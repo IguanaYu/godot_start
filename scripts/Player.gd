@@ -1,0 +1,265 @@
+## 玩家脚本（Player.gd）
+## 功能：处理玩家移动、受伤、无敌状态、吃金币回血、移速BUFF等逻辑
+## 节点结构：CharacterBody2D (根节点)
+##   ├── Sprite2D (玩家精灵)
+##   ├── CollisionShape2D (碰撞体)
+##   └── Area2D (伤害检测区域)
+##       ├── CollisionShape2D (检测碰撞体)
+##       └── Timer (无敌帧计时器)
+
+extends CharacterBody2D
+
+class_name Player
+
+## ========== 信号定义 ==========
+
+## 玩家受到伤害时发出
+signal player_took_damage(damage: int)
+## 玩家死亡时发出
+signal player_died()
+
+## ========== 可配置变量 ==========
+
+## 基础移动速度（像素/秒）
+@export var base_speed: float = 200.0
+## 加速度
+@export var acceleration: float = 1000.0
+## 摩擦力
+@export var friction: float = 1500.0
+## 无敌时间（秒）
+@export var invincibility_duration: float = 1.5
+## 无敌状态闪烁间隔（秒）
+@export var blink_interval: float = 0.1
+
+## ========== 私有变量 ==========
+
+## 当前移动速度
+var _current_speed: float = base_speed
+## 是否处于无敌状态
+var _is_invincible: bool = false
+## 无敌状态计时器
+var _invincibility_timer: float = 0.0
+## 闪烁计时器
+var _blink_timer: float = 0.0
+## 原始精灵透明度
+var _original_modulate: Color = Color.WHITE
+## 是否处于无敌星状态（无敌且秒杀敌人）
+var _is_star_invincible: bool = false
+## BUFF 计时器字典
+var _buff_timers: Dictionary = {}
+## 移速BUFF倍数
+var _speed_multiplier: float = 1.0
+
+## ========== 节点引用 ==========
+
+## 精灵节点引用
+@onready var sprite: Sprite2D = $Sprite2D
+## 碰撞形状引用
+@onready var collision_shape: CollisionShape2D = $CollisionShape2D
+## 伤害检测区域引用
+@onready var hurt_area: Area2D = $HurtArea
+## 伤害检测碰撞形状引用
+@onready var hurt_collision_shape: CollisionShape2D = $HurtArea/CollisionShape2D
+## 无敌帧计时器引用
+@onready var invincibility_timer_node: Timer = $HurtArea/InvincibilityTimer
+
+## ========== Godot 生命周期函数 ==========
+
+func _ready() -> void:
+	# 设置 GameManager 的玩家引用
+	GameManager.player = self
+
+	# 连接伤害检测信号
+	hurt_area.body_entered.connect(_on_hurt_area_body_entered)
+	invincibility_timer_node.timeout.connect(_on_invincibility_timer_timeout)
+
+	# 初始化精灵颜色
+	_original_modulate = sprite.modulate
+
+## ========== 物理处理（每帧调用） ==========
+
+func _physics_process(delta: float) -> void:
+	# 处理无敌状态闪烁
+	if _is_invincible or _is_star_invincible:
+		_blink_timer -= delta
+		if _blink_timer <= 0:
+			_blink_timer = blink_interval
+			_toggle_sprite_visibility()
+
+	# 处理 BUFF 计时器
+	_process_buff_timers(delta)
+
+	# 处理移动
+	_handle_movement(delta)
+
+	# 移动并处理碰撞
+	move_and_slide()
+
+## ========== 移动处理 ==========
+
+## 处理玩家移动输入
+func _handle_movement(delta: float) -> void:
+	# 获取输入方向
+	var input_dir: Vector2 = Vector2.ZERO
+
+	if Input.is_action_pressed("move_up"):
+		input_dir.y -= 1
+	if Input.is_action_pressed("move_down"):
+		input_dir.y += 1
+	if Input.is_action_pressed("move_left"):
+		input_dir.x -= 1
+	if Input.is_action_pressed("move_right"):
+		input_dir.x += 1
+
+	# 归一化对角线移动速度
+	if input_dir != Vector2.ZERO:
+		input_dir = input_dir.normalized()
+
+	# 应用当前速度
+	var target_velocity: Vector2 = input_dir * _current_speed * _speed_multiplier
+
+	# 平滑加速和减速
+	if input_dir != Vector2.ZERO:
+		velocity = velocity.move_toward(target_velocity, acceleration * delta)
+	else:
+		velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
+
+## ========== 伤害处理 ==========
+
+## 处理受到伤害
+func take_damage(damage: int = 1) -> void:
+	# 无敌状态下不受伤
+	if _is_invincible or _is_star_invincible:
+		return
+
+	# 调用 GameManager 扣血
+	GameManager.damage_player(damage)
+	player_took_damage.emit(damage)
+
+	# 启动无敌状态
+	_start_invincibility()
+
+## 启动无敌状态
+func _start_invincibility() -> void:
+	_is_invincible = true
+	_invincibility_timer_node.start(invincibility_duration)
+
+	# 设置闪烁计时器
+	_blink_timer = 0.0
+
+## 结束无敌状态
+func _end_invincibility() -> void:
+	_is_invincible = false
+	sprite.visible = true
+	sprite.modulate = _original_modulate
+
+## 切换精灵可见性（闪烁效果）
+func _toggle_sprite_visibility() -> void:
+	sprite.visible = not sprite.visible
+
+## ========== 无敌星状态 ==========
+
+## 启动无敌星状态（无敌且秒杀敌人）
+func start_star_invincibility(duration: float = 10.0) -> void:
+	_is_star_invincible = true
+	_is_invincible = false  # 无敌星状态下不需要普通无敌
+
+	# 改变精灵颜色为金黄色
+	sprite.modulate = Color.GOLD
+
+	# 设置计时器
+	if not _buff_timers.has("star_invincibility"):
+		_buff_timers["star_invincibility"] = duration
+
+## 结束无敌星状态
+func _end_star_invincibility() -> void:
+	_is_star_invincible = false
+	sprite.modulate = _original_modulate
+	sprite.visible = true
+	_buff_timers.erase("star_invincibility")
+
+## ========== BUFF 系统 ==========
+
+## 应用 BUFF 效果
+func apply_buff(buff_type: String) -> void:
+	match buff_type:
+		"speed_boost":
+			_apply_speed_boost(10.0)  # 10秒持续时间
+		"star_invincibility":
+			start_star_invincibility(10.0)  # 10秒持续时间
+		_:
+			push_warning("Unknown buff type: %s" % buff_type)
+
+## 应用移速提升BUFF
+func _apply_speed_boost(duration: float = 10.0) -> void:
+	_speed_multiplier = 1.3  # 提升30%
+
+	if not _buff_timers.has("speed_boost"):
+		_buff_timers["speed_boost"] = duration
+
+	# 改变精灵颜色为绿色提示
+	if not _is_star_invincible:
+		sprite.modulate = Color.GREEN_YELLOW
+
+## 处理 BUFF 计时器
+func _process_buff_timers(delta: float) -> void:
+	var buffs_to_remove: Array[String] = []
+
+	for buff_name: String in _buff_timers.keys():
+		_buff_timers[buff_name] -= delta
+
+		if _buff_timers[buff_name] <= 0:
+			# 移除过期 BUFF
+			match buff_name:
+				"speed_boost":
+					_speed_multiplier = 1.0
+					if not _is_star_invincible and not _is_invincible:
+						sprite.modulate = _original_modulate
+				"star_invincibility":
+					_end_star_invincibility()
+
+			buffs_to_remove.append(buff_name)
+
+	# 移除过期的 BUFF
+	for buff_name: String in buffs_to_remove:
+		_buff_timers.erase(buff_name)
+
+## ========== 信号回调 ==========
+
+## 伤害检测区域检测到碰撞体
+func _on_hurt_area_body_entered(body: Node2D) -> void:
+	# 检查碰撞体是否是敌人
+	if body is Enemy:
+		var enemy: Enemy = body as Enemy
+
+		if _is_star_invincible:
+			# 无敌星状态下直接秒杀敌人
+			enemy.destroy()
+		else:
+			# 普通状态下玩家受伤
+			take_damage(1)
+
+## 无敌时间计时器超时
+func _on_invincibility_timer_timeout() -> void:
+	_end_invincibility()
+
+## ========== 公共方法 ==========
+
+## 恢复玩家生命值（由 GameManager 调用）
+func heal(amount: int) -> void:
+	GameManager.heal_player(amount)
+
+## 获取当前是否无敌
+func is_invincible() -> bool:
+	return _is_invincible or _is_star_invincible
+
+## 获取当前是否是无敌星状态
+func is_star_invincible() -> bool:
+	return _is_star_invincible
+
+## ========== 清理 ==========
+
+func _exit_tree() -> void:
+	# 清理 GameManager 引用
+	if GameManager.player == self:
+		GameManager.player = null

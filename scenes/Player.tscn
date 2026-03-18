@@ -1,0 +1,28 @@
+[gd_scene load_steps=3 format=3 uid="uid://cxfj8kxqmnmyp"]
+
+[ext_resource type="Script" path="res://scripts/Player.gd" id="1_2x3rq"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_1xw7v"]
+radius = 16.0
+
+[node name="Player" type="CharacterBody2D" groups=["player"]]
+collision_layer = 1
+collision_mask = 0
+script = ExtResource("1_2x3rq")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+modulate = Color(0.2, 0.6, 1, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_1xw7v")
+
+[node name="HurtArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtArea"]
+shape = SubResource("CircleShape2D_1xw7v")
+
+[node name="InvincibilityTimer" type="Timer" parent="HurtArea"]
+wait_time = 1.5
+one_shot = true
