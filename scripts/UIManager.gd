@@ -9,7 +9,7 @@ class_name UIManager
 ## ========== 节点引用 ==========
 
 ## 血量条引用
-@onready var hp_bar: TextureProgressBar = $HPBar
+@onready var hp_bar: ProgressBar = $HPBar
 ## 金币标签引用
 @onready var coin_label: Label = $CoinLabel
 ## 奖励提示标签引用
@@ -65,13 +65,8 @@ func _update_hp_display() -> void:
 
 	hp_bar.value = hp_percentage
 
-	# 根据血量改变颜色
-	if hp_percentage > 60.0:
-		hp_bar.tint_progress = Color.GREEN
-	elif hp_percentage > 30.0:
-		hp_bar.tint_progress = Color.YELLOW
-	else:
-		hp_bar.tint_progress = Color.RED
+	# ProgressBar 使用主题样式定义颜色，无需动态修改
+	# 颜色已在场景中通过 theme_override_styles 设置
 
 ## 更新金币显示
 func _update_coin_display() -> void:

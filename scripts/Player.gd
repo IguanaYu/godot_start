@@ -60,21 +60,28 @@ var _speed_multiplier: float = 1.0
 @onready var hurt_area: Area2D = $HurtArea
 ## 伤害检测碰撞形状引用
 @onready var hurt_collision_shape: CollisionShape2D = $HurtArea/CollisionShape2D
-## 无敌帧计时器引用
-@onready var invincibility_timer_node: Timer = $HurtArea/InvincibilityTimer
 
 ## ========== Godot 生命周期函数 ==========
 
 func _ready() -> void:
+	# 重新初始化当前速度（确保使用场景中的覆盖值）
+	_current_speed = base_speed
+
 	# 设置 GameManager 的玩家引用
 	GameManager.player = self
 
+	# 获取无敌帧计时器引用（在运行时获取）
+	var timer_node: Timer = $HurtArea/InvincibilityTimer
+	if timer_node != null:
+		timer_node.timeout.connect(_on_invincibility_timer_timeout)
+
 	# 连接伤害检测信号
-	hurt_area.body_entered.connect(_on_hurt_area_body_entered)
-	invincibility_timer_node.timeout.connect(_on_invincibility_timer_timeout)
+	if hurt_area != null:
+		hurt_area.body_entered.connect(_on_hurt_area_body_entered)
 
 	# 初始化精灵颜色
-	_original_modulate = sprite.modulate
+	if sprite != null:
+		_original_modulate = sprite.modulate
 
 ## ========== 物理处理（每帧调用） ==========
 
@@ -124,6 +131,10 @@ func _handle_movement(delta: float) -> void:
 	else:
 		velocity = velocity.move_toward(Vector2.ZERO, friction * delta)
 
+	# # 调试：打印当前速度和加速度配置
+	# if input_dir != Vector2.ZERO:
+	# 	print("当前速度: ", velocity.length(), " | 目标: ", target_velocity.length(), " | 加速度: ", acceleration, " | 摩擦力: ", friction)
+
 ## ========== 伤害处理 ==========
 
 ## 处理受到伤害
@@ -142,7 +153,12 @@ func take_damage(damage: int = 1) -> void:
 ## 启动无敌状态
 func _start_invincibility() -> void:
 	_is_invincible = true
-	_invincibility_timer_node.start(invincibility_duration)
+
+	# 启动无敌计时器
+	var timer_node: Timer = $HurtArea/InvincibilityTimer
+	if timer_node != null:
+		timer_node.wait_time = invincibility_duration
+		timer_node.start()
 
 	# 设置闪烁计时器
 	_blink_timer = 0.0
@@ -150,12 +166,14 @@ func _start_invincibility() -> void:
 ## 结束无敌状态
 func _end_invincibility() -> void:
 	_is_invincible = false
-	sprite.visible = true
-	sprite.modulate = _original_modulate
+	if sprite != null:
+		sprite.visible = true
+		sprite.modulate = _original_modulate
 
 ## 切换精灵可见性（闪烁效果）
 func _toggle_sprite_visibility() -> void:
-	sprite.visible = not sprite.visible
+	if sprite != null:
+		sprite.visible = not sprite.visible
 
 ## ========== 无敌星状态 ==========
 
@@ -165,7 +183,8 @@ func start_star_invincibility(duration: float = 10.0) -> void:
 	_is_invincible = false  # 无敌星状态下不需要普通无敌
 
 	# 改变精灵颜色为金黄色
-	sprite.modulate = Color.GOLD
+	if sprite != null:
+		sprite.modulate = Color.GOLD
 
 	# 设置计时器
 	if not _buff_timers.has("star_invincibility"):
@@ -174,8 +193,9 @@ func start_star_invincibility(duration: float = 10.0) -> void:
 ## 结束无敌星状态
 func _end_star_invincibility() -> void:
 	_is_star_invincible = false
-	sprite.modulate = _original_modulate
-	sprite.visible = true
+	if sprite != null:
+		sprite.modulate = _original_modulate
+		sprite.visible = true
 	_buff_timers.erase("star_invincibility")
 
 ## ========== BUFF 系统 ==========
@@ -198,7 +218,7 @@ func _apply_speed_boost(duration: float = 10.0) -> void:
 		_buff_timers["speed_boost"] = duration
 
 	# 改变精灵颜色为绿色提示
-	if not _is_star_invincible:
+	if not _is_star_invincible and sprite != null:
 		sprite.modulate = Color.GREEN_YELLOW
 
 ## 处理 BUFF 计时器
@@ -213,7 +233,7 @@ func _process_buff_timers(delta: float) -> void:
 			match buff_name:
 				"speed_boost":
 					_speed_multiplier = 1.0
-					if not _is_star_invincible and not _is_invincible:
+					if not _is_star_invincible and not _is_invincible and sprite != null:
 						sprite.modulate = _original_modulate
 				"star_invincibility":
 					_end_star_invincibility()

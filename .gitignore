@@ -1,3 +1,10 @@
 # Godot 4+ specific ignores
 .godot/
 /android/
+
+# Downloaded asset packs (keep originals outside git)
+kenney_*.zip
+kenney_*/
+
+# Imported assets can be large
+*.import
