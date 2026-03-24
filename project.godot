@@ -19,6 +19,10 @@ config/icon="res://icon.svg"
 
 GameManager="*res://scripts/GameManager.gd"
 
+[display]
+
+window/stretch/mode="viewport"
+
 [input]
 
 ui_cancel={
@@ -67,4 +71,5 @@ ui_restart={
 
 [rendering]
 
+textures/canvas_textures/default_texture_filter=0
 rendering_device/driver.windows="d3d12"

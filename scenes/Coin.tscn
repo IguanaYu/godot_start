@@ -1,23 +1,24 @@
-[gd_scene load_steps=3 format=3 uid="uid://coinxqmnmyp"]
+[gd_scene format=3 uid="uid://coinxqmnmyp"]
 
-[ext_resource type="Script" path="res://scripts/Coin.gd" id="1_coin"]
+[ext_resource type="Script" uid="uid://b1gjt8c3tcg2g" path="res://scripts/Coin.gd" id="1_coin"]
+[ext_resource type="Texture2D" uid="uid://bfjdx4e8rmpyy" path="res://kenney_desert-shooter-pack_1.0/kenney_desert-shooter-pack_1.0/PNG/Tiles/Tiles/tile_0201.png" id="2_kyq3r"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_coin"]
 radius = 8.0
 
-[node name="Coin" type="Area2D" groups=["coins"]]
+[node name="Coin" type="Area2D" unique_id=1277562758 groups=["coins"]]
 collision_layer = 3
-collision_mask = 1
 script = ExtResource("1_coin")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=573422802]
 modulate = Color(1, 0.8, 0, 1)
 scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_kyq3r")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=616392956]
 shape = SubResource("CircleShape2D_coin")
 
-[node name="LifetimeTimer" type="Timer" parent="."]
+[node name="LifetimeTimer" type="Timer" parent="." unique_id=1423749119]
 wait_time = 15.0
 one_shot = true
 autostart = true

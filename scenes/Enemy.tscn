@@ -1,22 +1,23 @@
-[gd_scene load_steps=3 format=3 uid="uid://en5k2xqmnmyp"]
+[gd_scene format=3 uid="uid://en5k2xqmnmyp"]
 
-[ext_resource type="Script" path="res://scripts/Enemy.gd" id="1_enemy"]
+[ext_resource type="Script" uid="uid://j1k6j18s4xn4" path="res://scripts/Enemy.gd" id="1_enemy"]
+[ext_resource type="Texture2D" uid="uid://laoifh2pbpdl" path="res://kenney_desert-shooter-pack_1.0/kenney_desert-shooter-pack_1.0/PNG/Enemies/Tiles/tile_0010.png" id="2_55jtl"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_enemy"]
 radius = 16.0
 
-[node name="Enemy" type="Area2D" groups=["enemy"]]
+[node name="Enemy" type="Area2D" unique_id=1861044788 groups=["enemy"]]
 collision_layer = 2
-collision_mask = 1
 script = ExtResource("1_enemy")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=14220979]
 modulate = Color(1, 0.3, 0.3, 1)
+texture = ExtResource("2_55jtl")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1312266959]
 shape = SubResource("CircleShape2D_enemy")
 
-[node name="LifetimeTimer" type="Timer" parent="."]
+[node name="LifetimeTimer" type="Timer" parent="." unique_id=1140002504]
 wait_time = 10.0
 one_shot = true
 autostart = true
