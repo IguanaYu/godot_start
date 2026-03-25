@@ -14,6 +14,8 @@ signal health_changed(new_health: int)
 signal player_died()
 ## 获得奖励时发出（参数：奖励描述文本）
 signal reward_obtained(reward_text: String)
+## 音量变化时发出（参数：音量类型，音量值）
+signal volume_changed(volume_type: String, value: float)
 
 ## ========== 可配置变量 ==========
 
@@ -25,6 +27,15 @@ signal reward_obtained(reward_text: String)
 @export var coin_rain_duration: float = 20.0
 ## 金币雨生成间隔（秒）
 @export var coin_rain_interval: float = 1.0
+
+## ========== 音量设置 ==========
+
+## 主音量（0.0到1.0）
+@export var master_volume: float = 0.8
+## 音效音量（0.0到1.0）
+@export var sfx_volume: float = 0.8
+## 背景音乐音量（0.0到1.0）
+@export var music_volume: float = 0.8
 
 ## ========== 私有变量 ==========
 
@@ -242,3 +253,32 @@ func get_active_enemy_count() -> int:
 func apply_buff(buff_type: String) -> void:
 	if player != null and is_instance_valid(player):
 		player.apply_buff(buff_type)
+
+## ========== 公共方法：音量管理 ==========
+
+## 设置主音量
+func set_master_volume(value: float) -> void:
+	master_volume = clamp(value, 0.0, 1.0)
+	volume_changed.emit("master", master_volume)
+
+## 获取主音量
+func get_master_volume() -> float:
+	return master_volume
+
+## 设置音效音量
+func set_sfx_volume(value: float) -> void:
+	sfx_volume = clamp(value, 0.0, 1.0)
+	volume_changed.emit("sfx", sfx_volume)
+
+## 获取音效音量
+func get_sfx_volume() -> float:
+	return sfx_volume
+
+## 设置背景音乐音量
+func set_music_volume(value: float) -> void:
+	music_volume = clamp(value, 0.0, 1.0)
+	volume_changed.emit("music", music_volume)
+
+## 获取背景音乐音量
+func get_music_volume() -> float:
+	return music_volume
