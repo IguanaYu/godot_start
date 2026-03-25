@@ -2,9 +2,32 @@
 
 [ext_resource type="Script" uid="uid://j4xgwvcg88yh" path="res://scripts/Player.gd" id="1_2x3rq"]
 [ext_resource type="Texture2D" uid="uid://rw2fycfy36o4" path="res://kenney_desert-shooter-pack_1.0/kenney_desert-shooter-pack_1.0/PNG/Players/Tiles/tile_0000.png" id="2_v6fml"]
+[ext_resource type="Texture2D" uid="uid://baoanrec54qdt" path="res://kenney_desert-shooter-pack_1.0/kenney_desert-shooter-pack_1.0/PNG/Players/Tiles/tile_0001.png" id="3_bruh7"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_1xw7v"]
 radius = 16.0
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_v6fml"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_bruh7")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_v6fml")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_bruh7")
+}],
+"loop": true,
+"name": &"run",
+"speed": 5.0
+}]
 
 [node name="Player" type="CharacterBody2D" unique_id=2046445455 groups=["player"]]
 collision_mask = 0
@@ -29,3 +52,12 @@ shape = SubResource("CircleShape2D_1xw7v")
 [node name="InvincibilityTimer" type="Timer" parent="HurtArea" unique_id=314342124]
 wait_time = 1.5
 one_shot = true
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=140308380]
+zoom = Vector2(3, 3)
+limit_smoothed = true
+position_smoothing_enabled = true
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1927835245]
+sprite_frames = SubResource("SpriteFrames_v6fml")
+animation = &"idle"

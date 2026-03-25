@@ -54,6 +54,8 @@ var _speed_multiplier: float = 1.0
 
 ## 精灵节点引用
 @onready var sprite: Sprite2D = $Sprite2D
+## 动画精灵节点引用
+@onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
 ## 碰撞形状引用
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
 ## 伤害检测区域引用
@@ -82,6 +84,10 @@ func _ready() -> void:
 	# 初始化精灵颜色
 	if sprite != null:
 		_original_modulate = sprite.modulate
+
+	# 初始化动画（播放idle动画）
+	if animated_sprite != null:
+		animated_sprite.play("idle")
 
 ## ========== 物理处理（每帧调用） ==========
 
@@ -121,6 +127,19 @@ func _handle_movement(delta: float) -> void:
 	# 归一化对角线移动速度
 	if input_dir != Vector2.ZERO:
 		input_dir = input_dir.normalized()
+
+	# 控制动画和精灵翻转
+	if animated_sprite != null:
+		if input_dir != Vector2.ZERO:
+			# 移动时播放run动画
+			if animated_sprite.get_animation() != "run":
+				animated_sprite.play("run")
+			# 根据移动方向翻转精灵
+			animated_sprite.flip_h = input_dir.x < 0
+		else:
+			# 停止时切换到idle动画
+			if animated_sprite.get_animation() != "idle":
+				animated_sprite.play("idle")
 
 	# 应用当前速度
 	var target_velocity: Vector2 = input_dir * _current_speed * _speed_multiplier
