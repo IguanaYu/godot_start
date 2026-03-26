@@ -4,6 +4,8 @@
 [ext_resource type="PackedScene" uid="uid://cxfj8kxqmnmyp" path="res://scenes/Player.tscn" id="2_player"]
 [ext_resource type="Script" uid="uid://bjqegfkwqa12j" path="res://scripts/Spawner.gd" id="3_spawner"]
 [ext_resource type="Script" uid="uid://da45s4gck3421" path="res://scripts/UIManager.gd" id="4_ui"]
+[ext_resource type="Texture2D" uid="uid://st6lfgchh04h" path="res://kenney_desert-shooter-pack_1.0/kenney_desert-shooter-pack_1.0/PNG/Interface/Tiles/tile_0145.png" id="5_vcsgt"]
+[ext_resource type="Texture2D" uid="uid://jswtv1wirkd2" path="res://kenney_desert-shooter-pack_1.0/背景.png" id="6_c01mt"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hp_bg"]
 bg_color = Color(0.2, 0.2, 0.2, 0.8)
@@ -19,10 +21,23 @@ corner_radius_top_right = 5
 corner_radius_bottom_right = 5
 corner_radius_bottom_left = 5
 
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_vcsgt"]
+particle_flag_disable_z = true
+emission_shape = 3
+emission_box_extents = Vector3(10, 10, 1)
+angle_min = -225.0
+angle_max = 90.000015
+direction = Vector3(0, -90, 0)
+spread = 0.0
+initial_velocity_min = 100.0
+initial_velocity_max = 200.0
+gravity = Vector3(0, 98, 0)
+
 [node name="Main" type="Node2D" unique_id=542945104]
 script = ExtResource("1_main")
 
 [node name="Player" parent="." unique_id=9122496 instance=ExtResource("2_player")]
+z_index = 1
 base_speed = 100.0
 acceleration = 10000.0
 friction = 10000.0
@@ -94,3 +109,16 @@ offset_bottom = -20.0
 theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 0.7)
 theme_override_font_sizes/font_size = 14
 text = "WASD: 移动 | R: 重新开始 | ESC: 暂停"
+
+[node name="GPUParticles2D" type="GPUParticles2D" parent="." unique_id=693532415]
+position = Vector2(-60, 17)
+emitting = false
+amount = 21
+texture = ExtResource("5_vcsgt")
+lifetime = 3.1999999999999997
+one_shot = true
+explosiveness = 1.0
+process_material = SubResource("ParticleProcessMaterial_vcsgt")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=897015143]
+texture = ExtResource("6_c01mt")
