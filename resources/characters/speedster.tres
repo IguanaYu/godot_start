@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="CharacterData" format=3 uid="uid://dfh8onute3xwo"]
+
+[ext_resource type="Script" uid="uid://c73se281ow4dn" path="res://resources/character_data.gd" id="1"]
+[ext_resource type="SpriteFrames" uid="uid://dxb4sq7m4par" path="res://resources/characters/speedster_sprites.tres" id="2"]
+
+[resource]
+script = ExtResource("1")
+character_name = "疾风刺客"
+description = "低生命值，极速移动的挑战型角色"
+starting_health = 1
+sprite_frames = ExtResource("2")

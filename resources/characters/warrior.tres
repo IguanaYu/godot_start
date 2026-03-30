@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="CharacterData" format=3 uid="uid://bly8fkeryxj8v"]
+
+[ext_resource type="Script" uid="uid://c73se281ow4dn" path="res://resources/character_data.gd" id="1"]
+[ext_resource type="SpriteFrames" uid="uid://bxa8nm5kq2o7p" path="res://resources/characters/warrior_sprites.tres" id="2"]
+
+[resource]
+script = ExtResource("1")
+character_name = "勇敢战士"
+description = "平衡型角色，适合新手玩家"
+speed = 100.0
+sprite_frames = ExtResource("2")

@@ -1,0 +1,102 @@
+[gd_scene format=3 uid="uid://b8k2n3j4m5p6q"]
+
+[ext_resource type="Script" uid="uid://dtbklccaewaed" path="res://scripts/CharacterSelect.gd" id="1"]
+
+[node name="CharacterSelect" type="Control" unique_id=1817522804]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1")
+
+[node name="Background" type="ColorRect" parent="." unique_id=647899773]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.08, 0.08, 0.12, 1)
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1489073759]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -400.0
+offset_top = -300.0
+offset_right = 400.0
+offset_bottom = 300.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 30
+
+[node name="TitleLabel" type="Label" parent="VBoxContainer" unique_id=2144636201]
+layout_mode = 2
+theme_override_font_sizes/font_size = 48
+text = "选择你的英雄"
+horizontal_alignment = 1
+
+[node name="CharacterContainer" type="HBoxContainer" parent="VBoxContainer" unique_id=140419126]
+layout_mode = 2
+theme_override_constants/separation = 30
+
+[node name="SelectedCharacterPanel" type="Panel" parent="VBoxContainer" unique_id=676458381]
+layout_mode = 2
+
+[node name="SelectedVBox" type="VBoxContainer" parent="VBoxContainer/SelectedCharacterPanel" unique_id=589651583]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 10
+
+[node name="SelectedLabel" type="Label" parent="VBoxContainer/SelectedCharacterPanel/SelectedVBox" unique_id=1062704680]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "已选择: 无"
+
+[node name="PreviewSprite" type="TextureRect" parent="VBoxContainer/SelectedCharacterPanel/SelectedVBox" unique_id=1808372064]
+custom_minimum_size = Vector2(100, 100)
+layout_mode = 2
+stretch_mode = 5
+
+[node name="StatsLabel" type="Label" parent="VBoxContainer/SelectedCharacterPanel/SelectedVBox" unique_id=975839628]
+layout_mode = 2
+
+[node name="DescriptionLabel" type="Label" parent="VBoxContainer/SelectedCharacterPanel/SelectedVBox" unique_id=561936270]
+layout_mode = 2
+
+[node name="ButtonContainer" type="HBoxContainer" parent="." unique_id=1374285468]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -295.0
+offset_top = -42.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_constants/separation = 20
+
+[node name="BackButton" type="Button" parent="ButtonContainer" unique_id=1864389563]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "返回"
+
+[node name="StartGameButton" type="Button" parent="ButtonContainer" unique_id=1126596035]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+disabled = true
+text = "开始游戏"

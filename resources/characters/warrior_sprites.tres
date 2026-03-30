@@ -1,0 +1,27 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://bxa8nm5kq2o7p"]
+
+[ext_resource type="Texture2D" uid="uid://btpqwhxdy3c3k" path="res://kenney_desert-shooter-pack_1.0/kenney_desert-shooter-pack_1.0/PNG/Players/Tiles/tile_0012.png" id="1"]
+[ext_resource type="Texture2D" uid="uid://birabtmj0lxdi" path="res://kenney_desert-shooter-pack_1.0/kenney_desert-shooter-pack_1.0/PNG/Players/Tiles/tile_0014.png" id="2"]
+[ext_resource type="Texture2D" uid="uid://bexppbt1n5hvv" path="res://kenney_desert-shooter-pack_1.0/kenney_desert-shooter-pack_1.0/PNG/Players/Tiles/tile_0013.png" id="3"]
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3")
+}],
+"loop": true,
+"name": &"run",
+"speed": 5.0
+}]

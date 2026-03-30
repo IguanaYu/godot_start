@@ -41,6 +41,8 @@ signal volume_changed(volume_type: String, value: float)
 
 ## 当前收集的金币数量
 var _coins: int = 0
+## 当前选中的角色数据
+var selected_character_data: Resource = null
 ## 当前玩家生命值
 var _health: int = max_health
 ## 金币雨计时器
@@ -143,7 +145,11 @@ func get_health() -> int:
 
 ## 重置生命值
 func reset_health() -> void:
-	_health = max_health
+	# 如果有选中的角色，使用角色的最大生命值
+	if selected_character_data != null:
+		_health = selected_character_data.get_initial_health()
+	else:
+		_health = max_health
 	health_changed.emit(_health)
 
 ## 重置游戏状态

@@ -9,8 +9,8 @@ func _ready():
 	$VBoxContainer/ExitButton.pressed.connect(_on_exit_button_pressed)
 
 func _on_start_button_pressed():
-	# 切换到主游戏场景
-	get_tree().change_scene_to_file("res://scenes/Main.tscn")
+	# 切换到角色选择场景
+	get_tree().change_scene_to_file("res://scenes/CharacterSelect.tscn")
 
 func _on_settings_button_pressed():
 	# 切换到设置场景

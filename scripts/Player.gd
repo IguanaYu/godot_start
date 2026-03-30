@@ -66,6 +66,9 @@ var _speed_multiplier: float = 1.0
 ## ========== Godot 生命周期函数 ==========
 
 func _ready() -> void:
+	# 应用角色数据
+	_apply_character_data()
+
 	# 重新初始化当前速度（确保使用场景中的覆盖值）
 	_current_speed = base_speed
 
@@ -295,6 +298,26 @@ func is_invincible() -> bool:
 ## 获取当前是否是无敌星状态
 func is_star_invincible() -> bool:
 	return _is_star_invincible
+
+## ========== 公共方法 ==========
+
+## 应用角色数据到Player
+func _apply_character_data() -> void:
+	if not GameManager.has_method("get") or GameManager.get("selected_character_data") == null:
+		return
+
+	var char_data = GameManager.selected_character_data
+
+	# 应用速度
+	base_speed = char_data.speed
+	_current_speed = base_speed
+
+	# 应用动画帧资源
+	if animated_sprite != null and char_data.sprite_frames != null:
+		animated_sprite.sprite_frames = char_data.sprite_frames
+		# 重新播放idle动画
+		if animated_sprite.sprite_frames.has_animation("idle"):
+			animated_sprite.play("idle")
 
 ## ========== 清理 ==========
 

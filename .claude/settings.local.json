@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(\"E:\\\\chormeddownload7\\\\Godot_v4.6.1\\\\Godot_v4.6.1-stable_win64_console.exe\" --path \"F:\\\\godot_game\\\\run_game\\\\richman\")",
+      "Bash(\"E:\\\\chormedownload7\\\\Godot_v4.6.1\\\\Godot_v4.6.1-stable_win64_console.exe\":*)",
+      "Bash(\"/e/chormedownload7/Godot_v4.6.1/Godot_v4.6.1-stable_win64_console.exe\" --path \"/f/godot_game/run_game/richman\")",
+      "Bash(cmd.exe /c \"E:\\\\chormeddownload7\\\\Godot_v4.6.1\\\\Godot_v4.6.1-stable_win64_console.exe --path F:\\\\godot_game\\\\run_game\\\\richman\")"
+    ]
+  }
+}
