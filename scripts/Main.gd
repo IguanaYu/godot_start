@@ -18,6 +18,17 @@ class_name Main
 @export var auto_start: bool = true
 ## 背景颜色
 @export var background_color: Color = Color(0.1, 0.1, 0.15, 1.0)
+## 撤离点生成时间（秒）
+@export var evacuation_time: float = 20.0
+## 难度翻倍倍数
+@export var difficulty_multiplier: float = 2.0
+
+## ========== 私有变量 ==========
+
+## 游戏计时器
+var _game_timer: float = 0.0
+## 撤离点是否已生成
+var _evacuation_spawned: bool = false
 
 ## ========== 节点引用 ==========
 
@@ -25,12 +36,14 @@ class_name Main
 @onready var player: Player = $Player
 ## 生成器节点引用
 @onready var spawner: Spawner = $Spawner
-## 摄像机节点引用
-@onready var camera: Camera2D = $Camera2D
+## 摄像机节点引用（从Player节点获取）
+@onready var camera: Camera2D = $Player/Camera2D
 ## UI 容器引用
 @onready var ui_canvas: CanvasLayer = $UI
 ## 背景节点引用
 @onready var background: ColorRect = $Background
+## 倒计时标签引用
+@onready var countdown_label: Label = $UI/CountdownLabel
 
 ## ========== Godot 生命周期函数 ==========
 
@@ -110,6 +123,24 @@ func _physics_process(delta: float) -> void:
 		# camera.global_position = player.global_position
 		pass
 
+## 处理逻辑（每帧调用）
+func _process(delta: float) -> void:
+	# 处理撤离点生成计时器
+	if not _evacuation_spawned:
+		_game_timer += delta
+
+		# 更新倒计时显示
+		_update_countdown()
+
+		if _game_timer >= evacuation_time:
+			_spawn_evacuation_point()
+			_increase_difficulty()
+			_evacuation_spawned = true
+
+			# 隐藏倒计时
+			if countdown_label != null:
+				countdown_label.visible = false
+
 ## ========== 输入处理 ==========
 
 func _input(event: InputEvent) -> void:
@@ -125,3 +156,38 @@ func _input(event: InputEvent) -> void:
 func toggle_pause() -> void:
 	var tree: SceneTree = get_tree()
 	tree.paused = not tree.paused
+
+## ========== 撤离点系统 ==========
+
+## 生成撤离点
+func _spawn_evacuation_point() -> void:
+	var evacuation_scene = load("res://scenes/EvacuationPoint.tscn")
+	if evacuation_scene == null:
+		push_error("无法加载 EvacuationPoint.tscn")
+		return
+
+	var evacuation_point = evacuation_scene.instantiate()
+
+	# 在玩家周围随机位置生成
+	if player != null and is_instance_valid(player):
+		var random_offset = Vector2(randf_range(-200, 200), randf_range(-200, 200))
+		evacuation_point.global_position = player.global_position + random_offset
+	else:
+		evacuation_point.global_position = Vector2.ZERO
+
+	add_child(evacuation_point)
+
+	# 显示提示
+	GameManager.reward_obtained.emit("撤离点已出现！占领撤离点前往休息区域！")
+
+## 增加游戏难度
+func _increase_difficulty() -> void:
+	if spawner != null:
+		spawner.increase_difficulty(difficulty_multiplier)
+		GameManager.reward_obtained.emit("敌人刷新频率已提升！")
+
+## 更新倒计时显示
+func _update_countdown() -> void:
+	if countdown_label != null:
+		var remaining_time: float = max(0.0, evacuation_time - _game_timer)
+		countdown_label.text = "Evacuation: %.1fs" % remaining_time

@@ -16,6 +16,8 @@ signal player_died()
 signal reward_obtained(reward_text: String)
 ## 音量变化时发出（参数：音量类型，音量值）
 signal volume_changed(volume_type: String, value: float)
+## 背包变化时发出
+signal inventory_changed()
 
 ## ========== 可配置变量 ==========
 
@@ -54,14 +56,32 @@ var _coin_rain_time_left: float = 0.0
 ## 金币雨生成计时器
 var _coin_rain_spawn_timer: float = 0.0
 ## 当前活动中的占领据点列表
-var _active_capture_points: Array[CapturePoint] = []
+var _active_capture_points: Array = []
 ## 当前活动中的敌人列表
-var _active_enemies: Array[Enemy] = []
+var _active_enemies: Array = []
+
+## ========== 背包系统 ==========
+
+## 背包中的物品列表
+var inventory_items: Array = []
+
+## ========== 永久性增益存储 ==========
+
+## 速度增加百分比（累计）
+var speed_boost_percent: float = 0.0
+## 金币刷新几率增加百分比
+var coin_spawn_rate_bonus: float = 0.0
+## 敌人刷新几率减少百分比
+var enemy_spawn_rate_penalty: float = 0.0
+## 钻石刷新几率增加百分比
+var diamond_spawn_rate_bonus: float = 0.0
+## 最大生命值加成
+var max_health_bonus: int = 0
 
 ## ========== 节点引用 ==========
 
 ## 玩家引用（在游戏中动态设置）
-var player: Player = null
+var player: Node2D = null
 ## 主场景引用
 var main_scene: Node2D = null
 
@@ -204,7 +224,7 @@ func _spawn_coin_rain_coin() -> void:
 	# 加载并实例化金币场景
 	var coin_scene: PackedScene = load("res://scenes/Coin.tscn")
 	if coin_scene != null:
-		var coin: Coin = coin_scene.instantiate()
+		var coin = coin_scene.instantiate()
 		coin.global_position = spawn_position
 		coin.is_from_coin_rain = true  # 标记为金币雨生成的金币
 		main_scene.add_child(coin)
@@ -224,11 +244,11 @@ func clear_all_enemies() -> void:
 	reward_obtained.emit("圣光涌动！消除了 %d 个敌人" % cleared_count)
 
 ## 注册敌人到管理器
-func register_enemy(enemy: Enemy) -> void:
+func register_enemy(enemy: Node2D) -> void:
 	_active_enemies.append(enemy)
 
 ## 从管理器中移除敌人
-func unregister_enemy(enemy: Enemy) -> void:
+func unregister_enemy(enemy: Node2D) -> void:
 	var index: int = _active_enemies.find(enemy)
 	if index >= 0:
 		_active_enemies.remove_at(index)
@@ -236,11 +256,11 @@ func unregister_enemy(enemy: Enemy) -> void:
 ## ========== 公共方法：占领据点管理 ==========
 
 ## 注册占领据点
-func register_capture_point(capture_point: CapturePoint) -> void:
+func register_capture_point(capture_point: Node2D) -> void:
 	_active_capture_points.append(capture_point)
 
 ## 从管理器中移除占领据点
-func unregister_capture_point(capture_point: CapturePoint) -> void:
+func unregister_capture_point(capture_point: Node2D) -> void:
 	var index: int = _active_capture_points.find(capture_point)
 	if index >= 0:
 		_active_capture_points.remove_at(index)
@@ -288,3 +308,59 @@ func set_music_volume(value: float) -> void:
 ## 获取背景音乐音量
 func get_music_volume() -> float:
 	return music_volume
+
+## ========== 公共方法：背包管理 ==========
+
+## 添加物品到背包
+func add_item_to_inventory(item: Resource) -> void:
+	inventory_items.append(item)
+	inventory_changed.emit()
+
+## 从背包移除物品
+func remove_item_from_inventory(index: int) -> void:
+	if index >= 0 and index < inventory_items.size():
+		inventory_items.remove_at(index)
+		inventory_changed.emit()
+
+## 使用背包中的物品
+func use_item_from_inventory(index: int) -> void:
+	if index >= 0 and index < inventory_items.size():
+		var item: Resource = inventory_items[index]
+		item.apply_to_player()
+
+		# 如果不是永久物品，使用后移除
+		if not item.is_permanent():
+			inventory_items.remove_at(index)
+
+		inventory_changed.emit()
+
+## 获取背包中的所有物品
+func get_inventory_items() -> Array:
+	return inventory_items
+
+## 清空背包
+func clear_inventory() -> void:
+	inventory_items.clear()
+	inventory_changed.emit()
+
+## ========== 公共方法：永久性增益管理 ==========
+
+## 应用永久性增益到玩家
+func apply_permanent_bonuses() -> void:
+	# 应用最大生命值加成
+	if max_health_bonus > 0:
+		max_health += max_health_bonus
+
+	# 应用速度加成
+	if player != null and is_instance_valid(player) and speed_boost_percent > 0:
+		player.base_speed *= (1.0 + speed_boost_percent / 100.0)
+
+	# 恢复生命值到上限
+	heal_player(max_health - get_health())
+
+## 获取游戏总统计信息（用于调试）
+func get_stats_summary() -> String:
+	return "金币: %d | 生命: %d/%d | 背包: %d件 | 速度+%.1f%%" % [
+		get_coins(), get_health(), max_health,
+		inventory_items.size(), speed_boost_percent
+	]

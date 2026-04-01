@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3 uid="uid://speed_boost_1"]
+
+[ext_resource type="Script" path="res://scripts/ItemData.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+item_name = "速度徽章 I"
+item_description = "一个小巧的徽章，让移动更加敏捷。"
+item_type = 0
+item_value = 1.0
+price = 20
+stack_size = 99

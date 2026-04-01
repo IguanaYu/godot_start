@@ -50,6 +50,11 @@ var _buff_timers: Dictionary = {}
 ## 移速BUFF倍数
 var _speed_multiplier: float = 1.0
 
+## ========== 交互系统 ==========
+
+## 附近的可交互对象列表
+var _nearby_interactables: Array = []
+
 ## ========== 节点引用 ==========
 
 ## 精灵节点引用
@@ -62,6 +67,8 @@ var _speed_multiplier: float = 1.0
 @onready var hurt_area: Area2D = $HurtArea
 ## 伤害检测碰撞形状引用
 @onready var hurt_collision_shape: CollisionShape2D = $HurtArea/CollisionShape2D
+## 交互检测区域引用
+@onready var interaction_area: Area2D = $InteractionArea
 
 ## ========== Godot 生命周期函数 ==========
 
@@ -83,6 +90,11 @@ func _ready() -> void:
 	# 连接伤害检测信号
 	if hurt_area != null:
 		hurt_area.body_entered.connect(_on_hurt_area_body_entered)
+
+	# 连接交互检测信号
+	if interaction_area != null:
+		interaction_area.body_entered.connect(_on_interactable_entered)
+		interaction_area.body_exited.connect(_on_interactable_exited)
 
 	# 初始化精灵颜色
 	if sprite != null:
@@ -325,3 +337,41 @@ func _exit_tree() -> void:
 	# 清理 GameManager 引用
 	if GameManager.player == self:
 		GameManager.player = null
+
+## ========== 交互系统 ==========
+
+## 输入处理
+func _input(event: InputEvent) -> void:
+	# 处理交互键（E键）
+	if event.is_action_pressed("interact"):
+		_try_interact()
+
+## 尝试交互
+func _try_interact() -> void:
+	if _nearby_interactables.is_empty():
+		return
+
+	# 找到最近的交互对象
+	var closest = null
+	var closest_dist = INF
+
+	for obj in _nearby_interactables:
+		if is_instance_valid(obj):
+			var dist = global_position.distance_to(obj.global_position)
+			if dist < closest_dist:
+				closest_dist = dist
+				closest = obj
+
+	# 调用最近对象的交互方法
+	if closest != null and is_instance_valid(closest):
+		if closest.has_method("interact"):
+			closest.interact()
+
+## 可交互对象进入范围
+func _on_interactable_entered(body: Node2D) -> void:
+	if body.is_in_group("interactables"):
+		_nearby_interactables.append(body)
+
+## 可交互对象离开范围
+func _on_interactable_exited(body: Node2D) -> void:
+	_nearby_interactables.erase(body)

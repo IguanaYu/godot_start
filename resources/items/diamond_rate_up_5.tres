@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3 uid="uid://diamond_rate_up_5"]
+
+[ext_resource type="Script" path="res://scripts/ItemData.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+item_name = "探宝罗盘 V"
+item_description = "大幅增加钻石刷新几率的传说罗盘。"
+item_type = 5
+item_value = 5.0
+price = 150
+stack_size = 99

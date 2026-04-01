@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3 uid="uid://speed_boost_5"]
+
+[ext_resource type="Script" path="res://scripts/ItemData.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+item_name = "速度徽章 V"
+item_description = "传说中的徽章，蕴含着风之神的力量。"
+item_type = 0
+item_value = 5.0
+price = 80
+stack_size = 99

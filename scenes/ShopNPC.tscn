@@ -1,0 +1,25 @@
+[gd_scene format=3 uid="uid://g87datem2pem"]
+
+[ext_resource type="Script" uid="uid://de62j47h1ajfb" path="res://scripts/ShopNPC.gd" id="1_shop_npc"]
+[ext_resource type="Texture2D" uid="uid://cripv46engqkx" path="res://kenney_desert-shooter-pack_1.0/kenney_desert-shooter-pack_1.0/PNG/Enemies/Tiles/tile_0009.png" id="2_obn0l"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_body"]
+radius = 30.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_interaction"]
+radius = 80.0
+
+[node name="ShopNPC" type="Area2D" unique_id=1605904635]
+script = ExtResource("1_shop_npc")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=626431670]
+modulate = Color(0.2, 0.8, 0.2, 1)
+texture = ExtResource("2_obn0l")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1721621559]
+shape = SubResource("CircleShape2D_body")
+
+[node name="InteractionArea" type="Area2D" parent="." unique_id=2129678721]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractionArea" unique_id=471049221]
+shape = SubResource("CircleShape2D_interaction")

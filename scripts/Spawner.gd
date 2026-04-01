@@ -68,6 +68,8 @@ var _enemy_spawn_timer: float = 0.0
 var _coin_spawn_timer: float = 0.0
 var _capture_point_spawn_timer: float = 0.0
 var _chest_spawn_timer: float = 0.0
+## 基础敌人生成间隔（用于难度调整）
+var _base_enemy_spawn_interval: float = 0.0
 
 ## ========== 预加载场景 ==========
 
@@ -83,6 +85,9 @@ var chest_scene: PackedScene = preload("res://scenes/Chest.tscn")
 ## ========== Godot 生命周期函数 ==========
 
 func _ready() -> void:
+	# 存储基础敌人生成间隔
+	_base_enemy_spawn_interval = enemy_spawn_interval
+
 	# 随机化初始计时器，避免所有物体同时生成
 	_enemy_spawn_timer = randf() * enemy_spawn_interval
 	_coin_spawn_timer = randf() * coin_spawn_interval
@@ -255,3 +260,7 @@ func pause_spawning() -> void:
 ## 恢复所有生成
 func resume_spawning() -> void:
 	set_process(true)
+
+## 增加游戏难度（敌人刷新频率翻倍）
+func increase_difficulty(multiplier: float = 2.0) -> void:
+	enemy_spawn_interval = _base_enemy_spawn_interval / multiplier

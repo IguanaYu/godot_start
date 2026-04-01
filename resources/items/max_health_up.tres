@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3 uid="uid://max_health_up"]
+
+[ext_resource type="Script" path="res://scripts/ItemData.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+item_name = "生命之心"
+item_description = "永久增加1点最大生命值的神圣道具。"
+item_type = 2
+item_value = 0.0
+price = 100
+stack_size = 99

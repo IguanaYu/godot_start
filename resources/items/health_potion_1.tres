@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3 uid="uid://health_potion_1"]
+
+[ext_resource type="Script" path="res://scripts/ItemData.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+item_name = "生命药水 I"
+item_description = "恢复少量生命值的红色药水。"
+item_type = 1
+item_value = 1.0
+price = 15
+stack_size = 99

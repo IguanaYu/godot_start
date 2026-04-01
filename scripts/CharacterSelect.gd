@@ -171,6 +171,11 @@ func _on_start_button_pressed() -> void:
 	if _selected_character == null:
 		return
 
+	# 检查GameManager是否可用
+	if GameManager == null:
+		push_error("GameManager is not available!")
+		return
+
 	# 将选中角色数据保存到GameManager
 	GameManager.selected_character_data = _selected_character
 

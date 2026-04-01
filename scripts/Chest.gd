@@ -32,7 +32,7 @@ var _is_opened: bool = false
 ## 碰撞形状引用
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
 ## 动画播放器引用（可选）
-@onready var animation_player: AnimationPlayer = $AnimationPlayer
+@onready var animation_player: AnimationPlayer = $AnimationPlayer if has_node("AnimationPlayer") else null
 
 ## ========== Godot 生命周期函数 ==========
 

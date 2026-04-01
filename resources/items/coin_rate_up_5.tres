@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3 uid="uid://coin_rate_up_5"]
+
+[ext_resource type="Script" path="res://scripts/ItemData.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+item_name = "财富护符 V"
+item_description = "大幅增加金币刷新几率的稀有护符。"
+item_type = 3
+item_value = 5.0
+price = 100
+stack_size = 99
