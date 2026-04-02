@@ -78,7 +78,7 @@ var enemy_scene: PackedScene = preload("res://scenes/Enemy.tscn")
 ## 预加载金币场景
 var coin_scene: PackedScene = preload("res://scenes/Coin.tscn")
 ## 预加载占领据点场景
-var capture_point_scene: PackedScene = preload("res://scenes/CapturePoint.tscn")
+var capture_point_scene: PackedScene = preload("res://scenes/areas/CaptureArea.tscn")
 ## 预加载宝箱场景
 var chest_scene: PackedScene = preload("res://scenes/Chest.tscn")
 
@@ -183,7 +183,7 @@ func _process_capture_point_spawning(delta: float) -> void:
 
 func _spawn_capture_point() -> void:
 	var spawn_position: Vector2 = _get_random_spawn_position(100.0, 400.0)
-	var capture_point: CapturePoint = capture_point_scene.instantiate()
+	var capture_point: CaptureArea = capture_point_scene.instantiate()
 	capture_point.global_position = spawn_position
 	get_parent().add_child(capture_point)
 

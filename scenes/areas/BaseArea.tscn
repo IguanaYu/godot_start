@@ -1,0 +1,28 @@
+[gd_scene load_steps=3 format=3 uid="uid://base_area"]
+
+[ext_resource type="Script" path="res://scripts/areas/BaseArea.gd" id="1_base_area"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_base"]
+radius = 64.0
+
+[node name="BaseArea" type="Area2D"]
+collision_layer = 0
+collision_mask = 1
+script = ExtResource("1_base_area")
+
+[node name="AreaSprite" type="Sprite2D" parent="."]
+z_index = 0
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+z_index = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_base")
+
+[node name="ProgressBar" type="ProgressBar" parent="."]
+offset_left = -50.0
+offset_top = -80.0
+offset_right = 50.0
+offset_bottom = -65.0
+value = 0.0
+show_percentage = false

@@ -20,6 +20,10 @@ class_name Main
 @export var background_color: Color = Color(0.1, 0.1, 0.15, 1.0)
 ## 撤离点生成时间（秒）
 @export var evacuation_time: float = 20.0
+## 初始占领点生成时间（秒）
+@export var initial_capture_points_time: float = 5.0
+## 初始占领点生成数量
+@export var initial_capture_points_count: int = 3
 ## 难度翻倍倍数
 @export var difficulty_multiplier: float = 2.0
 
@@ -29,6 +33,8 @@ class_name Main
 var _game_timer: float = 0.0
 ## 撤离点是否已生成
 var _evacuation_spawned: bool = false
+## 初始占领点是否已生成
+var _initial_capture_points_spawned: bool = false
 
 ## ========== 节点引用 ==========
 
@@ -125,10 +131,16 @@ func _physics_process(delta: float) -> void:
 
 ## 处理逻辑（每帧调用）
 func _process(delta: float) -> void:
+	_game_timer += delta
+
+	# 处理初始占领点生成（5秒时）
+	if not _initial_capture_points_spawned:
+		if _game_timer >= initial_capture_points_time:
+			_spawn_initial_capture_points()
+			_initial_capture_points_spawned = true
+
 	# 处理撤离点生成计时器
 	if not _evacuation_spawned:
-		_game_timer += delta
-
 		# 更新倒计时显示
 		_update_countdown()
 
@@ -161,9 +173,9 @@ func toggle_pause() -> void:
 
 ## 生成撤离点
 func _spawn_evacuation_point() -> void:
-	var evacuation_scene = load("res://scenes/EvacuationPoint.tscn")
+	var evacuation_scene = load("res://scenes/areas/EvacuationArea.tscn")
 	if evacuation_scene == null:
-		push_error("无法加载 EvacuationPoint.tscn")
+		push_error("无法加载 EvacuationArea.tscn")
 		return
 
 	var evacuation_point = evacuation_scene.instantiate()
@@ -191,3 +203,15 @@ func _update_countdown() -> void:
 	if countdown_label != null:
 		var remaining_time: float = max(0.0, evacuation_time - _game_timer)
 		countdown_label.text = "Evacuation: %.1fs" % remaining_time
+
+## 生成初始占领点
+func _spawn_initial_capture_points() -> void:
+	if spawner == null:
+		return
+
+	# 使用Spawner的方法生成多个占领点
+	for i in range(initial_capture_points_count):
+		spawner.spawn_capture_point_immediate()
+
+	# 显示提示
+	GameManager.reward_obtained.emit("占领点已出现！占领3个点以获得奖励！")
