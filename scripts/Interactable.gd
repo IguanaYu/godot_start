@@ -49,9 +49,10 @@ func _ready() -> void:
 	# 添加到可交互对象组，便于Player查找
 	add_to_group("interactables")
 
-	# 设置交互区域的碰撞层
+	# 设置交互区域的碰撞层（NPC自身的碰撞层在场景中设置）
 	interaction_area.collision_layer = 0
-	interaction_area.collision_mask = 1 << 0  # 检测玩家层（第0层）
+	# 检测玩家：假设Player在第0层
+	interaction_area.collision_mask = 1
 
 	# 连接交互区域的信号
 	interaction_area.body_entered.connect(_on_body_entered)

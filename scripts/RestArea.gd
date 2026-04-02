@@ -41,8 +41,13 @@ func _ready() -> void:
 	if background != null:
 		background.color = background_color
 
-	# 设置玩家位置
-	_setup_player()
+	# 更新GameManager的玩家引用为本场景的Player
+	var player = get_node_or_null("Player")
+	if player != null:
+		GameManager.player = player
+		# 确保Player应用角色数据（贴图、速度等）
+		if player.has_method("_apply_character_data"):
+			player._apply_character_data()
 
 	# 设置NPC
 	_setup_npcs()
@@ -57,11 +62,10 @@ func _ready() -> void:
 	if inventory_button != null:
 		inventory_button.pressed.connect(_on_inventory_button_pressed)
 
-## 设置玩家位置
-func _setup_player() -> void:
-	var player = GameManager.player
-	if player != null and is_instance_valid(player) and player_spawn != null:
-		player.global_position = player_spawn.global_position
+	# 连接背包面板关闭按钮信号
+	var inventory_close_button = inventory_panel.get_node_or_null("VBoxContainer/CloseButton")
+	if inventory_close_button != null:
+		inventory_close_button.pressed.connect(_on_inventory_close_pressed)
 
 ## 设置NPC
 func _setup_npcs() -> void:
@@ -84,6 +88,11 @@ func _on_returned_to_main() -> void:
 func _on_inventory_button_pressed() -> void:
 	if inventory_panel != null:
 		inventory_panel.visible = not inventory_panel.visible
+
+## 背包关闭按钮按下
+func _on_inventory_close_pressed() -> void:
+	if inventory_panel != null:
+		inventory_panel.visible = false
 
 ## ========== 输入处理 ==========
 

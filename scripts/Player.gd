@@ -1,7 +1,7 @@
 ## 玩家脚本（Player.gd）
 ## 功能：处理玩家移动、受伤、无敌状态、吃金币回血、移速BUFF等逻辑
 ## 节点结构：CharacterBody2D (根节点)
-##   ├── Sprite2D (玩家精灵)
+##   ├── AnimatedSprite2D (玩家动画精灵)
 ##   ├── CollisionShape2D (碰撞体)
 ##   └── Area2D (伤害检测区域)
 ##       ├── CollisionShape2D (检测碰撞体)
@@ -41,8 +41,6 @@ var _is_invincible: bool = false
 var _invincibility_timer: float = 0.0
 ## 闪烁计时器
 var _blink_timer: float = 0.0
-## 原始精灵透明度
-var _original_modulate: Color = Color.WHITE
 ## 是否处于无敌星状态（无敌且秒杀敌人）
 var _is_star_invincible: bool = false
 ## BUFF 计时器字典
@@ -57,8 +55,6 @@ var _nearby_interactables: Array = []
 
 ## ========== 节点引用 ==========
 
-## 精灵节点引用
-@onready var sprite: Sprite2D = $Sprite2D
 ## 动画精灵节点引用
 @onready var animated_sprite: AnimatedSprite2D = $AnimatedSprite2D
 ## 碰撞形状引用
@@ -95,10 +91,6 @@ func _ready() -> void:
 	if interaction_area != null:
 		interaction_area.body_entered.connect(_on_interactable_entered)
 		interaction_area.body_exited.connect(_on_interactable_exited)
-
-	# 初始化精灵颜色
-	if sprite != null:
-		_original_modulate = sprite.modulate
 
 	# 初始化动画（播放idle动画）
 	if animated_sprite != null:
@@ -200,14 +192,14 @@ func _start_invincibility() -> void:
 ## 结束无敌状态
 func _end_invincibility() -> void:
 	_is_invincible = false
-	if sprite != null:
-		sprite.visible = true
-		sprite.modulate = _original_modulate
+	if animated_sprite != null:
+		animated_sprite.visible = true
+		animated_sprite.modulate = Color.WHITE
 
 ## 切换精灵可见性（闪烁效果）
 func _toggle_sprite_visibility() -> void:
-	if sprite != null:
-		sprite.visible = not sprite.visible
+	if animated_sprite != null:
+		animated_sprite.visible = not animated_sprite.visible
 
 ## ========== 无敌星状态 ==========
 
@@ -217,8 +209,8 @@ func start_star_invincibility(duration: float = 10.0) -> void:
 	_is_invincible = false  # 无敌星状态下不需要普通无敌
 
 	# 改变精灵颜色为金黄色
-	if sprite != null:
-		sprite.modulate = Color.GOLD
+	if animated_sprite != null:
+		animated_sprite.modulate = Color.GOLD
 
 	# 设置计时器
 	if not _buff_timers.has("star_invincibility"):
@@ -227,9 +219,9 @@ func start_star_invincibility(duration: float = 10.0) -> void:
 ## 结束无敌星状态
 func _end_star_invincibility() -> void:
 	_is_star_invincible = false
-	if sprite != null:
-		sprite.modulate = _original_modulate
-		sprite.visible = true
+	if animated_sprite != null:
+		animated_sprite.modulate = Color.WHITE
+		animated_sprite.visible = true
 	_buff_timers.erase("star_invincibility")
 
 ## ========== BUFF 系统 ==========
@@ -252,8 +244,8 @@ func _apply_speed_boost(duration: float = 10.0) -> void:
 		_buff_timers["speed_boost"] = duration
 
 	# 改变精灵颜色为绿色提示
-	if not _is_star_invincible and sprite != null:
-		sprite.modulate = Color.GREEN_YELLOW
+	if not _is_star_invincible and animated_sprite != null:
+		animated_sprite.modulate = Color.GREEN_YELLOW
 
 ## 处理 BUFF 计时器
 func _process_buff_timers(delta: float) -> void:
@@ -267,8 +259,8 @@ func _process_buff_timers(delta: float) -> void:
 			match buff_name:
 				"speed_boost":
 					_speed_multiplier = 1.0
-					if not _is_star_invincible and not _is_invincible and sprite != null:
-						sprite.modulate = _original_modulate
+					if not _is_star_invincible and not _is_invincible and animated_sprite != null:
+						animated_sprite.modulate = Color.WHITE
 				"star_invincibility":
 					_end_star_invincibility()
 

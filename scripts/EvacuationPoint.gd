@@ -1,10 +1,12 @@
 ## 撤离点脚本（EvacuationPoint.gd）
 ## 功能：处理撤离点的占领逻辑，占领完成后切换到休息场景
 ## 节点结构：Area2D (根节点)
-##   ├── Sprite2D (撤离点视觉区域 - 紫色半透明圆形)
+##   ├── AreaSprite (范围指示器 - 大的半透明紫色圆形)
+##   ├── Sprite2D (撤离点贴图标识)
 ##   ├── CollisionShape2D (碰撞体 - 圆形)
 ##   └── ProgressBar (进度条)
 
+@tool
 extends Area2D
 
 class_name EvacuationPoint
@@ -25,6 +27,15 @@ signal evacuation_point_captured()
 ## 占领成功奖励的金币数量
 @export var capture_bonus_coins: int = 10
 
+## ========== 范围指示器设置 ==========
+
+## 范围指示器的大小（缩放倍数）
+@export var area_sprite_scale: float = 2.0
+## 范围指示器的图像分辨率（越高越清晰，但性能开销大）
+@export var area_sprite_size: int = 128
+## 范围指示器的圆形半径（相对于图像尺寸）
+@export_range(0.1, 1.0) var area_sprite_radius_ratio: float = 0.47
+
 ## ========== 私有变量 ==========
 
 ## 当前占领进度（0-100）
@@ -36,7 +47,14 @@ var _is_completed: bool = false
 
 ## ========== 节点引用 ==========
 
-## 精灵节点引用
+## 范围指示器精灵节点引用
+@onready var area_sprite: Sprite2D = $AreaSprite
+
+## 编辑器中监控参数变化
+var _last_scale: float = 0
+var _last_size: int = 0
+var _last_radius_ratio: float = 0
+## 精灵节点引用（贴图标识）
 @onready var sprite: Sprite2D = $Sprite2D
 ## 碰撞形状引用
 @onready var collision_shape: CollisionShape2D = $CollisionShape2D
@@ -54,18 +72,30 @@ func _ready() -> void:
 	collision_layer = 0
 	collision_mask = 1 << 0  # 第0层是玩家层
 
+	# 创建纯色圆形纹理
+	create_solid_circle_texture()
+
 	# 初始化撤离点外观
 	_initialize_appearance()
 
-## 初始化撤离点外观
-func _initialize_appearance() -> void:
-	# 设置撤离点颜色为紫色（区别于CapturePoint的蓝色）
-	if sprite != null:
-		sprite.modulate = Color.PURPLE
+	# 编辑器模式：监控参数变化
+	if Engine.is_editor_hint():
+		_last_scale = area_sprite_scale
+		_last_size = area_sprite_size
+		_last_radius_ratio = area_sprite_radius_ratio
 
-## ========== 处理逻辑 ==========
-
+## 编辑器中每帧检查参数变化
 func _process(delta: float) -> void:
+	# 编辑器模式：参数变化时重新生成纹理
+	if Engine.is_editor_hint():
+		if area_sprite_scale != _last_scale or area_sprite_size != _last_size or area_sprite_radius_ratio != _last_radius_ratio:
+			create_solid_circle_texture()
+			_last_scale = area_sprite_scale
+			_last_size = area_sprite_size
+			_last_radius_ratio = area_sprite_radius_ratio
+		return
+
+	# 游戏模式：正常逻辑
 	if _is_completed:
 		return
 
@@ -90,6 +120,48 @@ func _process(delta: float) -> void:
 	if _capture_progress >= 100.0:
 		_complete_capture()
 
+## 创建纯色圆形纹理
+func create_solid_circle_texture() -> void:
+	if area_sprite == null:
+		return
+
+	# 创建指定大小的图像
+	var image = Image.create(area_sprite_size, area_sprite_size, false, Image.FORMAT_RGBA8)
+
+	# 填充透明背景
+	image.fill(Color(0, 0, 0, 0))
+
+	# 绘制圆形（从中心向外填充）
+	var center = Vector2(area_sprite_size / 2.0, area_sprite_size / 2.0)
+	var radius = float(area_sprite_size) * area_sprite_radius_ratio
+
+	for y in range(area_sprite_size):
+		for x in range(area_sprite_size):
+			var pos = Vector2(x, y)
+			var distance = pos.distance_to(center)
+			if distance <= radius:
+				# 设置纯色白色（alpha会在modulate中控制）
+				image.set_pixel(x, y, Color.WHITE)
+
+	# 创建纹理
+	var texture = ImageTexture.create_from_image(image)
+
+	# 设置缩放和纹理
+	area_sprite.texture = texture
+	area_sprite.scale = Vector2(area_sprite_scale, area_sprite_scale)
+
+	# 在编辑器中也显示纹理
+	if Engine.is_editor_hint():
+		area_sprite.modulate = Color(0.5, 0, 0.5, 0.5)
+
+## 初始化撤离点外观
+func _initialize_appearance() -> void:
+	# 设置撤离点颜色为紫色（区别于CapturePoint的蓝色）
+	if area_sprite != null:
+		area_sprite.modulate = Color(0.5, 0, 0.5, 0.3)
+	if sprite != null:
+		sprite.modulate = Color.PURPLE
+
 ## ========== 占领逻辑 ==========
 
 ## 完成占领
@@ -103,6 +175,8 @@ func _complete_capture() -> void:
 	_grant_capture_bonus()
 
 	# 更新视觉
+	if area_sprite != null:
+		area_sprite.modulate = Color.GOLD
 	if sprite != null:
 		sprite.modulate = Color.GOLD
 
@@ -125,10 +199,17 @@ func _update_visuals() -> void:
 		progress_bar.value = _capture_progress
 
 	# 更新精灵颜色（根据进度从紫色渐变到金色）
+	var progress_ratio: float = _capture_progress / 100.0
+	var base_color: Color = Color(0.5, 0, 0.5, 0.3)
+	var target_color: Color = Color(1, 0.84, 0, 0.3)
+
+	if area_sprite != null:
+		area_sprite.modulate = base_color.lerp(target_color, progress_ratio)
+
+	# 贴图标识从紫色渐变到金色（不透明）
+	base_color = Color.PURPLE
+	target_color = Color.GOLD
 	if sprite != null:
-		var progress_ratio: float = _capture_progress / 100.0
-		var base_color: Color = Color.PURPLE
-		var target_color: Color = Color.GOLD
 		sprite.modulate = base_color.lerp(target_color, progress_ratio)
 
 ## ========== 信号回调 ==========
