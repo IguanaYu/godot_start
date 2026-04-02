@@ -24,7 +24,7 @@ func _ready() -> void:
 ## 初始化外观 - 设置紫色主题
 func _initialize_appearance() -> void:
 	if area_sprite != null:
-		area_sprite.modulate = Color(0.5, 0, 0.5, 0.3)
+		area_sprite.modulate = Color(0.5, 0, 0.5, 0.5)
 	if sprite != null:
 		sprite.modulate = Color.PURPLE
 

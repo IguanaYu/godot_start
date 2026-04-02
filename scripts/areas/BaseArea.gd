@@ -25,9 +25,23 @@ signal capture_area_completed()
 @export var decay_rate: float = 10.0
 
 ## 范围指示器参数
-@export var area_sprite_scale: float = 2.0
-@export var area_sprite_size: int = 128
-@export_range(0.1, 1.0) var area_sprite_radius_ratio: float = 0.47
+@export var area_sprite_scale: float = 2.0:
+	set(value):
+		if area_sprite_scale != value:
+			area_sprite_scale = value
+			_update_editor_texture()
+
+@export var area_sprite_size: int = 128:
+	set(value):
+		if area_sprite_size != value:
+			area_sprite_size = value
+			_update_editor_texture()
+
+@export_range(0.1, 1.0) var area_sprite_radius_ratio: float = 0.47:
+	set(value):
+		if area_sprite_radius_ratio != value:
+			area_sprite_radius_ratio = value
+			_update_editor_texture()
 
 ## 旋转系统参数
 @export var base_rotation_speed: float = 90.0
@@ -82,21 +96,17 @@ func _ready() -> void:
 	# 初始化区域外观
 	_initialize_appearance()
 
-	# 编辑器模式：监控参数变化
-	if Engine.is_editor_hint():
-		_last_scale = area_sprite_scale
-		_last_size = area_sprite_size
-		_last_radius_ratio = area_sprite_radius_ratio
+## 编辑器纹理更新
+func _update_editor_texture() -> void:
+	if Engine.is_editor_hint() and is_inside_tree():
+		var sprite = get_node_or_null("AreaSprite")
+		if sprite != null:
+			_create_texture_for_sprite(sprite)
 
 ## 编辑器中每帧检查参数变化
 func _process(delta: float) -> void:
-	# 编辑器模式：参数变化时重新生成纹理
+	# 编辑器模式：跳过游戏逻辑
 	if Engine.is_editor_hint():
-		if area_sprite_scale != _last_scale or area_sprite_size != _last_size or area_sprite_radius_ratio != _last_radius_ratio:
-			create_solid_circle_texture()
-			_last_scale = area_sprite_scale
-			_last_size = area_sprite_size
-			_last_radius_ratio = area_sprite_radius_ratio
 		return
 
 	# 游戏模式：正常逻辑
@@ -131,7 +141,12 @@ func _process(delta: float) -> void:
 
 ## 创建纯色圆形纹理
 func create_solid_circle_texture() -> void:
-	if area_sprite == null:
+	if area_sprite != null:
+		_create_texture_for_sprite(area_sprite)
+
+## 为指定的 Sprite2D 节点创建纹理
+func _create_texture_for_sprite(sprite_node: Sprite2D) -> void:
+	if sprite_node == null:
 		return
 
 	# 创建指定大小的图像
@@ -156,12 +171,12 @@ func create_solid_circle_texture() -> void:
 	var texture = ImageTexture.create_from_image(image)
 
 	# 设置缩放和纹理
-	area_sprite.texture = texture
-	area_sprite.scale = Vector2(area_sprite_scale, area_sprite_scale)
+	sprite_node.texture = texture
+	sprite_node.scale = Vector2(area_sprite_scale, area_sprite_scale)
 
-	# 在编辑器中也显示纹理
+	# 在编辑器中使用更明显的颜色
 	if Engine.is_editor_hint():
-		area_sprite.modulate = Color(0.5, 0, 0.5, 0.5)
+		sprite_node.modulate = Color(1, 1, 1, 0.6)
 
 ## 更新图标旋转
 func _update_sprite_rotation(delta: float) -> void:
