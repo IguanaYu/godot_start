@@ -29,8 +29,6 @@ border_color = Color(0.5, 0, 0.5, 0.8)
 [node name="EvacuationArea" type="Area2D" unique_id=861092480]
 collision_layer = 0
 script = ExtResource("1_evacuation_area")
-area_sprite_scale = 1.0
-area_sprite_radius_ratio = 0.513
 
 [node name="AreaSprite" type="Sprite2D" parent="." unique_id=1190346673]
 scale = Vector2(1.4, 1.4)
