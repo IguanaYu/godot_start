@@ -24,25 +24,6 @@ signal capture_area_completed()
 @export var capture_rate: float = 20.0
 @export var decay_rate: float = 10.0
 
-## 范围指示器参数
-@export var area_sprite_scale: float = 2.0:
-	set(value):
-		if area_sprite_scale != value:
-			area_sprite_scale = value
-			_update_editor_texture()
-
-@export var area_sprite_size: int = 128:
-	set(value):
-		if area_sprite_size != value:
-			area_sprite_size = value
-			_update_editor_texture()
-
-@export_range(0.1, 1.0) var area_sprite_radius_ratio: float = 0.47:
-	set(value):
-		if area_sprite_radius_ratio != value:
-			area_sprite_radius_ratio = value
-			_update_editor_texture()
-
 ## 旋转系统参数
 @export var base_rotation_speed: float = 90.0
 @export var max_rotation_speed_multiplier: float = 2.0
@@ -61,12 +42,6 @@ var _player_inside: bool = false
 var _is_completed: bool = false
 ## 当前旋转角度（度）
 var _current_rotation: float = 0.0
-
-## ========== 编辑器参数监控 ==========
-
-var _last_scale: float = 0
-var _last_size: int = 0
-var _last_radius_ratio: float = 0
 
 ## ========== 节点引用 ==========
 
@@ -90,18 +65,8 @@ func _ready() -> void:
 	collision_layer = 0
 	collision_mask = 1 << 0  # 第0层是玩家层
 
-	# 创建纯色圆形纹理
-	create_solid_circle_texture()
-
 	# 初始化区域外观
 	_initialize_appearance()
-
-## 编辑器纹理更新
-func _update_editor_texture() -> void:
-	if Engine.is_editor_hint() and is_inside_tree():
-		var sprite = get_node_or_null("AreaSprite")
-		if sprite != null:
-			_create_texture_for_sprite(sprite)
 
 ## 编辑器中每帧检查参数变化
 func _process(delta: float) -> void:
@@ -138,45 +103,6 @@ func _process(delta: float) -> void:
 	_update_sprite_rotation(delta)
 
 ## ========== 核心功能 ==========
-
-## 创建纯色圆形纹理
-func create_solid_circle_texture() -> void:
-	if area_sprite != null:
-		_create_texture_for_sprite(area_sprite)
-
-## 为指定的 Sprite2D 节点创建纹理
-func _create_texture_for_sprite(sprite_node: Sprite2D) -> void:
-	if sprite_node == null:
-		return
-
-	# 创建指定大小的图像
-	var image = Image.create(area_sprite_size, area_sprite_size, false, Image.FORMAT_RGBA8)
-
-	# 填充透明背景
-	image.fill(Color(0, 0, 0, 0))
-
-	# 绘制圆形（从中心向外填充）
-	var center = Vector2(area_sprite_size / 2.0, area_sprite_size / 2.0)
-	var radius = float(area_sprite_size) * area_sprite_radius_ratio
-
-	for y in range(area_sprite_size):
-		for x in range(area_sprite_size):
-			var pos = Vector2(x, y)
-			var distance = pos.distance_to(center)
-			if distance <= radius:
-				# 设置纯色白色（alpha会在modulate中控制）
-				image.set_pixel(x, y, Color.WHITE)
-
-	# 创建纹理
-	var texture = ImageTexture.create_from_image(image)
-
-	# 设置缩放和纹理
-	sprite_node.texture = texture
-	sprite_node.scale = Vector2(area_sprite_scale, area_sprite_scale)
-
-	# 在编辑器中使用更明显的颜色
-	if Engine.is_editor_hint():
-		sprite_node.modulate = Color(1, 1, 1, 0.6)
 
 ## 更新图标旋转
 func _update_sprite_rotation(delta: float) -> void:
