@@ -79,6 +79,8 @@ func _setup_npcs() -> void:
 ## ========== 返回到主关卡 ==========
 
 func _on_returned_to_main() -> void:
+	print("RestAreaLevel: 玩家与出口NPC交互，准备返回主关卡")
+
 	# 应用永久性增益
 	GameManager.apply_permanent_bonuses()
 
@@ -115,6 +117,22 @@ func _input(event: InputEvent) -> void:
 			shop_panel.visible = false
 		elif inventory_panel != null and inventory_panel.visible:
 			inventory_panel.visible = false
+
+	# 处理玩家与出口NPC的交互（按E键）
+	if event.is_action_pressed("interact"):
+		_try_interact_with_exit_npc()
+
+## ========== 处理与出口NPC的交互 ==========
+
+## 尝试与出口NPC交互
+func _try_interact_with_exit_npc() -> void:
+	if level_exit_npc == null or player == null:
+		return
+
+	# 检查玩家与出口NPC的距离
+	var distance = player.global_position.distance_to(level_exit_npc.global_position)
+	if distance <= 80.0:  # 交互范围
+		_on_returned_to_main()
 
 ## ========== 清理 ==========
 
