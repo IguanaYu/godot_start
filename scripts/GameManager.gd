@@ -201,7 +201,13 @@ func _on_coin_rain_finished() -> void:
 
 ## 生成金币雨中的单个金币
 func _spawn_coin_rain_coin() -> void:
-	if main_scene == null:
+	# 获取 GameRoot 和当前关卡
+	var game_root = get_tree().current_scene
+	if game_root == null or not game_root.has_method("get_current_level"):
+		return
+
+	var current_level = game_root.get_current_level()
+	if current_level == null:
 		return
 
 	# 获取视口大小
@@ -227,7 +233,7 @@ func _spawn_coin_rain_coin() -> void:
 		var coin = coin_scene.instantiate()
 		coin.global_position = spawn_position
 		coin.is_from_coin_rain = true  # 标记为金币雨生成的金币
-		main_scene.add_child(coin)
+		current_level.add_child(coin)
 
 ## ========== 公共方法：清除敌人 ==========
 
@@ -235,6 +241,18 @@ func _spawn_coin_rain_coin() -> void:
 func clear_all_enemies() -> void:
 	var cleared_count: int = 0
 
+	# 获取 GameRoot 和当前关卡
+	var game_root = get_tree().current_scene
+	if game_root != null and game_root.has_method("get_current_level"):
+		var current_level = game_root.get_current_level()
+		if current_level != null and current_level.has_method("get_enemies"):
+			var enemies = current_level.get_enemies()
+			for enemy in enemies:
+				if is_instance_valid(enemy):
+					enemy.destroy()
+					cleared_count += 1
+
+	# 同时清除注册的敌人（向后兼容）
 	for enemy in _active_enemies:
 		if is_instance_valid(enemy):
 			enemy.destroy()

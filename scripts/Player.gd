@@ -325,10 +325,8 @@ func _apply_character_data() -> void:
 
 ## ========== 清理 ==========
 
-func _exit_tree() -> void:
-	# 清理 GameManager 引用
-	if GameManager.player == self:
-		GameManager.player = null
+## 注意：Player 现在是 GameRoot 中的常驻节点，不需要清理 GameManager 引用
+## 原 _exit_tree 方法已移除
 
 ## ========== 交互系统 ==========
 

@@ -14,7 +14,10 @@
       "Bash(where:*)",
       "Bash(cmd.exe /c 'E:\\\\godot\\\\Godot_v4.6.1-stable_win64_console.exe --path \"\"F:\\\\godot_game\\\\run_game\\\\richman\"\"')",
       "Bash(\"E:\\\\godot\\\\Godot_v4.6.1-stable_win64_console.exe\" --path \"F:\\\\godot_game\\\\run_game\\\\richman\")",
-      "Bash(\"E:\\\\godot\\\\Godot_v4.6.1-stable_win64_console.exe\":*)"
+      "Bash(\"E:\\\\godot\\\\Godot_v4.6.1-stable_win64_console.exe\":*)",
+      "Bash(powershell.exe -Command \"Get-ChildItem -Path ''C:\\\\'', ''D:\\\\'', ''E:\\\\'', ''F:\\\\'' -Filter ''Godot*.exe'' -Recurse -ErrorAction SilentlyContinue -Depth 3 | Select-Object -First 5 FullName\")",
+      "Bash(\"E:/godot/Godot_v4.6.1-stable_win64.exe\" --path \"f:/godot_game/run_game/richman\" --editor)",
+      "Bash(\"E:/godot/Godot_v4.6.1-stable_win64.exe\":*)"
     ]
   }
 }

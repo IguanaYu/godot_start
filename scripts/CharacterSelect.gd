@@ -179,8 +179,8 @@ func _on_start_button_pressed() -> void:
 	# 将选中角色数据保存到GameManager
 	GameManager.selected_character_data = _selected_character
 
-	# 切换到主游戏场景
-	get_tree().change_scene_to_file("res://scenes/Main.tscn")
+	# 切换到 GameRoot 场景（包含常驻 Player）
+	get_tree().change_scene_to_file("res://scenes/GameRoot.tscn")
 
 ## 返回按钮被点击
 func _on_back_button_pressed() -> void:

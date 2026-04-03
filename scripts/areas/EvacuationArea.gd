@@ -43,9 +43,14 @@ func _on_base_capture_completed() -> void:
 	# 显示完成提示
 	GameManager.reward_obtained.emit("撤离点占领成功！即将撤离...")
 
-	# 延迟后切换场景（RestArea已有Player实例）
+	# 延迟后切换场景（通过 GameRoot）
 	await get_tree().create_timer(1.0).timeout
-	get_tree().change_scene_to_file("res://scenes/RestArea.tscn")
+
+	var game_root = get_tree().current_scene
+	if game_root and game_root.has_method("switch_to_rest_area"):
+		game_root.switch_to_rest_area()
+	else:
+		push_error("EvacuationArea: 无法获取 GameRoot 实例")
 
 ## 发放占领完成奖励
 func _grant_capture_bonus() -> void:

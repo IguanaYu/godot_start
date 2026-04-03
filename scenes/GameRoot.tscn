@@ -1,0 +1,53 @@
+[gd_scene format=3 uid="uid://baseroot_gameroot"]
+
+[ext_resource type="Script" path="res://scripts/GameRoot.gd" id="1_gameroot"]
+[ext_resource type="PackedScene" uid="uid://cxfj8kxqmnmyp" path="res://scenes/Player.tscn" id="2_player"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hp_bg"]
+bg_color = Color(0.2, 0.2, 0.2, 0.8)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hp_fill"]
+bg_color = Color(0.2, 0.8, 0.2, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[node name="GameRoot" type="Node2D"]
+script = ExtResource("1_gameroot")
+
+[node name="Player" parent="." instance=ExtResource("2_player")]
+z_index = 1
+
+[node name="LevelContainer" type="Node2D" parent="."]
+
+[node name="GlobalUI" type="CanvasLayer" parent="."]
+
+[node name="HPBar" type="ProgressBar" parent="GlobalUI"]
+offset_right = 200.0
+offset_bottom = 30.0
+theme_override_styles/background = SubResource("StyleBoxFlat_hp_bg")
+theme_override_styles/fill = SubResource("StyleBoxFlat_hp_fill")
+value = 100.0
+show_percentage = false
+
+[node name="CoinLabel" type="Label" parent="GlobalUI"]
+offset_left = 20.0
+offset_top = 60.0
+offset_right = 200.0
+offset_bottom = 90.0
+theme_override_colors/font_color = Color(1, 0.8, 0, 1)
+theme_override_font_sizes/font_size = 20
+text = "Coins: 0"
+
+[node name="Background" type="ColorRect" parent="."]
+z_index = -10
+offset_left = -1000.0
+offset_top = -1000.0
+offset_right = 1000.0
+offset_bottom = 1000.0
+color = Color(0.1, 0.1, 0.15, 1)
