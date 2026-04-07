@@ -1,17 +1,23 @@
 ## 商店NPC脚本（ShopNPC.gd）
 ## 功能：处理商店交互，打开商店界面，刷新商品
-## 节点结构：继承自 Interactable
+## 继承：Interactable → PurchaseNPC → ShopNPC
 
-extends "res://scripts/Interactable.gd"
+extends "res://scripts/shop/PurchaseNPC.gd"
 
 class_name ShopNPC
 
 ## ========== 信号定义 ==========
 
 ## 商品购买时发出（参数：物品数据）
-signal item_purchased(item: Resource)
+signal item_purchased(item: ItemData)
 
 ## ========== 可配置变量 ==========
+
+## 商店UI面板引用（直接存储，带setter同步ui_panel）
+var shop_panel: Panel = null:
+	set(value):
+		shop_panel = value
+		ui_panel = value  # 同步到父类使用的变量
 
 ## 商店名称
 @export var shop_name: String = "神秘商店"
@@ -20,31 +26,21 @@ signal item_purchased(item: Resource)
 ## 商品栏位数量
 @export var max_items: int = 3
 
-## ========== 公共变量 ==========
-
-## 商店UI面板引用（由RestArea设置）
-var shop_panel: Panel = null
-
 ## ========== 私有变量 ==========
 
-## 当前商品列表
+## 当前商品列表（ItemData数组）
 var _shop_items: Array = []
-## 所有可选商品池
+## 所有可选商品池（ItemData数组）
 var _all_possible_items: Array = []
-
-## ========== 节点引用 ==========
-
-## 商店系统脚本
-@onready var shop_system: Node = null
 
 ## ========== Godot 生命周期函数 ==========
 
 func _ready() -> void:
-	# 调用父类的_ready
+	# 调用父类_ready
 	super._ready()
 
-	# 设置交互提示
-	set_interaction_prompt("打开商店")
+	# 设置NPC名称
+	npc_name = shop_name
 
 	# 加载物品池
 	_load_item_pool()
@@ -52,16 +48,10 @@ func _ready() -> void:
 	# 生成初始商品
 	refresh_shop()
 
-	# 查找ShopSystem脚本
-	if shop_panel != null and shop_panel.has_method("open_shop"):
-		shop_system = shop_panel
-
 ## ========== 商店逻辑 ==========
 
 ## 加载物品池
 func _load_item_pool() -> void:
-	# 这里可以预加载所有物品资源
-	# 暂时创建一些示例物品
 	var items_dir = "res://resources/items/"
 	var dir = DirAccess.open(items_dir)
 	if dir != null:
@@ -81,8 +71,6 @@ func _load_item_pool() -> void:
 
 ## 创建默认物品（用于测试）
 func _create_default_items() -> void:
-	# 这里创建一些临时物品用于测试
-	# 实际使用时应该从.tres文件加载
 	push_warning("未找到物品资源文件，使用临时物品")
 
 ## 刷新商店商品
@@ -100,52 +88,54 @@ func refresh_shop() -> void:
 	# 更新UI
 	_update_shop_ui()
 
-## 购买商品
+## 购买商品（保留供外部调用）
 func buy_item(index: int) -> void:
 	if index < 0 or index >= _shop_items.size():
 		return
 
-	var item = _shop_items[index]
+	var item: ItemData = _shop_items[index]
 
-	# 检查金币是否足够
-	if GameManager.get_coins() < item.price:
-		GameManager.reward_obtained.emit("金币不足！")
-		return
-
-	# 扣除金币
-	GameManager.add_coins(-item.price)
-
-	# 添加到背包
-	GameManager.add_item_to_inventory(item)
-
-	# 发出信号
-	item_purchased.emit(item)
-
-	# 从商店移除该商品
-	_shop_items.remove_at(index)
-
-	# 更新UI
-	_update_shop_ui()
-
-	GameManager.reward_obtained.emit("购买了: %s" % item.item_name)
+	# 转换为PurchaseData并调用基类方法
+	var purchase_data = item.to_purchase_data()
+	_on_purchase_button_pressed(index)
 
 ## 更新商店UI
 func _update_shop_ui() -> void:
 	if shop_panel == null:
 		return
 
-	# 查找ShopSystem脚本并更新
-	var shop_system = shop_panel.get_node_or_null("ShopSystem")
-	if shop_system != null and shop_system.has_method("set_items"):
-		shop_system.set_items(_shop_items)
+	# shop_panel本身就是ShopSystem，直接调用
+	if shop_panel.has_method("set_items"):
+		shop_panel.set_items(_shop_items)
 
-## ========== 交互逻辑 ==========
+## ========== 重写PurchaseNPC虚方法 ==========
 
-## 重写交互方法
-func interact() -> void:
-	# 打开商店UI
-	if shop_panel != null:
-		shop_panel.visible = true
-		_update_shop_ui()
-	else:
-		push_warning("商店面板未设置！")
+## 设置UI
+func _setup_ui() -> void:
+	# 设置ShopSystem的npc引用
+	if shop_panel.has_method("set_shop_npc"):
+		shop_panel.set_shop_npc(self)
+
+	# 设置商品列表
+	if shop_panel.has_method("set_items"):
+		shop_panel.set_items(_shop_items)
+
+## 购买选项
+func _purchase_option(data: PurchaseData) -> void:
+	# 从PurchaseData中提取ItemData
+	var item: ItemData = ItemData.from_purchase_data(data)
+	if item == null:
+		push_error("无法从PurchaseData提取ItemData")
+		return
+
+	# 添加到背包
+	GameManager.add_item_to_inventory(item)
+
+	# 从商店移除该商品
+	_shop_items.erase(item)
+
+	# 发出信号
+	item_purchased.emit(item)
+
+	# 提示消息
+	GameManager.reward_obtained.emit("购买了: %s" % item.item_name)

@@ -95,3 +95,22 @@ func is_consumable() -> bool:
 ## 验证数据完整性
 func is_valid() -> bool:
 	return item_name != "" and price >= 0
+
+## ========== PurchaseData适配方法 ==========
+
+## 转换为PurchaseData格式（用于购买系统）
+func to_purchase_data() -> PurchaseData:
+	var data = PurchaseData.new()
+	data.option_name = item_name
+	data.description = get_display_description()
+	data.price = price
+	data.icon = item_icon
+	# 将ItemData引用存入custom_data，以便购买后可以调用apply_to_player()
+	data.custom_data = {"item_resource": self}
+	return data
+
+## 从PurchaseData创建ItemData（静态方法）
+static func from_purchase_data(data: PurchaseData) -> ItemData:
+	if data == null or data.custom_data.is_empty():
+		return null
+	return data.custom_data.get("item_resource") as ItemData

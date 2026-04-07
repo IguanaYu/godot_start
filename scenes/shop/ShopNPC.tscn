@@ -1,6 +1,6 @@
-[gd_scene format=3 uid="uid://g87datem2pem"]
+[gd_scene format=3 uid="uid://bxe2acb931ed16438780dd"]
 
-[ext_resource type="Script" uid="uid://de62j47h1ajfb" path="res://scripts/ShopNPC.gd" id="1_shop_npc"]
+[ext_resource type="Script" uid="uid://dx0uplfboiyt6" path="res://scripts/shop/ShopNPC.gd" id="1_shop_npc"]
 [ext_resource type="Texture2D" uid="uid://cripv46engqkx" path="res://kenney_desert-shooter-pack_1.0/kenney_desert-shooter-pack_1.0/PNG/Enemies/Tiles/tile_0009.png" id="2_obn0l"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_body"]

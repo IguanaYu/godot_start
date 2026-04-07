@@ -2,9 +2,9 @@
 
 [ext_resource type="Script" uid="uid://bu76swod4rvwm" path="res://scripts/RestArea.gd" id="1_rest_area"]
 [ext_resource type="PackedScene" uid="uid://cxfj8kxqmnmyp" path="res://scenes/Player.tscn" id="2_player"]
-[ext_resource type="PackedScene" uid="uid://g87datem2pem" path="res://scenes/ShopNPC.tscn" id="3_shop_npc"]
+[ext_resource type="PackedScene" uid="uid://bxe2acb931ed16438780dd" path="res://scenes/shop/ShopNPC.tscn" id="3_shop_npc"]
 [ext_resource type="PackedScene" uid="uid://bxootm8ylcpec" path="res://scenes/LevelExitNPC.tscn" id="4_exit_npc"]
-[ext_resource type="Script" uid="uid://cxrxleadtt37r" path="res://scripts/ShopSystem.gd" id="5_shop_system"]
+[ext_resource type="PackedScene" uid="uid://bxshoppanel" path="res://scenes/shop/ShopPanel.tscn" id="5_shop_panel"]
 
 [node name="RestArea" type="Node2D" unique_id=362930540]
 script = ExtResource("1_rest_area")
@@ -30,43 +30,7 @@ position = Vector2(600, 300)
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=2069202027]
 
-[node name="ShopPanel" type="Panel" parent="UI" unique_id=73784775]
-visible = false
-anchors_preset = -1
-anchor_left = 0.25
-anchor_top = 0.2
-anchor_right = 0.75
-anchor_bottom = 0.8
-script = ExtResource("5_shop_system")
-
-[node name="VBoxContainer" type="VBoxContainer" parent="UI/ShopPanel" unique_id=927995992]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 10.0
-offset_top = 10.0
-offset_right = -10.0
-offset_bottom = -10.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="TitleLabel" type="Label" parent="UI/ShopPanel/VBoxContainer" unique_id=550530624]
-layout_mode = 2
-text = "神秘商店"
-horizontal_alignment = 1
-
-[node name="ItemsContainer" type="VBoxContainer" parent="UI/ShopPanel/VBoxContainer" unique_id=362212830]
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="RefreshButton" type="Button" parent="UI/ShopPanel/VBoxContainer" unique_id=505484781]
-layout_mode = 2
-text = "刷新商品 (10金币)"
-
-[node name="CloseButton" type="Button" parent="UI/ShopPanel/VBoxContainer" unique_id=46420286]
-layout_mode = 2
-text = "关闭"
+[node name="ShopPanel" parent="UI" unique_id=73784775 instance=ExtResource("5_shop_panel")]
 
 [node name="InventoryPanel" type="Panel" parent="UI" unique_id=740142817]
 visible = false

@@ -1,6 +1,6 @@
 [gd_resource type="Resource" script_class="ItemData" load_steps=2 format=3 uid="uid://coin_rate_up_5"]
 
-[ext_resource type="Script" path="res://scripts/ItemData.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/shop/ItemData.gd" id="1"]
 
 [resource]
 script = ExtResource("1")

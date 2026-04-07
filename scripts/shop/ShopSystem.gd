@@ -4,7 +4,7 @@
 
 extends Panel
 
-class_name ShopSystem
+class_name ShopPanelUI
 
 ## ========== 可配置变量 ==========
 
@@ -71,6 +71,7 @@ func _create_item_slot(index: int) -> Panel:
 	slot.custom_minimum_size = Vector2(400, 100)
 
 	var vbox = VBoxContainer.new()
+	vbox.name = "VBoxContainer"
 	vbox.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT, Control.PRESET_MODE_MINSIZE)
 	slot.add_child(vbox)
 

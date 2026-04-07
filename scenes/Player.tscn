@@ -33,6 +33,7 @@ animations = [{
 }]
 
 [node name="Player" type="CharacterBody2D" unique_id=2046445455 groups=["player"]]
+collision_layer = 1
 collision_mask = 0
 script = ExtResource("1_2x3rq")
 acceleration = 100.0
