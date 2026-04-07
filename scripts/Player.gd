@@ -89,8 +89,8 @@ func _ready() -> void:
 
 	# 连接交互检测信号
 	if interaction_area != null:
-		interaction_area.body_entered.connect(_on_interactable_entered)
-		interaction_area.body_exited.connect(_on_interactable_exited)
+		interaction_area.area_entered.connect(_on_interactable_entered)
+		interaction_area.area_exited.connect(_on_interactable_exited)
 
 	# 初始化动画（播放idle动画）
 	if animated_sprite != null:
@@ -358,10 +358,10 @@ func _try_interact() -> void:
 			closest.interact()
 
 ## 可交互对象进入范围
-func _on_interactable_entered(body: Node2D) -> void:
-	if body.is_in_group("interactables"):
-		_nearby_interactables.append(body)
+func _on_interactable_entered(area: Area2D) -> void:
+	if area.is_in_group("interactables"):
+		_nearby_interactables.append(area)
 
 ## 可交互对象离开范围
-func _on_interactable_exited(body: Node2D) -> void:
-	_nearby_interactables.erase(body)
+func _on_interactable_exited(area: Area2D) -> void:
+	_nearby_interactables.erase(area)
