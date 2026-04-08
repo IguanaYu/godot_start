@@ -38,6 +38,8 @@ signal level_unloading(level_name: String)
 @onready var hp_bar: ProgressBar = $GlobalUI/HPBar
 ## 金币标签引用
 @onready var coin_label: Label = $GlobalUI/CoinLabel
+## 暂停菜单引用
+@onready var pause_menu: CanvasLayer = $PauseMenu
 
 ## ========== 私有变量 ==========
 
@@ -63,6 +65,12 @@ func _ready() -> void:
 
 	# 连接 GameManager 信号
 	_connect_game_manager_signals()
+
+	# 连接暂停菜单信号
+	if pause_menu != null:
+		pause_menu.resume_requested.connect(_on_pause_resume_requested)
+		pause_menu.main_menu_requested.connect(_on_pause_main_menu_requested)
+		pause_menu.quit_requested.connect(_on_pause_quit_requested)
 
 	# 自动加载首个关卡
 	if auto_load_first_level:
@@ -286,4 +294,22 @@ func _input(event: InputEvent) -> void:
 
 ## 暂停/恢复游戏
 func toggle_pause() -> void:
-	get_tree().paused = not get_tree().paused
+	var is_paused = not get_tree().paused
+	get_tree().paused = is_paused
+	if is_paused:
+		pause_menu.show_pause_menu()
+	else:
+		pause_menu.hide_pause_menu()
+
+## 暂停菜单 - 继续游戏回调
+func _on_pause_resume_requested() -> void:
+	get_tree().paused = false
+
+## 暂停菜单 - 返回主菜单回调
+func _on_pause_main_menu_requested() -> void:
+	get_tree().paused = false
+	get_tree().change_scene_to_file("res://scenes/StartScreen.tscn")
+
+## 暂停菜单 - 退出游戏回调
+func _on_pause_quit_requested() -> void:
+	get_tree().quit()

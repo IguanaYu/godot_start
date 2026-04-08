@@ -2,6 +2,12 @@ extends Control
 
 # 设置界面脚本 - 用于调整游戏音量设置
 
+## 设置面板关闭信号（用于暂停菜单中的返回）
+signal settings_closed()
+
+## 是否在暂停菜单中使用（由 PauseMenu 设置）
+var is_in_pause_menu: bool = false
+
 func _ready():
 	# 从GameManager读取当前音量值并设置滑块位置
 	_master_slider.value = GameManager.get_master_volume() * 100
@@ -39,7 +45,12 @@ func _on_music_slider_value_changed(value: float):
 
 ## 返回按钮点击时返回开始界面
 func _on_back_button_pressed():
-	get_tree().change_scene_to_file("res://scenes/StartScreen.tscn")
+	# 如果在暂停菜单中使用，发出信号
+	if is_in_pause_menu:
+		settings_closed.emit()
+	else:
+		# 否则返回开始界面（主菜单模式）
+		get_tree().change_scene_to_file("res://scenes/StartScreen.tscn")
 
 ## 更新所有音量值标签
 func _update_volume_labels():

@@ -20,9 +20,6 @@ radius = 64.0
 [node name="BaseArea" type="Area2D" unique_id=1751208619]
 collision_layer = 0
 script = ExtResource("1_base_area")
-area_sprite_scale = 1.0
-area_sprite_size = 100
-area_sprite_radius_ratio = 0.5
 
 [node name="AreaSprite" type="Sprite2D" parent="." unique_id=509416586]
 modulate = Color(1, 1, 1, 0.6)

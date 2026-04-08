@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/GameRoot.gd" id="1_gameroot"]
 [ext_resource type="PackedScene" uid="uid://cxfj8kxqmnmyp" path="res://scenes/Player.tscn" id="2_player"]
+[ext_resource type="PackedScene" uid="uid://pause_menu_main" path="res://scenes/PauseMenu.tscn" id="3_pause_menu"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hp_bg"]
 bg_color = Color(0.2, 0.2, 0.2, 0.8)
@@ -51,3 +52,5 @@ offset_top = -1000.0
 offset_right = 1000.0
 offset_bottom = 1000.0
 color = Color(0.1, 0.1, 0.15, 1)
+
+[node name="PauseMenu" parent="." instance=ExtResource("3_pause_menu")]
