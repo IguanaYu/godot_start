@@ -4,6 +4,9 @@
 
 extends Node
 
+## 预加载能力类（避免循环依赖）
+const CharacterAbility = preload("res://scripts/abilities/CharacterAbility.gd")
+
 ## ========== 信号定义 ==========
 
 ## 金币数量变化时发出（参数：当前金币数量）
@@ -59,6 +62,11 @@ var _coin_rain_spawn_timer: float = 0.0
 var _active_capture_points: Array = []
 ## 当前活动中的敌人列表
 var _active_enemies: Array = []
+
+## ========== 能力系统 ==========
+
+## 当前激活的能力列表
+var _active_abilities: Array[CharacterAbility] = []
 
 ## ========== 背包系统 ==========
 
@@ -119,13 +127,11 @@ func add_coins(amount: int) -> void:
 	_coins += amount
 	coins_changed.emit(_coins)
 
-	# 检查是否达到回血条件
-	var heal_thresholds: int = _coins / coins_to_heal
-	var previous_thresholds: int = (_coins - amount) / coins_to_heal
+	# 触发金币收集能力（累计类型）
+	_trigger_abilities("on_coin_collect", {"coins_added": amount})
 
-	if heal_thresholds > previous_thresholds:
-		# 达到新的回血阈值，恢复生命值
-		heal_player(1)
+	# 触发金币阈值能力
+	_trigger_abilities("on_coin_threshold", {"coins": _coins})
 
 ## 获取当前金币数量
 func get_coins() -> int:
@@ -145,6 +151,12 @@ func damage_player(amount: int) -> void:
 
 	_health -= amount
 	health_changed.emit(_health)
+
+	# 触发受伤能力
+	_trigger_abilities("on_damage_taken", {"damage": amount})
+
+	# 触发低血量能力
+	_trigger_abilities("on_health_low", {"health": _health})
 
 	if _health <= 0:
 		_health = 0
@@ -175,8 +187,16 @@ func reset_health() -> void:
 ## 重置游戏状态
 func reset_game() -> void:
 	reset_coins()
+
+	# 如果有选中的角色，应用初始金币
+	if selected_character_data != null:
+		if selected_character_data.get("starting_coins") != null:
+			_coins = selected_character_data.starting_coins
+			coins_changed.emit(_coins)
+
 	reset_health()
 	_stop_coin_rain()
+	initialize_abilities()  # 重新初始化能力
 
 ## ========== 公共方法：金币雨 ==========
 
@@ -360,6 +380,59 @@ func get_inventory_items() -> Array:
 func clear_inventory() -> void:
 	inventory_items.clear()
 	inventory_changed.emit()
+
+## ========== 公共方法：能力系统 ==========
+
+## 初始化角色能力
+func initialize_abilities() -> void:
+	_active_abilities.clear()
+
+	if selected_character_data != null and selected_character_data.has_method("get_enabled_abilities"):
+		_active_abilities = selected_character_data.get_enabled_abilities()
+
+		# 重置所有能力的计数器
+		for ability in _active_abilities:
+			ability.reset_counter()
+
+## 触发特定类型的能力
+func _trigger_abilities(trigger_type_str: String, context: Dictionary = {}) -> void:
+	for ability in _active_abilities:
+		# 检查触发类型是否匹配
+		var ability_trigger_type_str = ""
+		match ability.trigger_type:
+			CharacterAbility.TriggerType.ON_COIN_COLLECT:
+				ability_trigger_type_str = "on_coin_collect"
+			CharacterAbility.TriggerType.ON_COIN_THRESHOLD:
+				ability_trigger_type_str = "on_coin_threshold"
+			CharacterAbility.TriggerType.ON_HEALTH_LOW:
+				ability_trigger_type_str = "on_health_low"
+			CharacterAbility.TriggerType.ON_DAMAGE_TAKEN:
+				ability_trigger_type_str = "on_damage_taken"
+			CharacterAbility.TriggerType.ON_KILL_ENEMY:
+				ability_trigger_type_str = "on_kill_enemy"
+			CharacterAbility.TriggerType.ON_LEVEL_START:
+				ability_trigger_type_str = "on_level_start"
+
+		if ability_trigger_type_str == trigger_type_str:
+			# 对于累计类型，使用add_to_counter
+			if trigger_type_str == "on_coin_collect":
+				ability.add_to_counter(1)
+			else:
+				# 对于阈值类型，检查是否达到阈值
+				if trigger_type_str == "on_coin_threshold":
+					var coins = get_coins()
+					if coins > 0 and coins % ability.trigger_threshold == 0:
+						ability.trigger(context)
+				elif trigger_type_str == "on_health_low":
+					var health_percent = float(get_health()) / float(max_health) * 100.0
+					if health_percent <= ability.trigger_threshold:
+						ability.trigger(context)
+				else:
+					ability.trigger(context)
+
+## 当敌人被击杀时调用
+func on_enemy_killed(enemy: Node2D) -> void:
+	_trigger_abilities("on_kill_enemy", {"enemy": enemy})
 
 ## ========== 公共方法：永久性增益管理 ==========
 

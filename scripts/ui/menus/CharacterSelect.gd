@@ -179,6 +179,9 @@ func _on_start_button_pressed() -> void:
 	# 将选中角色数据保存到GameManager
 	GameManager.selected_character_data = _selected_character
 
+	# 初始化角色能力系统
+	GameManager.initialize_abilities()
+
 	# 切换到 GameRoot 场景（包含常驻 Player）
 	get_tree().change_scene_to_file("res://scenes/GameRoot.tscn")
 

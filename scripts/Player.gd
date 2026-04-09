@@ -316,6 +316,10 @@ func _apply_character_data() -> void:
 	base_speed = char_data.speed
 	_current_speed = base_speed
 
+	# 应用加速度和摩擦力
+	acceleration = char_data.acceleration
+	friction = char_data.friction
+
 	# 应用动画帧资源
 	if animated_sprite != null and char_data.sprite_frames != null:
 		animated_sprite.sprite_frames = char_data.sprite_frames
