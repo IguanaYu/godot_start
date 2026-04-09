@@ -2,7 +2,8 @@
 
 [ext_resource type="Script" uid="uid://c73se281ow4dn" path="res://resources/character_data.gd" id="1"]
 [ext_resource type="SpriteFrames" uid="uid://cxa3rp6l3np8q" path="res://resources/characters/tank_sprites.tres" id="2"]
-[ext_resource type="Resource" path="res://resources/abilities/tank_coin_shield.tres" id="3"]
+[ext_resource type="Resource" path="res://resources/abilities/tank_coin_heal.tres" id="3"]
+[ext_resource type="Resource" path="res://resources/abilities/tank_coin_shield.tres" id="4"]
 
 [resource]
 script = ExtResource("1")
@@ -15,4 +16,4 @@ acceleration = 800.0
 friction = 1000.0
 starting_coins = 0
 sprite_frames = ExtResource("2")
-abilities = Array[CharacterAbility]([ExtResource("3")])
+abilities = Array[CharacterAbility]([ExtResource("3"), ExtResource("4")])

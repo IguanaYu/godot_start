@@ -4,12 +4,12 @@
 
 [resource]
 script = ExtResource("1")
-ability_name = "战斗激励"
-ability_description = "收集金币时获得战斗力量，恢复生命值"
+ability_name = "刺客恢复"
+ability_description = "收集金币时恢复生命值"
 trigger_type = 0
 is_enabled = true
-trigger_threshold = 10
+trigger_threshold = 5
 cooldown = 0.0
 effect_type = "heal"
-effect_value = 2.0
+effect_value = 1.0
 effect_duration = 0.0

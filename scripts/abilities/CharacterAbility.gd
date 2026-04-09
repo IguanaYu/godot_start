@@ -132,5 +132,8 @@ func _apply_effect(context: Dictionary) -> void:
 				GameManager.player.start_star_invincibility(effect_duration)
 		"clear_enemies":
 			GameManager.clear_all_enemies()
+		"max_health_up":
+			GameManager.max_health += int(effect_value)
+			GameManager.max_health_bonus += int(effect_value)
 		_:
 			push_warning("Unknown effect type: %s" % effect_type)

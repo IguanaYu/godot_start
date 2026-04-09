@@ -4,12 +4,12 @@
 
 [resource]
 script = ExtResource("1")
-ability_name = "金币护盾"
-ability_description = "收集金币时获得短暂无敌"
+ability_name = "坦克强化"
+ability_description = "收集金币时提升生命值上限"
 trigger_type = 0
 is_enabled = true
 trigger_threshold = 15
 cooldown = 0.0
-effect_type = "invincibility"
-effect_value = 0.0
-effect_duration = 2.0
+effect_type = "max_health_up"
+effect_value = 1.0
+effect_duration = 0.0
