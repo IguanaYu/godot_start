@@ -124,6 +124,8 @@ func _process(delta: float) -> void:
 
 ## 增加金币数量
 func add_coins(amount: int) -> void:
+	if amount < 0:
+		return  # 防止增加负数金币
 	_coins += amount
 	coins_changed.emit(_coins)
 
@@ -195,6 +197,7 @@ func reset_game() -> void:
 			coins_changed.emit(_coins)
 
 	reset_health()
+	clear_inventory()  # 清空背包
 	_stop_coin_rain()
 	initialize_abilities()  # 重新初始化能力
 

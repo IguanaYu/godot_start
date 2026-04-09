@@ -23,6 +23,10 @@ GameManager="*res://scripts/GameManager.gd"
 
 window/stretch/mode="viewport"
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/gut/plugin.cfg")
+
 [input]
 
 ui_cancel={

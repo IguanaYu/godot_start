@@ -1,0 +1,24 @@
+[gd_scene load_steps=2 format=3 uid="uid://bubbly_test_runner"]
+
+[ext_resource type="PackedScene" uid="uid://4jb53yqktyfg" path="res://addons/gut/gui/GutControl.tscn" id="gut_control"]
+
+[node name="TestRunner" type="Node2D"]
+
+[node name="GutControl" parent="." instance=ExtResource("gut_control")]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+bg_color = Color(0.1, 0.1, 0.15, 1)
+
+## 配置说明：
+## 1. 这个场景用于运行GUT测试
+## 2. 在Godot编辑器中打开此场景
+## 3. 按F6运行场景，或点击右上角的"运行当前场景"按钮
+## 4. GutControl会自动发现并运行tests目录下的所有测试
+##
+## 测试目录配置：
+## - 默认会扫描 res://tests 目录
+## - 单元测试位于 res://tests/unit/
+## - 集成测试位于 res://tests/integration/（未来添加）
