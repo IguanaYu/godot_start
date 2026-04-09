@@ -50,7 +50,7 @@ func _on_back_button_pressed():
 		settings_closed.emit()
 	else:
 		# 否则返回开始界面（主菜单模式）
-		get_tree().change_scene_to_file("res://scenes/StartScreen.tscn")
+		get_tree().change_scene_to_file("res://scenes/ui/menus/StartScreen.tscn")
 
 ## 更新所有音量值标签
 func _update_volume_labels():

@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://pause_menu_main"]
 
-[ext_resource type="Script" path="res://scripts/PauseMenu.gd" id="1_pause_menu"]
-[ext_resource type="PackedScene" uid="uid://dvk8j3m2ln5q8" path="res://scenes/SettingsScreen.tscn" id="2_settings"]
+[ext_resource type="Script" path="res://scripts/ui/menus/PauseMenu.gd" id="1_pause_menu"]
+[ext_resource type="PackedScene" uid="uid://dvk8j3m2ln5q8" path="res://scenes/ui/menus/SettingsScreen.tscn" id="2_settings"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
 bg_color = Color(0.08, 0.08, 0.12, 0.95)

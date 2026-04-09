@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://dvk8j3m2ln5q8"]
 
-[ext_resource type="Script" path="res://scripts/SettingsScreen.gd" id="1_settings"]
+[ext_resource type="Script" path="res://scripts/ui/menus/SettingsScreen.gd" id="1_settings"]
 
 [node name="SettingsScreen" type="Control"]
 layout_mode = 3

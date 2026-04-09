@@ -308,7 +308,7 @@ func _on_pause_resume_requested() -> void:
 ## 暂停菜单 - 返回主菜单回调
 func _on_pause_main_menu_requested() -> void:
 	get_tree().paused = false
-	get_tree().change_scene_to_file("res://scenes/StartScreen.tscn")
+	get_tree().change_scene_to_file("res://scenes/ui/menus/StartScreen.tscn")
 
 ## 暂停菜单 - 退出游戏回调
 func _on_pause_quit_requested() -> void:

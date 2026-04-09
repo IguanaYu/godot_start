@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://c12my2je5u1m8"]
 
-[ext_resource type="Script" uid="uid://dq85cxjrtpst0" path="res://scripts/StartScreen.gd" id="1_4k2qv"]
+[ext_resource type="Script" uid="uid://dq85cxjrtpst0" path="res://scripts/ui/menus/StartScreen.gd" id="1_4k2qv"]
 
 [node name="StartScreen" type="Control" unique_id=339612030]
 layout_mode = 3

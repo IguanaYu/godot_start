@@ -10,11 +10,11 @@ func _ready():
 
 func _on_start_button_pressed():
 	# 切换到角色选择场景
-	get_tree().change_scene_to_file("res://scenes/CharacterSelect.tscn")
+	get_tree().change_scene_to_file("res://scenes/ui/menus/CharacterSelect.tscn")
 
 func _on_settings_button_pressed():
 	# 切换到设置场景
-	get_tree().change_scene_to_file("res://scenes/SettingsScreen.tscn")
+	get_tree().change_scene_to_file("res://scenes/ui/menus/SettingsScreen.tscn")
 
 func _on_exit_button_pressed():
 	# 退出游戏

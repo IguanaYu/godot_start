@@ -184,4 +184,4 @@ func _on_start_button_pressed() -> void:
 
 ## 返回按钮被点击
 func _on_back_button_pressed() -> void:
-	get_tree().change_scene_to_file("res://scenes/StartScreen.tscn")
+	get_tree().change_scene_to_file("res://scenes/ui/menus/StartScreen.tscn")
