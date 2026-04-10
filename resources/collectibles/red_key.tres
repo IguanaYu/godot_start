@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="CollectibleData" format=3 uid="uid://bo8i2s2rdx38"]
+
+[ext_resource type="Texture2D" uid="uid://bfjdx4e8rmpyy" path="res://kenney_desert-shooter-pack_1.0/kenney_desert-shooter-pack_1.0/PNG/Tiles/Tiles/tile_0201.png" id="2_54j6y"]
+[ext_resource type="Script" uid="uid://baaecsy7dgw4q" path="res://resources/collectibles/collectible_data.gd" id="CollectibleData"]
+
+[resource]
+script = ExtResource("CollectibleData")
+display_name = "红色钥匙"
+description = "收集3把钥匙获得巨额奖励！"
+sprite_texture = ExtResource("2_54j6y")
+scale = Vector2(1.5, 1.5)
+collision_shape_size = Vector2(48, 48)
+lifetime = 60.0
+reward_text = "获得红色钥匙！"
+custom_effect = "red_key"
+show_direction_arrow = true
+arrow_color = Color(1, 0, 0, 1)
+arrow_show_distance = 400.0
+arrow_hide_distance = 250.0
+arrow_priority = 10
+rotation_speed = 0.0
+enable_float = true
+float_amplitude = 15.0

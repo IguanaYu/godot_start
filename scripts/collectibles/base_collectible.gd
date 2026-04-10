@@ -90,7 +90,6 @@ func _apply_collectible_data() -> void:
 
 		# 调试：确保物品可见
 		sprite.visible = true
-		print("BaseCollectible: 外观已应用 - 颜色:", collectible_data.modulate_color, " 缩放:", collectible_data.scale, " 贴图:", sprite.texture)
 
 	# 设置Z轴
 	z_index = collectible_data.z_index

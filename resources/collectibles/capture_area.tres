@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="CollectibleData" format=3 uid="uid://dfagqsqv7ygoj"]
+
+[ext_resource type="Texture2D" uid="uid://canyawwqiqmmh" path="res://kenney_desert-shooter-pack_1.0/kenney_desert-shooter-pack_1.0/PNG/Interface/Tiles/tile_0059.png" id="2_heehj"]
+[ext_resource type="Script" uid="uid://baaecsy7dgw4q" path="res://resources/collectibles/collectible_data.gd" id="CollectibleData"]
+
+[resource]
+script = ExtResource("CollectibleData")
+display_name = "占领点"
+description = "站在区域内进行占领"
+collectible_type = 1
+sprite_texture = ExtResource("2_heehj")
+scale = Vector2(2.5, 2.5)
+collision_shape_size = Vector2(150, 150)
+capture_bonus_coins = 3
+arrow_color = Color(0, 0, 1, 1)
+rotation_speed = 0.0
+float_amplitude = 0.0
+float_frequency = 0.0

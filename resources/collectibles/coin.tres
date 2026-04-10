@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="CollectibleData" format=3 uid="uid://lg838jvgrfj2"]
+
+[ext_resource type="Texture2D" uid="uid://cgj65kd4na1pl" path="res://kenney_desert-shooter-pack_1.0/kenney_desert-shooter-pack_1.0/PNG/Tiles/Tiles/tile_0218.png" id="2_3odf4"]
+[ext_resource type="Script" uid="uid://baaecsy7dgw4q" path="res://resources/collectibles/collectible_data.gd" id="CollectibleData"]
+
+[resource]
+script = ExtResource("CollectibleData")
+display_name = "金币"
+description = "收集金币获得分数"
+sprite_texture = ExtResource("2_3odf4")
+coin_value = 1
+lifetime = 15.0
+enable_rotation = true
+enable_float = true

@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="CollectibleData" format=3 uid="uid://fpbhfj6qan5b"]
+
+[ext_resource type="Texture2D" uid="uid://dkvvkw238iecs" path="res://kenney_desert-shooter-pack_1.0/kenney_desert-shooter-pack_1.0/PNG/Tiles/Tiles/tile_0222.png" id="2_0e0fa"]
+[ext_resource type="Script" uid="uid://baaecsy7dgw4q" path="res://resources/collectibles/collectible_data.gd" id="CollectibleData"]
+
+[resource]
+script = ExtResource("CollectibleData")
+display_name = "巨型金币"
+description = "高价值金币！值得收集！"
+sprite_texture = ExtResource("2_0e0fa")
+scale = Vector2(2, 2)
+collision_shape_size = Vector2(64, 64)
+coin_value = 10
+lifetime = 30.0
+reward_text = "获得巨型金币！+10金币"
+show_direction_arrow = true
+arrow_color = Color(1, 0.84, 0, 1)
+arrow_show_distance = 300.0
+arrow_hide_distance = 200.0
+arrow_priority = 5
+enable_rotation = true
+rotation_speed = 90.0
+enable_float = true

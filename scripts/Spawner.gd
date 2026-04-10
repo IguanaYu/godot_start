@@ -88,23 +88,17 @@ var chest_scene: PackedScene = preload("res://scenes/Chest.tscn")
 
 ## ========== 收集品数据 ==========
 
-## 普通金币数据（在 _ready 中通过 CollectibleData.new() 创建）
-var coin_data: CollectibleData = null
-## 巨型金币数据（在 _ready 中通过 CollectibleData.new() 创建）
-var giant_coin_data: CollectibleData = null
-## 红色钥匙数据（在 _ready 中通过 CollectibleData.new() 创建）
-var red_key_data: CollectibleData = null
-## 占领区域数据（在 _ready 中通过 CollectibleData.new() 创建）
-var capture_area_data: CollectibleData = null
+## 预加载收集品数据 Resource
+var coin_data: CollectibleData = preload("res://resources/collectibles/coin.tres")
+var giant_coin_data: CollectibleData = preload("res://resources/collectibles/giant_coin.tres")
+var red_key_data: CollectibleData = preload("res://resources/collectibles/red_key.tres")
+var capture_area_data: CollectibleData = preload("res://resources/collectibles/capture_area.tres")
 
 ## ========== Godot 生命周期函数 ==========
 
 func _ready() -> void:
 	# 存储基础敌人生成间隔
 	_base_enemy_spawn_interval = enemy_spawn_interval
-
-	# 创建收集品数据实例
-	_create_collectible_data()
 
 	# 随机化初始计时器，避免所有物体同时生成
 	_enemy_spawn_timer = randf() * enemy_spawn_interval
@@ -192,7 +186,6 @@ func _spawn_coin() -> void:
 	collectible.global_position = spawn_position
 	collectible.add_to_group("coins")
 	get_parent().add_child(collectible)
-	print("Spawner: 金币已生成于位置: ", spawn_position)
 
 ## ========== 占领据点生成逻辑 ==========
 
@@ -263,82 +256,6 @@ func _get_random_spawn_position(min_offset: float, max_offset: float) -> Vector2
 	return spawn_position
 
 ## ========== 辅助函数 ==========
-
-## 创建收集品数据实例
-func _create_collectible_data() -> void:
-	print("Spawner: 开始创建收集品数据")
-
-	# 创建普通金币数据
-	coin_data = CollectibleData.new()
-	coin_data.display_name = "金币"
-	coin_data.description = "收集金币获得分数"
-	coin_data.collectible_type = CollectibleData.CollectibleType.COLLECTIBLE
-	coin_data.modulate_color = Color(1, 0.8, 0, 1)
-	coin_data.scale = Vector2(1, 1)
-	coin_data.collision_shape_size = Vector2(32, 32)
-	coin_data.coin_value = 1
-	coin_data.lifetime = 15.0
-	coin_data.enable_rotation = true
-	coin_data.rotation_speed = 180.0
-	coin_data.enable_float = true
-	coin_data.float_amplitude = 10.0
-	coin_data.float_frequency = 2.0
-
-	print("Spawner: 普通金币数据创建完成")
-
-	# 创建巨型金币数据
-	giant_coin_data = CollectibleData.new()
-	giant_coin_data.display_name = "巨型金币"
-	giant_coin_data.description = "高价值金币！值得收集！"
-	giant_coin_data.collectible_type = CollectibleData.CollectibleType.COLLECTIBLE
-	giant_coin_data.modulate_color = Color.GOLD
-	giant_coin_data.scale = Vector2(2, 2)
-	giant_coin_data.collision_shape_size = Vector2(64, 64)
-	giant_coin_data.coin_value = 10
-	giant_coin_data.lifetime = 30.0
-	giant_coin_data.reward_text = "获得巨型金币！+10金币"
-	giant_coin_data.show_direction_arrow = true
-	giant_coin_data.arrow_color = Color.GOLD
-	giant_coin_data.arrow_show_distance = 300.0
-	giant_coin_data.arrow_hide_distance = 200.0
-	giant_coin_data.arrow_priority = 5
-	giant_coin_data.enable_rotation = true
-	giant_coin_data.rotation_speed = 90.0
-	giant_coin_data.enable_float = true
-	giant_coin_data.float_amplitude = 10.0
-	giant_coin_data.float_frequency = 2.0
-
-	# 创建红色钥匙数据
-	red_key_data = CollectibleData.new()
-	red_key_data.display_name = "红色钥匙"
-	red_key_data.description = "收集3把钥匙获得巨额奖励！"
-	red_key_data.collectible_type = CollectibleData.CollectibleType.COLLECTIBLE
-	red_key_data.modulate_color = Color.RED
-	red_key_data.scale = Vector2(1.5, 1.5)
-	red_key_data.collision_shape_size = Vector2(48, 48)
-	red_key_data.lifetime = 60.0
-	red_key_data.reward_text = "获得红色钥匙！"
-	red_key_data.custom_effect = "red_key"
-	red_key_data.show_direction_arrow = true
-	red_key_data.arrow_color = Color.RED
-	red_key_data.arrow_show_distance = 400.0
-	red_key_data.arrow_hide_distance = 250.0
-	red_key_data.arrow_priority = 10
-	red_key_data.enable_float = true
-	red_key_data.float_amplitude = 15.0
-	red_key_data.float_frequency = 2.0
-
-	# 创建占领区域数据
-	capture_area_data = CollectibleData.new()
-	capture_area_data.display_name = "占领点"
-	capture_area_data.description = "站在区域内进行占领"
-	capture_area_data.collectible_type = CollectibleData.CollectibleType.AREA_STAY
-	capture_area_data.modulate_color = Color.BLUE
-	capture_area_data.scale = Vector2(2.5, 2.5)
-	capture_area_data.collision_shape_size = Vector2(150, 150)
-	capture_area_data.capture_time = 5.0
-	capture_area_data.capture_bonus_coins = 3
-	capture_area_data.show_direction_arrow = false
 
 ## ========== 公共方法 ==========
 
