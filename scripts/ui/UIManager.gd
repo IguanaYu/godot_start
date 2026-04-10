@@ -18,6 +18,8 @@ class_name UIManager
 @onready var game_over_panel: Panel = $GameOverPanel if has_node("GameOverPanel") else null
 ## 最终分数标签引用
 @onready var final_score_label: Label = $GameOverPanel/FinalScoreLabel if has_node("GameOverPanel/FinalScoreLabel") else null
+## 方向指引管理器引用
+@onready var direction_indicator: DirectionIndicator = $DirectionIndicator if has_node("DirectionIndicator") else null
 
 ## ========== 私有变量 ==========
 
@@ -120,3 +122,15 @@ func _on_player_died() -> void:
 func update_all_ui() -> void:
 	_update_hp_display()
 	_update_coin_display()
+
+## ========== 方向指引接口 ==========
+
+## 显示收集品方向指引
+func show_collectible_indicator(target: Node2D, arrow_color: Color, show_distance: float, hide_distance: float, priority: int) -> void:
+	if direction_indicator != null:
+		direction_indicator.add_indicator(target, arrow_color, show_distance, hide_distance, priority)
+
+## 隐藏收集品方向指引
+func hide_collectible_indicator(target: Node2D) -> void:
+	if direction_indicator != null:
+		direction_indicator.remove_indicator(target)

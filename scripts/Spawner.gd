@@ -68,19 +68,34 @@ var _enemy_spawn_timer: float = 0.0
 var _coin_spawn_timer: float = 0.0
 var _capture_point_spawn_timer: float = 0.0
 var _chest_spawn_timer: float = 0.0
+var _giant_coin_timer: float = 0.0
+var _red_key_timer: float = 0.0
 ## 基础敌人生成间隔（用于难度调整）
 var _base_enemy_spawn_interval: float = 0.0
+## 巨型金币生成间隔（秒）
+@export var giant_coin_interval: float = 60.0
+## 红色钥匙生成间隔（秒）
+@export var red_key_interval: float = 90.0
 
 ## ========== 预加载场景 ==========
 
 ## 预加载敌人场景
 var enemy_scene: PackedScene = preload("res://scenes/Enemy.tscn")
-## 预加载金币场景
-var coin_scene: PackedScene = preload("res://scenes/Coin.tscn")
-## 预加载占领据点场景
-var capture_point_scene: PackedScene = preload("res://scenes/areas/CaptureArea.tscn")
+## 预加载基础收集品场景
+var base_collectible_scene: PackedScene = preload("res://scenes/collectibles/BaseCollectible.tscn")
 ## 预加载宝箱场景
 var chest_scene: PackedScene = preload("res://scenes/Chest.tscn")
+
+## ========== 收集品数据 ==========
+
+## 普通金币数据（在 _ready 中通过 CollectibleData.new() 创建）
+var coin_data: CollectibleData = null
+## 巨型金币数据（在 _ready 中通过 CollectibleData.new() 创建）
+var giant_coin_data: CollectibleData = null
+## 红色钥匙数据（在 _ready 中通过 CollectibleData.new() 创建）
+var red_key_data: CollectibleData = null
+## 占领区域数据（在 _ready 中通过 CollectibleData.new() 创建）
+var capture_area_data: CollectibleData = null
 
 ## ========== Godot 生命周期函数 ==========
 
@@ -88,11 +103,16 @@ func _ready() -> void:
 	# 存储基础敌人生成间隔
 	_base_enemy_spawn_interval = enemy_spawn_interval
 
+	# 创建收集品数据实例
+	_create_collectible_data()
+
 	# 随机化初始计时器，避免所有物体同时生成
 	_enemy_spawn_timer = randf() * enemy_spawn_interval
 	_coin_spawn_timer = randf() * coin_spawn_interval
 	_capture_point_spawn_timer = randf() * capture_point_spawn_interval
 	_chest_spawn_timer = randf() * chest_spawn_interval
+	_giant_coin_timer = 0.0
+	_red_key_timer = 0.0
 
 ## ========== 处理逻辑 ==========
 
@@ -112,6 +132,12 @@ func _process(delta: float) -> void:
 	# 处理宝箱生成
 	if enable_chest_spawning:
 		_process_chest_spawning(delta)
+
+	# 处理巨型金币生成
+	_process_giant_coin_spawning(delta)
+
+	# 处理红色钥匙生成
+	_process_red_key_spawning(delta)
 
 ## ========== 敌人生成逻辑 ==========
 
@@ -161,10 +187,12 @@ func _process_coin_spawning(delta: float) -> void:
 
 func _spawn_coin() -> void:
 	var spawn_position: Vector2 = _get_random_spawn_position(50.0, 300.0)
-	var coin: Coin = coin_scene.instantiate()
-	coin.global_position = spawn_position
-	coin.add_to_group("coins")  # 添加到组以便计数
-	get_parent().add_child(coin)
+	var collectible: BaseCollectible = base_collectible_scene.instantiate()
+	collectible.collectible_data = coin_data
+	collectible.global_position = spawn_position
+	collectible.add_to_group("coins")
+	get_parent().add_child(collectible)
+	print("Spawner: 金币已生成于位置: ", spawn_position)
 
 ## ========== 占领据点生成逻辑 ==========
 
@@ -183,9 +211,10 @@ func _process_capture_point_spawning(delta: float) -> void:
 
 func _spawn_capture_point() -> void:
 	var spawn_position: Vector2 = _get_random_spawn_position(100.0, 400.0)
-	var capture_point: CaptureArea = capture_point_scene.instantiate()
-	capture_point.global_position = spawn_position
-	get_parent().add_child(capture_point)
+	var collectible: BaseCollectible = base_collectible_scene.instantiate()
+	collectible.collectible_data = capture_area_data
+	collectible.global_position = spawn_position
+	get_parent().add_child(collectible)
 
 ## ========== 宝箱生成逻辑 ==========
 
@@ -233,6 +262,84 @@ func _get_random_spawn_position(min_offset: float, max_offset: float) -> Vector2
 
 	return spawn_position
 
+## ========== 辅助函数 ==========
+
+## 创建收集品数据实例
+func _create_collectible_data() -> void:
+	print("Spawner: 开始创建收集品数据")
+
+	# 创建普通金币数据
+	coin_data = CollectibleData.new()
+	coin_data.display_name = "金币"
+	coin_data.description = "收集金币获得分数"
+	coin_data.collectible_type = CollectibleData.CollectibleType.COLLECTIBLE
+	coin_data.modulate_color = Color(1, 0.8, 0, 1)
+	coin_data.scale = Vector2(1, 1)
+	coin_data.collision_shape_size = Vector2(32, 32)
+	coin_data.coin_value = 1
+	coin_data.lifetime = 15.0
+	coin_data.enable_rotation = true
+	coin_data.rotation_speed = 180.0
+	coin_data.enable_float = true
+	coin_data.float_amplitude = 10.0
+	coin_data.float_frequency = 2.0
+
+	print("Spawner: 普通金币数据创建完成")
+
+	# 创建巨型金币数据
+	giant_coin_data = CollectibleData.new()
+	giant_coin_data.display_name = "巨型金币"
+	giant_coin_data.description = "高价值金币！值得收集！"
+	giant_coin_data.collectible_type = CollectibleData.CollectibleType.COLLECTIBLE
+	giant_coin_data.modulate_color = Color.GOLD
+	giant_coin_data.scale = Vector2(2, 2)
+	giant_coin_data.collision_shape_size = Vector2(64, 64)
+	giant_coin_data.coin_value = 10
+	giant_coin_data.lifetime = 30.0
+	giant_coin_data.reward_text = "获得巨型金币！+10金币"
+	giant_coin_data.show_direction_arrow = true
+	giant_coin_data.arrow_color = Color.GOLD
+	giant_coin_data.arrow_show_distance = 300.0
+	giant_coin_data.arrow_hide_distance = 200.0
+	giant_coin_data.arrow_priority = 5
+	giant_coin_data.enable_rotation = true
+	giant_coin_data.rotation_speed = 90.0
+	giant_coin_data.enable_float = true
+	giant_coin_data.float_amplitude = 10.0
+	giant_coin_data.float_frequency = 2.0
+
+	# 创建红色钥匙数据
+	red_key_data = CollectibleData.new()
+	red_key_data.display_name = "红色钥匙"
+	red_key_data.description = "收集3把钥匙获得巨额奖励！"
+	red_key_data.collectible_type = CollectibleData.CollectibleType.COLLECTIBLE
+	red_key_data.modulate_color = Color.RED
+	red_key_data.scale = Vector2(1.5, 1.5)
+	red_key_data.collision_shape_size = Vector2(48, 48)
+	red_key_data.lifetime = 60.0
+	red_key_data.reward_text = "获得红色钥匙！"
+	red_key_data.custom_effect = "red_key"
+	red_key_data.show_direction_arrow = true
+	red_key_data.arrow_color = Color.RED
+	red_key_data.arrow_show_distance = 400.0
+	red_key_data.arrow_hide_distance = 250.0
+	red_key_data.arrow_priority = 10
+	red_key_data.enable_float = true
+	red_key_data.float_amplitude = 15.0
+	red_key_data.float_frequency = 2.0
+
+	# 创建占领区域数据
+	capture_area_data = CollectibleData.new()
+	capture_area_data.display_name = "占领点"
+	capture_area_data.description = "站在区域内进行占领"
+	capture_area_data.collectible_type = CollectibleData.CollectibleType.AREA_STAY
+	capture_area_data.modulate_color = Color.BLUE
+	capture_area_data.scale = Vector2(2.5, 2.5)
+	capture_area_data.collision_shape_size = Vector2(150, 150)
+	capture_area_data.capture_time = 5.0
+	capture_area_data.capture_bonus_coins = 3
+	capture_area_data.show_direction_arrow = false
+
 ## ========== 公共方法 ==========
 
 ## 立即生成指定数量的敌人
@@ -264,3 +371,38 @@ func resume_spawning() -> void:
 ## 增加游戏难度（敌人刷新频率翻倍）
 func increase_difficulty(multiplier: float = 2.0) -> void:
 	enemy_spawn_interval = _base_enemy_spawn_interval / multiplier
+
+## ========== 巨型金币生成逻辑 ==========
+
+func _process_giant_coin_spawning(delta: float) -> void:
+	_giant_coin_timer += delta
+
+	if _giant_coin_timer >= giant_coin_interval:
+		spawn_giant_coin()
+		_giant_coin_timer = 0.0
+
+## 生成巨型金币
+func spawn_giant_coin() -> void:
+	var spawn_position: Vector2 = _get_random_spawn_position(150.0, 500.0)
+	var collectible: BaseCollectible = base_collectible_scene.instantiate()
+	collectible.collectible_data = giant_coin_data
+	collectible.global_position = spawn_position
+	get_parent().add_child(collectible)
+
+## ========== 红色钥匙生成逻辑 ==========
+
+func _process_red_key_spawning(delta: float) -> void:
+	_red_key_timer += delta
+
+	if _red_key_timer >= red_key_interval:
+		spawn_red_keys(3)
+		_red_key_timer = 0.0
+
+## 生成红色钥匙
+func spawn_red_keys(count: int = 3) -> void:
+	for i in count:
+		var spawn_position: Vector2 = _get_random_spawn_position(200.0, 600.0)
+		var collectible: BaseCollectible = base_collectible_scene.instantiate()
+		collectible.collectible_data = red_key_data
+		collectible.global_position = spawn_position
+		get_parent().add_child(collectible)

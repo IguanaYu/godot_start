@@ -1,0 +1,26 @@
+[gd_resource type="Resource" format=3]
+
+[resource]
+display_name = "金币"
+description = "收集金币获得分数"
+modulate_color = Color(1, 0.8, 0, 1)
+scale = Vector2(1, 1)
+z_index = 0
+collision_shape_size = Vector2(32, 32)
+coin_value = 1
+health_value = 0
+lifetime = 15.0
+reward_text = ""
+custom_effect = ""
+capture_time = 5.0
+capture_bonus_coins = 0
+show_direction_arrow = false
+arrow_color = Color(1, 1, 0, 1)
+arrow_show_distance = 200.0
+arrow_hide_distance = 150.0
+arrow_priority = 0
+enable_rotation = true
+rotation_speed = 180.0
+enable_float = true
+float_amplitude = 10.0
+float_frequency = 2.0

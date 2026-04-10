@@ -8,3 +8,5 @@ kenney_*/
 
 # Imported assets can be large
 *.import
+nul
+*.uid

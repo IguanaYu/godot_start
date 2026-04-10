@@ -21,6 +21,10 @@ signal reward_obtained(reward_text: String)
 signal volume_changed(volume_type: String, value: float)
 ## 背包变化时发出
 signal inventory_changed()
+## 红色钥匙收集时发出（参数：当前数量，需求数量）
+signal red_key_collected(current_count: int, required: int)
+## 所有红色钥匙收集完成时发出
+signal all_red_keys_collected()
 
 ## ========== 可配置变量 ==========
 
@@ -85,6 +89,13 @@ var enemy_spawn_rate_penalty: float = 0.0
 var diamond_spawn_rate_bonus: float = 0.0
 ## 最大生命值加成
 var max_health_bonus: int = 0
+
+## ========== 红色钥匙系统 ==========
+
+## 已收集的红色钥匙数量
+var red_keys_collected: int = 0
+## 需要收集的红色钥匙数量
+var red_keys_required: int = 3
 
 ## ========== 节点引用 ==========
 
@@ -458,3 +469,17 @@ func get_stats_summary() -> String:
 		get_coins(), get_health(), max_health,
 		inventory_items.size(), speed_boost_percent
 	]
+
+## ========== 红色钥匙系统 ==========
+
+## 红色钥匙收集处理
+func on_red_key_collected() -> void:
+	red_keys_collected += 1
+	red_key_collected.emit(red_keys_collected, red_keys_required)
+
+	if red_keys_collected >= red_keys_required:
+		all_red_keys_collected.emit()
+		# 给予巨额奖励
+		add_coins(100)
+		reward_obtained.emit("集齐3把红色钥匙！获得100金币！")
+		red_keys_collected = 0  # 重置

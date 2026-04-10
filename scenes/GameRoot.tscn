@@ -27,6 +27,7 @@ z_index = 1
 [node name="LevelContainer" type="Node2D" parent="."]
 
 [node name="GlobalUI" type="CanvasLayer" parent="."]
+groups = ["ui_manager"]
 
 [node name="HPBar" type="ProgressBar" parent="GlobalUI"]
 offset_right = 200.0
@@ -44,6 +45,15 @@ offset_bottom = 90.0
 theme_override_colors/font_color = Color(1, 0.8, 0, 1)
 theme_override_font_sizes/font_size = 20
 text = "Coins: 0"
+
+[node name="DirectionIndicator" type="Control" parent="GlobalUI"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
 
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10
