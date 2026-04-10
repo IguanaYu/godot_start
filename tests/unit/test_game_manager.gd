@@ -6,6 +6,9 @@ extends GutTest
 
 ## 每个测试前执行
 func before_each():
+	GameManager.selected_character_data = null  # 清除角色数据
+	GameManager.max_health = 3  # 重置最大生命值
+	GameManager.max_health_bonus = 0  # 清除生命值加成
 	GameManager.reset_game()
 	GameManager.reset_coins()
 	GameManager.reset_health()
