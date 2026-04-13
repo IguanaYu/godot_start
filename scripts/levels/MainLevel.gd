@@ -136,11 +136,36 @@ func _init_day_night_cycle() -> void:
 	# 启动昼夜循环
 	day_night_cycle_manager.start_cycle(tier)
 
+	# 设置 SpawnManager 引用（事件调度用）
+	day_night_cycle_manager.set_spawn_manager(spawn_manager)
+
+	# 调度事件（步骤8新增）
+	_schedule_events()
+
 	# 监听昼夜切换信号
 	if not day_night_cycle_manager.period_changed.is_connected(_on_period_changed):
 		day_night_cycle_manager.period_changed.connect(_on_period_changed)
 
 	print("[DayNight] 第%d天, 挡位%d, 白天 %.0fs / 黑夜 %.0fs" % [GameManager.current_day_number, tier.tier_index, tier.day_duration, tier.night_duration])
+
+## ========== 事件调度（步骤8新增） ==========
+
+## 调度当前地图的事件
+func _schedule_events() -> void:
+	if day_night_cycle_manager == null:
+		return
+
+	var event_pool: Array[SpecialEvent] = []
+	if GameManager.current_map_config != null:
+		event_pool = GameManager.current_map_config.event_pool
+
+	# 合并已接受的任务
+	var extra_events: Array = []
+	for mission in GameManager.accepted_missions:
+		if mission is SpecialEvent:
+			extra_events.append(mission)
+
+	day_night_cycle_manager.schedule_events(event_pool, extra_events)
 
 ## ========== 信号回调 ==========
 

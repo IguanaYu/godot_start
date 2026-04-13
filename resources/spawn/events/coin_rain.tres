@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="SpecialEvent" format=3]
+
+[ext_resource type="Script" path="res://resources/spawn/special_event.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/events/coin_rain_event.tscn" id="2"]
+
+[resource]
+script = ExtResource("1")
+event_id = "coin_rain"
+display_name = "金币雨"
+description = "天降金币雨！大量金币出现在地图上"
+trigger_period = "DAY"
+trigger_time = 12.0
+trigger_probability = 0.6

@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="SpecialEvent" format=3]
+
+[ext_resource type="Script" path="res://resources/spawn/special_event.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/events/enemy_rush_event.tscn" id="2"]
+
+[resource]
+script = ExtResource("1")
+event_id = "enemy_rush"
+display_name = "敌人突袭"
+description = "大量敌人突然涌入地图！"
+trigger_period = "NIGHT"
+trigger_time = 8.0
+trigger_probability = 0.5
