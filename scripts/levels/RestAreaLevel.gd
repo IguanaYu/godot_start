@@ -31,6 +31,10 @@ extends "res://scripts/levels/BaseLevel.gd"
 @onready var inventory_panel: Panel = $LevelUI/InventoryPanel
 ## 背包按钮
 @onready var inventory_button: Button = $LevelUI/InventoryButton
+## 任务商店（步骤9b新增）
+@onready var mission_shop: MissionShop = null
+## 任务面板（步骤9b新增）
+@onready var mission_panel: Panel = null
 
 ## ========== 标准接口实现 ==========
 
@@ -64,6 +68,9 @@ func initialize_level(game_root: Node2D) -> void:
 	var inventory_close_button = inventory_panel.get_node_or_null("VBoxContainer/CloseButton")
 	if inventory_close_button != null:
 		inventory_close_button.pressed.connect(_on_inventory_close_pressed)
+
+	# 初始化任务商店（步骤9b新增）
+	_init_mission_shop()
 
 	print("RestAreaLevel: 关卡初始化完成")
 
@@ -164,6 +171,32 @@ func _try_interact_with_exit_npc() -> void:
 	var distance = player.global_position.distance_to(level_exit_npc.global_position)
 	if distance <= 80.0:  # 交互范围
 		_on_returned_to_main()
+
+## ========== 任务商店（步骤9b新增） ==========
+
+## 初始化任务商店
+func _init_mission_shop() -> void:
+	# 尝试查找 MissionShop 节点
+	mission_shop = get_node_or_null("NPCsContainer/MissionShop")
+	if mission_shop == null:
+		return
+
+	# 加载默认可用任务
+	if mission_shop.available_missions.is_empty():
+		var coin_rain = load("res://resources/spawn/events/coin_rain.tres") as SpecialEvent
+		var enemy_rush = load("res://resources/spawn/events/enemy_rush.tres") as SpecialEvent
+		var stele = load("res://resources/spawn/events/stele_unlock.tres") as SpecialEvent
+		if coin_rain != null:
+			mission_shop.available_missions.append(coin_rain)
+		if enemy_rush != null:
+			mission_shop.available_missions.append(enemy_rush)
+		if stele != null:
+			mission_shop.available_missions.append(stele)
+
+	# 查找或创建任务面板
+	mission_panel = $LevelUI/ShopPanel if has_node("LevelUI/ShopPanel") else null
+
+	print("RestAreaLevel: 任务商店已初始化, %d 个可用任务" % mission_shop.available_missions.size())
 
 ## ========== 清理 ==========
 
