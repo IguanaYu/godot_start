@@ -117,19 +117,9 @@ func _ready() -> void:
 ## ========== _process 处理金币雨逻辑 ==========
 
 func _process(delta: float) -> void:
-	# 处理金币雨逻辑
-	if _is_coin_rain_active:
-		_coin_rain_time_left -= delta
-		_coin_rain_spawn_timer -= delta
-
-		# 每隔一定时间生成一个金币
-		if _coin_rain_spawn_timer <= 0:
-			_spawn_coin_rain_coin()
-			_coin_rain_spawn_timer = coin_rain_interval
-
-		# 金币雨时间结束
-		if _coin_rain_time_left <= 0:
-			_stop_coin_rain()
+	# 金币雨已迁移到 SpawnManager，此处保留兼容逻辑
+	# GameManager 不再直接处理金币雨生成
+	pass
 
 ## ========== 公共方法：金币管理 ==========
 
@@ -214,7 +204,7 @@ func reset_game() -> void:
 
 ## ========== 公共方法：金币雨 ==========
 
-## 启动金币雨效果
+## 启动金币雨效果（代理到 SpawnManager）
 func start_coin_rain() -> void:
 	if _is_coin_rain_active:
 		return
@@ -222,6 +212,19 @@ func start_coin_rain() -> void:
 	_is_coin_rain_active = true
 	_coin_rain_time_left = coin_rain_duration
 	_coin_rain_spawn_timer = 0.0
+
+	# 代理到 SpawnManager 处理金币雨
+	var game_root = get_tree().current_scene
+	if game_root != null and game_root.has_method("get_current_level"):
+		var current_level = game_root.get_current_level()
+		if current_level != null and current_level.has_method("get_spawner"):
+			var spawner = current_level.get_spawner()
+			if spawner != null and spawner.has_method("start_coin_rain"):
+				spawner.start_coin_rain(coin_rain_duration, coin_rain_interval)
+				reward_obtained.emit("金币雨开始！持续 %.0f 秒" % coin_rain_duration)
+				return
+
+	# fallback: 如果没有 SpawnManager，使用旧逻辑
 	reward_obtained.emit("金币雨开始！持续 %.0f 秒" % coin_rain_duration)
 
 ## 停止金币雨效果

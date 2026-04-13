@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://mainlevel"]
 
 [ext_resource type="Script" path="res://scripts/levels/MainLevel.gd" id="1_main_level"]
-[ext_resource type="Script" uid="uid://bjqegfkwqa12j" path="res://scripts/Spawner.gd" id="3_spawner"]
+[ext_resource type="Script" path="res://scripts/SpawnManager.gd" id="2_spawn_manager"]
 [ext_resource type="Script" path="res://scripts/DayNightCycleManager.gd" id="4_daynight"]
 [ext_resource type="Texture2D" uid="uid://st6lfgchh04h" path="res://kenney_desert-shooter-pack_1.0/kenney_desert-shooter-pack_1.0/PNG/Interface/Tiles/tile_0145.png" id="5_vcsgt"]
 [ext_resource type="Texture2D" uid="uid://jswtv1wirkd2" path="res://kenney_desert-shooter-pack_1.0/背景.png" id="6_c01mt"]
@@ -24,17 +24,8 @@ script = ExtResource("1_main_level")
 [node name="PlayerSpawn" type="Marker2D" parent="."]
 position = Vector2(400, 300)
 
-[node name="Spawner" type="Node2D" parent="."]
-script = ExtResource("3_spawner")
-max_enemies_per_spawn = 2
-max_enemies_in_scene = 10
-coin_spawn_interval = 4.0
-max_coins_per_spawn = 3
-max_coins_in_scene = 20
-capture_point_spawn_interval = 12.0
-max_capture_points_in_scene = 2
-chest_spawn_interval = 18.0
-max_chests_in_scene = 3
+[node name="SpawnManager" type="Node2D" parent="."]
+script = ExtResource("2_spawn_manager")
 
 [node name="DayNightCycleManager" type="Node" parent="."]
 script = ExtResource("4_daynight")

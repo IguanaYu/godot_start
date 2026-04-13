@@ -2,7 +2,8 @@
 ## 功能：管理主关卡的初始化和游戏流程
 ## 节点结构：Node2D (根节点)
 ##   ├── PlayerSpawn (玩家出生点)
-##   ├── Spawner (生成器实例)
+##   ├── SpawnManager (数据驱动刷新管理器)
+##   ├── DayNightCycleManager (昼夜循环)
 ##   ├── LevelUI (关卡特定UI)
 ##   └── Background (背景)
 
@@ -30,9 +31,9 @@ var _initial_capture_points_spawned: bool = false
 
 ## ========== 节点引用 ==========
 
-## 生成器节点引用
-@onready var spawner: Spawner = $Spawner
-## 昼夜循环管理器（步骤4新增）
+## 刷新管理器节点引用
+@onready var spawn_manager: SpawnManager = $SpawnManager
+## 昼夜循环管理器
 @onready var day_night_cycle_manager: DayNightCycleManager = $DayNightCycleManager
 ## 背景节点引用
 @onready var background: ColorRect = $Background
@@ -65,11 +66,10 @@ func initialize_level(game_root: Node2D) -> void:
 	if not GameManager.reward_obtained.is_connected(_on_reward_obtained):
 		GameManager.reward_obtained.connect(_on_reward_obtained)
 
-	# 确保生成器正在运行
-	if spawner != null:
-		spawner.resume_spawning()
+	# 初始化 SpawnManager（加载默认白天阶段配置）
+	_init_spawn_manager()
 
-	# 初始化昼夜循环（步骤4新增：仅视觉过渡，不影响刷新）
+	# 初始化昼夜循环
 	_init_day_night_cycle()
 
 	# 重置游戏计时器
@@ -83,18 +83,57 @@ func initialize_level(game_root: Node2D) -> void:
 
 	print("MainLevel: 关卡初始化完成")
 
-## 获取生成器
-func get_spawner() -> Spawner:
-	return spawner
+## 获取刷新管理器（兼容接口）
+func get_spawner() -> SpawnManager:
+	return spawn_manager
+
+## ========== 初始化方法 ==========
+
+## 初始化 SpawnManager
+func _init_spawn_manager() -> void:
+	if spawn_manager == null:
+		push_error("MainLevel: SpawnManager 节点未找到！")
+		return
+
+	# 加载默认白天阶段配置
+	var default_phase: SpawnPhase = load("res://resources/spawn/phases/default_day_phase.tres")
+	if default_phase == null:
+		push_error("MainLevel: 无法加载默认白天阶段配置")
+		return
+
+	# 配置 SpawnManager
+	spawn_manager.configure(default_phase)
+	spawn_manager.resume_spawning()
+
+	print("MainLevel: SpawnManager 已配置")
+
+## 初始化昼夜循环
+func _init_day_night_cycle() -> void:
+	if day_night_cycle_manager == null:
+		return
+
+	# 加载默认昼夜挡位
+	var default_tier: DayNightTier = load("res://resources/spawn/tiers/default_tier.tres")
+	if default_tier == null:
+		push_warning("MainLevel: 无法加载默认昼夜挡位")
+		return
+
+	# 设置背景节点
+	day_night_cycle_manager.set_background(background)
+
+	# 启动昼夜循环
+	day_night_cycle_manager.start_cycle(default_tier)
+
+	print("MainLevel: 昼夜循环已启动")
 
 ## ========== 信号回调 ==========
 
 ## 玩家死亡
 func _on_player_died() -> void:
 	print("MainLevel: 玩家死亡")
-	# 暂停生成器
-	if spawner != null:
-		spawner.pause_spawning()
+	# 暂停刷新管理器
+	if spawn_manager != null:
+		spawn_manager.pause_spawning()
 
 	# 重新开始当前关卡（通过 GameRoot）
 	var game_root = get_tree().current_scene
@@ -169,8 +208,8 @@ func _spawn_evacuation_point() -> void:
 
 ## 增加游戏难度
 func _increase_difficulty() -> void:
-	if spawner != null:
-		spawner.increase_difficulty(difficulty_multiplier)
+	if spawn_manager != null:
+		spawn_manager.increase_difficulty(difficulty_multiplier)
 		GameManager.reward_obtained.emit("敌人刷新频率已提升！")
 
 ## 更新倒计时显示
@@ -181,36 +220,15 @@ func _update_countdown() -> void:
 
 ## 生成初始占领点
 func _spawn_initial_capture_points() -> void:
-	if spawner == null:
+	if spawn_manager == null:
 		return
 
-	# 使用Spawner的方法生成多个占领点
+	# 使用 SpawnManager 的方法生成多个占领点
 	for i in range(initial_capture_points_count):
-		spawner.spawn_capture_point_immediate()
+		spawn_manager.spawn_capture_point_immediate()
 
 	# 显示提示
 	GameManager.reward_obtained.emit("占领点已出现！占领3个点以获得奖励！")
-
-## ========== 昼夜循环（步骤4新增） ==========
-
-## 初始化昼夜循环（仅视觉过渡）
-func _init_day_night_cycle() -> void:
-	if day_night_cycle_manager == null:
-		return
-
-	# 加载默认昼夜挡位
-	var default_tier: DayNightTier = load("res://resources/spawn/tiers/default_tier.tres")
-	if default_tier == null:
-		push_warning("MainLevel: 无法加载默认昼夜挡位")
-		return
-
-	# 设置背景节点
-	day_night_cycle_manager.set_background(background)
-
-	# 启动昼夜循环
-	day_night_cycle_manager.start_cycle(default_tier)
-
-	print("MainLevel: 昼夜循环已启动")
 
 ## ========== 清理 ==========
 
