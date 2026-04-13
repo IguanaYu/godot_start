@@ -32,6 +32,8 @@ var _initial_capture_points_spawned: bool = false
 
 ## 生成器节点引用
 @onready var spawner: Spawner = $Spawner
+## 昼夜循环管理器（步骤4新增）
+@onready var day_night_cycle_manager: DayNightCycleManager = $DayNightCycleManager
 ## 背景节点引用
 @onready var background: ColorRect = $Background
 ## 倒计时标签引用
@@ -66,6 +68,9 @@ func initialize_level(game_root: Node2D) -> void:
 	# 确保生成器正在运行
 	if spawner != null:
 		spawner.resume_spawning()
+
+	# 初始化昼夜循环（步骤4新增：仅视觉过渡，不影响刷新）
+	_init_day_night_cycle()
 
 	# 重置游戏计时器
 	_game_timer = 0.0
@@ -185,6 +190,27 @@ func _spawn_initial_capture_points() -> void:
 
 	# 显示提示
 	GameManager.reward_obtained.emit("占领点已出现！占领3个点以获得奖励！")
+
+## ========== 昼夜循环（步骤4新增） ==========
+
+## 初始化昼夜循环（仅视觉过渡）
+func _init_day_night_cycle() -> void:
+	if day_night_cycle_manager == null:
+		return
+
+	# 加载默认昼夜挡位
+	var default_tier: DayNightTier = load("res://resources/spawn/tiers/default_tier.tres")
+	if default_tier == null:
+		push_warning("MainLevel: 无法加载默认昼夜挡位")
+		return
+
+	# 设置背景节点
+	day_night_cycle_manager.set_background(background)
+
+	# 启动昼夜循环
+	day_night_cycle_manager.start_cycle(default_tier)
+
+	print("MainLevel: 昼夜循环已启动")
 
 ## ========== 清理 ==========
 
