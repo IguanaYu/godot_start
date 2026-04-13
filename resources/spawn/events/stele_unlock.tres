@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="SpecialEvent" format=3]
+
+[ext_resource type="Script" path="res://resources/spawn/special_event.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+event_id = "stele_unlock"
+display_name = "神秘石碑"
+description = "占领石碑解锁新的刷新内容"
+trigger_period = "DAY"
+trigger_time = 15.0
+trigger_probability = 0.4
