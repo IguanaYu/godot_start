@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="SpawnEntry" format=3]
+
+[ext_resource type="Script" path="res://resources/spawn/spawn_entry.gd" id="1"]
+[ext_resource type="Resource" path="res://resources/collectibles/capture_area.tres" id="2"]
+
+[resource]
+script = ExtResource("1")
+entry_id = "capture_point"
+entity_type = "capture_point"
+collectible_data = ExtResource("2")
+spawn_interval = 15.0
+max_in_scene = 3
+spawn_count_min = 1
+spawn_count_max = 1
+min_offset = 100.0
+max_offset = 400.0
+enabled = true
+is_cumulative_timer = false

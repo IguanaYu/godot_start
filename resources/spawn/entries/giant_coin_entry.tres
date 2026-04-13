@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="SpawnEntry" format=3]
+
+[ext_resource type="Script" path="res://resources/spawn/spawn_entry.gd" id="1"]
+[ext_resource type="Resource" path="res://resources/collectibles/giant_coin.tres" id="2"]
+
+[resource]
+script = ExtResource("1")
+entry_id = "giant_coin"
+entity_type = "giant_coin"
+collectible_data = ExtResource("2")
+spawn_interval = 60.0
+max_in_scene = 99
+spawn_count_min = 1
+spawn_count_max = 1
+min_offset = 150.0
+max_offset = 500.0
+enabled = true
+is_cumulative_timer = true

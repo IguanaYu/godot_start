@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="SpawnPhase" format=3]
+
+[ext_resource type="Script" path="res://resources/spawn/spawn_phase.gd" id="1"]
+[ext_resource type="Resource" path="res://resources/spawn/entries/enemy_entry.tres" id="2"]
+[ext_resource type="Resource" path="res://resources/spawn/entries/coin_entry.tres" id="3"]
+[ext_resource type="Resource" path="res://resources/spawn/entries/capture_entry.tres" id="4"]
+[ext_resource type="Resource" path="res://resources/spawn/entries/chest_entry.tres" id="5"]
+
+[resource]
+script = ExtResource("1")
+phase_id = "default_night"
+period = 1
+entries = [ExtResource("2"), ExtResource("3"), ExtResource("4"), ExtResource("5")]

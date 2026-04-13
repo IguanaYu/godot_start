@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="SpawnEntry" format=3]
+
+[ext_resource type="Script" path="res://resources/spawn/spawn_entry.gd" id="1"]
+[ext_resource type="Resource" path="res://resources/collectibles/red_key.tres" id="2"]
+
+[resource]
+script = ExtResource("1")
+entry_id = "red_key"
+entity_type = "red_key"
+collectible_data = ExtResource("2")
+spawn_interval = 90.0
+max_in_scene = 99
+spawn_count_min = 1
+spawn_count_max = 3
+min_offset = 200.0
+max_offset = 600.0
+enabled = true
+is_cumulative_timer = true
