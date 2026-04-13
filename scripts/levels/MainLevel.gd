@@ -124,9 +124,24 @@ func _init_day_night_cycle() -> void:
 	# 启动昼夜循环
 	day_night_cycle_manager.start_cycle(default_tier)
 
+	# 监听昼夜切换信号（步骤6：影响刷新）
+	if not day_night_cycle_manager.period_changed.is_connected(_on_period_changed):
+		day_night_cycle_manager.period_changed.connect(_on_period_changed)
+
 	print("MainLevel: 昼夜循环已启动")
 
 ## ========== 信号回调 ==========
+
+## 昼夜时段切换（步骤6）
+func _on_period_changed(period: SpawnPhase.Period) -> void:
+	if spawn_manager == null:
+		return
+
+	# 根据时段加载对应阶段配置
+	var phase_path := "res://resources/spawn/phases/default_day_phase.tres" if period == SpawnPhase.Period.DAY else "res://resources/spawn/phases/default_night_phase.tres"
+	var phase: SpawnPhase = load(phase_path)
+	if phase != null:
+		spawn_manager.set_active_phase(phase)
 
 ## 玩家死亡
 func _on_player_died() -> void:
@@ -238,3 +253,5 @@ func _exit_tree() -> void:
 		GameManager.player_died.disconnect(_on_player_died)
 	if GameManager.reward_obtained.is_connected(_on_reward_obtained):
 		GameManager.reward_obtained.disconnect(_on_reward_obtained)
+	if day_night_cycle_manager != null and day_night_cycle_manager.period_changed.is_connected(_on_period_changed):
+		day_night_cycle_manager.period_changed.disconnect(_on_period_changed)
