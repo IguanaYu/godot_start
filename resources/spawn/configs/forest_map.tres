@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="MapConfig" format=3]
+
+[ext_resource type="Script" path="res://resources/spawn/map_config.gd" id="1"]
+[ext_resource type="Resource" path="res://resources/spawn/tiers/default_tier.tres" id="2"]
+[ext_resource type="Resource" path="res://resources/spawn/phases/default_day_phase.tres" id="3"]
+[ext_resource type="Resource" path="res://resources/spawn/phases/default_night_phase.tres" id="4"]
+[ext_resource type="Resource" path="res://resources/spawn/configs/default_progression.tres" id="5"]
+
+[resource]
+script = ExtResource("1")
+map_name = "森林"
+description = "初始森林地图，适合新手探索"
+min_unlock_day = 1
+tiers = [ExtResource("2")]
+day_phase = ExtResource("3")
+night_phase = ExtResource("4")
+progression = ExtResource("5")

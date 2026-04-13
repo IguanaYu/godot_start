@@ -97,6 +97,15 @@ var red_keys_collected: int = 0
 ## 需要收集的红色钥匙数量
 var red_keys_required: int = 3
 
+## ========== 天数与地图系统（步骤7新增） ==========
+
+## 当前天数
+var current_day_number: int = 1
+## 当前地图配置
+var current_map_config: MapConfig = null
+## 已接受的任务列表
+var accepted_missions: Array = []
+
 ## ========== 节点引用 ==========
 
 ## 玩家引用（在游戏中动态设置）
@@ -201,6 +210,9 @@ func reset_game() -> void:
 	clear_inventory()  # 清空背包
 	_stop_coin_rain()
 	initialize_abilities()  # 重新初始化能力
+	current_day_number = 1  # 重置天数
+	current_map_config = null  # 重置地图配置
+	accepted_missions.clear()  # 清空任务
 
 ## ========== 公共方法：金币雨 ==========
 
@@ -486,3 +498,21 @@ func on_red_key_collected() -> void:
 		add_coins(100)
 		reward_obtained.emit("集齐3把红色钥匙！获得100金币！")
 		red_keys_collected = 0  # 重置
+
+## ========== 公共方法：天数与地图管理 ==========
+
+## 推进天数（撤离后调用）
+func advance_day() -> void:
+	current_day_number += 1
+	accepted_missions.clear()
+	print("[GameManager] 天数推进到: %d" % current_day_number)
+
+## 接受任务
+func accept_mission(event: SpecialEvent) -> void:
+	if not accepted_missions.has(event):
+		accepted_missions.append(event)
+		print("[GameManager] 接受任务: %s" % event.display_name)
+
+## 清空已接受的任务
+func clear_accepted_missions() -> void:
+	accepted_missions.clear()

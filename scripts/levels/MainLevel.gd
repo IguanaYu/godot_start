@@ -95,14 +95,20 @@ func _init_spawn_manager() -> void:
 		push_error("MainLevel: SpawnManager 节点未找到！")
 		return
 
-	# 加载默认白天阶段配置
-	var default_phase: SpawnPhase = load("res://resources/spawn/phases/default_day_phase.tres")
-	if default_phase == null:
-		push_error("MainLevel: 无法加载默认白天阶段配置")
+	# 从 MapConfig 加载阶段配置，或使用默认
+	var day_phase: SpawnPhase = null
+	if GameManager.current_map_config != null:
+		day_phase = GameManager.current_map_config.day_phase
+
+	if day_phase == null:
+		day_phase = load("res://resources/spawn/phases/default_day_phase.tres")
+
+	if day_phase == null:
+		push_error("MainLevel: 无法加载白天阶段配置")
 		return
 
 	# 配置 SpawnManager
-	spawn_manager.configure(default_phase)
+	spawn_manager.configure(day_phase)
 	spawn_manager.resume_spawning()
 
 	print("MainLevel: SpawnManager 已配置")
@@ -112,34 +118,47 @@ func _init_day_night_cycle() -> void:
 	if day_night_cycle_manager == null:
 		return
 
-	# 加载默认昼夜挡位
-	var default_tier: DayNightTier = load("res://resources/spawn/tiers/default_tier.tres")
-	if default_tier == null:
-		push_warning("MainLevel: 无法加载默认昼夜挡位")
+	# 从 MapConfig 加载对应天数的挡位
+	var tier: DayNightTier = null
+	if GameManager.current_map_config != null:
+		tier = GameManager.current_map_config.get_tier_for_day(GameManager.current_day_number)
+
+	if tier == null:
+		tier = load("res://resources/spawn/tiers/default_tier.tres")
+
+	if tier == null:
+		push_warning("MainLevel: 无法加载昼夜挡位")
 		return
 
 	# 设置背景节点
 	day_night_cycle_manager.set_background(background)
 
 	# 启动昼夜循环
-	day_night_cycle_manager.start_cycle(default_tier)
+	day_night_cycle_manager.start_cycle(tier)
 
-	# 监听昼夜切换信号（步骤6：影响刷新）
+	# 监听昼夜切换信号
 	if not day_night_cycle_manager.period_changed.is_connected(_on_period_changed):
 		day_night_cycle_manager.period_changed.connect(_on_period_changed)
 
-	print("MainLevel: 昼夜循环已启动")
+	print("[DayNight] 第%d天, 挡位%d, 白天 %.0fs / 黑夜 %.0fs" % [GameManager.current_day_number, tier.tier_index, tier.day_duration, tier.night_duration])
 
 ## ========== 信号回调 ==========
 
-## 昼夜时段切换（步骤6）
+## 昼夜时段切换（步骤6/7）
 func _on_period_changed(period: SpawnPhase.Period) -> void:
 	if spawn_manager == null:
 		return
 
-	# 根据时段加载对应阶段配置
-	var phase_path := "res://resources/spawn/phases/default_day_phase.tres" if period == SpawnPhase.Period.DAY else "res://resources/spawn/phases/default_night_phase.tres"
-	var phase: SpawnPhase = load(phase_path)
+	var phase: SpawnPhase = null
+	# 从 MapConfig 加载对应阶段
+	if GameManager.current_map_config != null:
+		phase = GameManager.current_map_config.night_phase if period == SpawnPhase.Period.NIGHT else GameManager.current_map_config.day_phase
+
+	# fallback 到默认配置
+	if phase == null:
+		var phase_path := "res://resources/spawn/phases/default_day_phase.tres" if period == SpawnPhase.Period.DAY else "res://resources/spawn/phases/default_night_phase.tres"
+		phase = load(phase_path)
+
 	if phase != null:
 		spawn_manager.set_active_phase(phase)
 

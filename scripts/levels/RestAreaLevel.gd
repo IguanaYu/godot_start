@@ -12,6 +12,8 @@ extends "res://scripts/levels/BaseLevel.gd"
 
 ## 背景颜色
 @export var background_color: Color = Color(0.15, 0.1, 0.2, 1.0)
+## 可选地图配置列表
+@export var available_maps: Array[MapConfig] = []
 
 ## ========== 节点引用 ==========
 
@@ -84,12 +86,41 @@ func _on_returned_to_main() -> void:
 	# 应用永久性增益
 	GameManager.apply_permanent_bonuses()
 
+	# 推进天数
+	GameManager.advance_day()
+
+	# 设置地图配置（默认使用第一个可用地图）
+	_select_default_map()
+
 	# 通过 GameRoot 切换回主关卡
 	var game_root = get_tree().current_scene
 	if game_root and game_root.has_method("switch_to_main_level"):
 		game_root.switch_to_main_level()
 	else:
 		push_error("RestAreaLevel: 无法获取 GameRoot 实例")
+
+## 选择默认地图（第一个已解锁的地图）
+func _select_default_map() -> void:
+	# 如果已有配置，保持不变
+	if GameManager.current_map_config != null:
+		return
+
+	# 尝试加载默认地图配置列表
+	if available_maps.is_empty():
+		var forest_map = load("res://resources/spawn/configs/forest_map.tres") as MapConfig
+		if forest_map != null:
+			available_maps.append(forest_map)
+
+	# 选择第一个已解锁的地图
+	for map_config in available_maps:
+		if GameManager.current_day_number >= map_config.min_unlock_day:
+			GameManager.current_map_config = map_config
+			print("[RestArea] 选择地图: %s" % map_config.map_name)
+			return
+
+	# fallback：使用第一个地图
+	if not available_maps.is_empty():
+		GameManager.current_map_config = available_maps[0]
 
 ## ========== UI 事件处理 ==========
 
