@@ -1,4 +1,4 @@
-## 角色选择场景脚本
+## 角色选择场景脚本 — 支持 WASD + 空格键盘导航
 extends Control
 
 ## ========== 私有变量 ==========
@@ -7,6 +7,10 @@ extends Control
 var _character_data_list: Array = []
 ## 当前选中的角色数据
 var _selected_character: Resource = null
+## 当前焦点卡片索引
+var _focused_card_index: int = 0
+## 卡片节点引用列表
+var _card_panels: Array = []
 
 ## ========== 节点引用 ==========
 
@@ -38,6 +42,57 @@ func _ready() -> void:
 	start_button.pressed.connect(_on_start_button_pressed)
 	back_button.pressed.connect(_on_back_button_pressed)
 
+	# 应用焦点样式
+	_apply_styles()
+
+	# 设置焦点链
+	_setup_focus_chain()
+
+	# 默认聚焦第一张卡片
+	if _card_panels.size() > 0:
+		_focused_card_index = 0
+		_card_panels[0].grab_focus()
+		_update_focus_visual()
+
+## ========== 输入处理 ==========
+
+func _input(event: InputEvent) -> void:
+	if _card_panels.is_empty():
+		return
+
+	var current_focus := get_viewport().gui_get_focus_owner()
+
+	# 判断焦点在卡片区还是按钮区
+	var in_card_area := _card_panels.has(current_focus)
+
+	if in_card_area:
+		if event.is_action_pressed("ui_left") or event.is_action_pressed("ui_up"):
+			_move_focus(-1)
+			accept_event()
+		elif event.is_action_pressed("ui_right") or event.is_action_pressed("ui_down"):
+			_move_focus(1)
+			accept_event()
+		elif event.is_action_pressed("ui_accept"):
+			# 空格选中当前焦点卡片对应的角色
+			_select_focused_card()
+			accept_event()
+		# 焦点在卡片上时，阻止默认的焦点邻居跳转
+		# 因为我们自己管理卡片间的焦点移动
+
+## 移动卡片焦点
+func _move_focus(direction: int) -> void:
+	_focused_card_index = (_focused_card_index + direction + _card_panels.size()) % _card_panels.size()
+	_card_panels[_focused_card_index].grab_focus()
+	_update_focus_visual()
+
+## 选中当前焦点卡片对应的角色
+func _select_focused_card() -> void:
+	if _focused_card_index < 0 or _focused_card_index >= _character_data_list.size():
+		return
+	var char_data = _character_data_list[_focused_card_index]
+	var card = _card_panels[_focused_card_index]
+	_on_select_button_pressed(char_data, card)
+
 ## ========== 数据加载 ==========
 
 ## 加载所有角色数据资源
@@ -63,14 +118,16 @@ func _create_character_cards() -> void:
 		var char_data = _character_data_list[i]
 		var card: Panel = _create_character_card(char_data, i)
 		character_container.add_child(card)
+		_card_panels.append(card)
 
 ## 创建单个角色卡片
 func _create_character_card(char_data, index: int) -> Panel:
 	var card: Panel = Panel.new()
 	card.custom_minimum_size = Vector2(200, 350)
+	card.focus_mode = Control.FOCUS_ALL
 
 	var vbox: VBoxContainer = VBoxContainer.new()
-	vbox.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT, Control.PRESET_MODE_MINSIZE)
+	vbox.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT, Control.PRESET_MINSIZE)
 	vbox.add_theme_constant_override("separation", 10)
 	card.add_child(vbox)
 
@@ -105,6 +162,9 @@ func _create_character_card(char_data, index: int) -> Panel:
 	stats_panel.visible = false
 	vbox.add_child(stats_panel)
 
+	# 鼠标悬停时也更新焦点索引
+	card.mouse_entered.connect(func(): _on_card_mouse_entered(index))
+
 	return card
 
 ## 创建属性面板
@@ -130,7 +190,77 @@ func _create_stats_panel(char_data) -> VBoxContainer:
 
 	return panel
 
+## ========== 样式 ==========
+
+## 应用焦点样式
+func _apply_styles() -> void:
+	# 底部按钮样式
+	FocusStyleHelper.apply_button_style(back_button)
+	FocusStyleHelper.apply_button_style(start_button)
+
+	# 卡片初始样式
+	for card in _card_panels:
+		card.add_theme_stylebox_override("panel", FocusStyleHelper.create_panel_normal_style())
+
+## 更新焦点视觉（区分"焦点"和"已选中"）
+func _update_focus_visual() -> void:
+	for i in range(_card_panels.size()):
+		var card = _card_panels[i]
+		if i == _focused_card_index:
+			# 当前焦点卡片
+			if _card_panels[i] == _get_selected_card():
+				card.add_theme_stylebox_override("panel", FocusStyleHelper.create_panel_selected_style())
+			else:
+				card.add_theme_stylebox_override("panel", FocusStyleHelper.create_panel_focused_style())
+		else:
+			if _card_panels[i] == _get_selected_card():
+				card.add_theme_stylebox_override("panel", FocusStyleHelper.create_panel_selected_style())
+			else:
+				card.add_theme_stylebox_override("panel", FocusStyleHelper.create_panel_normal_style())
+
+## 获取当前选中的卡片节点
+func _get_selected_card() -> Panel:
+	if _selected_character == null:
+		return null
+	var idx = _character_data_list.find(_selected_character)
+	if idx >= 0 and idx < _card_panels.size():
+		return _card_panels[idx]
+	return null
+
+## ========== 焦点链 ==========
+
+## 设置焦点链
+func _setup_focus_chain() -> void:
+	# 卡片之间：水平邻居（A/D）
+	for i in range(_card_panels.size()):
+		var card = _card_panels[i]
+		var left_idx = (i - 1 + _card_panels.size()) % _card_panels.size()
+		var right_idx = (i + 1) % _card_panels.size()
+
+		# 左右邻居
+		card.focus_neighbor_left = _card_panels[left_idx].get_path()
+		card.focus_neighbor_right = _card_panels[right_idx].get_path()
+		# 上下邻居：底部跳到 BackButton
+		card.focus_neighbor_bottom = back_button.get_path()
+		card.focus_neighbor_top = _card_panels[left_idx].get_path()
+
+	# 底部按钮区：左右互通
+	back_button.focus_neighbor_left = start_button.get_path()
+	back_button.focus_neighbor_right = start_button.get_path()
+	back_button.focus_neighbor_top = _card_panels[0].get_path()
+	back_button.focus_neighbor_bottom = _card_panels[0].get_path()
+
+	start_button.focus_neighbor_left = back_button.get_path()
+	start_button.focus_neighbor_right = back_button.get_path()
+	start_button.focus_neighbor_top = _card_panels[_card_panels.size() - 1].get_path()
+	start_button.focus_neighbor_bottom = _card_panels[_card_panels.size() - 1].get_path()
+
 ## ========== 事件处理 ==========
+
+## 卡片鼠标悬停时同步焦点索引
+func _on_card_mouse_entered(index: int) -> void:
+	_focused_card_index = index
+	_update_focus_visual()
 
 ## 选择按钮被点击
 func _on_select_button_pressed(char_data, card: Panel) -> void:
@@ -153,6 +283,9 @@ func _on_select_button_pressed(char_data, card: Panel) -> void:
 
 	# 启用开始按钮
 	start_button.disabled = false
+
+	# 更新视觉（选中状态）
+	_update_focus_visual()
 
 ## 更新选中角色详情面板
 func _update_selected_panel(char_data) -> void:
