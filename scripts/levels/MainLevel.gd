@@ -32,9 +32,9 @@ var _initial_capture_points_spawned: bool = false
 ## ========== 节点引用 ==========
 
 ## 刷新管理器节点引用
-@onready var spawn_manager: SpawnManager = $SpawnManager
+@onready var spawn_manager = $SpawnManager
 ## 昼夜循环管理器
-@onready var day_night_cycle_manager: DayNightCycleManager = $DayNightCycleManager
+@onready var day_night_cycle_manager = $DayNightCycleManager
 ## 背景节点引用
 @onready var background: ColorRect = $Background
 ## 倒计时标签引用
