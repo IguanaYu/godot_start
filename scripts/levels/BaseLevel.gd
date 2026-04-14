@@ -32,7 +32,7 @@ func initialize_level(game_root: Node2D) -> void:
 
 ## 获取生成器（如果有）
 ## 返回关卡中的 SpawnManager 节点，如果没有则返回 null
-func get_spawner() -> SpawnManager:
+func get_spawner():
 	return get_node_or_null("SpawnManager")
 
 ## 获取敌人列表（用于 GameManager.clear_all_enemies）
