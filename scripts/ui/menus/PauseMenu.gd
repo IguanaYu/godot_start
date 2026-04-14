@@ -23,6 +23,7 @@ signal quit_requested()
 ## ========== 私有变量 ==========
 
 var _is_settings_open: bool = false
+var _buttons: Array = []
 
 ## ========== 公共方法 ==========
 
@@ -32,6 +33,8 @@ func show_pause_menu() -> void:
 	pause_panel.visible = true
 	settings_screen.visible = false
 	_is_settings_open = false
+	# 自动聚焦到继续游戏按钮
+	resume_button.grab_focus()
 
 ## 隐藏暂停菜单
 func hide_pause_menu() -> void:
@@ -45,6 +48,13 @@ func toggle_settings() -> void:
 	_is_settings_open = not _is_settings_open
 	pause_panel.visible = not _is_settings_open
 	settings_screen.visible = _is_settings_open
+	# 切换到设置时，焦点转移到设置界面的主音量滑块
+	if _is_settings_open and settings_screen != null:
+		var master_slider = settings_screen.get_node_or_null("VBoxContainer/MasterVolumeContainer/MasterSlider")
+		if master_slider != null:
+			master_slider.grab_focus()
+	else:
+		resume_button.grab_focus()
 
 ## ========== 信号回调 ==========
 
@@ -89,5 +99,32 @@ func _ready():
 	if settings_back != null:
 		settings_back.pressed.connect(_on_settings_back_pressed)
 
+	# 应用焦点样式
+	_apply_focus_styles()
+
+	# 设置焦点链
+	_setup_focus_chain()
+
 	# 初始隐藏
 	visible = false
+
+## 应用焦点样式
+func _apply_focus_styles() -> void:
+	FocusStyleHelper.apply_button_style(resume_button)
+	FocusStyleHelper.apply_button_style(settings_button)
+	FocusStyleHelper.apply_button_style(main_menu_button)
+	FocusStyleHelper.apply_button_style(quit_button)
+
+## 设置按钮焦点链（循环）
+func _setup_focus_chain() -> void:
+	_buttons = [resume_button, settings_button, main_menu_button, quit_button]
+
+	for i in range(_buttons.size()):
+		var btn = _buttons[i]
+		var prev_idx = (i - 1 + _buttons.size()) % _buttons.size()
+		var next_idx = (i + 1) % _buttons.size()
+
+		btn.focus_neighbor_top = _buttons[prev_idx].get_path()
+		btn.focus_neighbor_bottom = _buttons[next_idx].get_path()
+		btn.focus_previous = _buttons[prev_idx].get_path()
+		btn.focus_next = _buttons[next_idx].get_path()
