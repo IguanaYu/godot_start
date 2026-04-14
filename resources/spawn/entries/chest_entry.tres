@@ -1,7 +1,7 @@
 [gd_resource type="Resource" script_class="SpawnEntry" format=3]
 
 [ext_resource type="Script" path="res://resources/spawn/spawn_entry.gd" id="1"]
-[ext_resource type="PackedScene" path="res://scenes/Chest.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://scenes/collectibles/collection_chest.tscn" id="2"]
 
 [resource]
 script = ExtResource("1")

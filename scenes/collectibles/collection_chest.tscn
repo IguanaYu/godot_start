@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://chestxqmnmyp"]
+
+[ext_resource type="Script" uid="uid://clpai56jrhop7" path="res://scripts/Chest.gd" id="1_chest"]
+[ext_resource type="Texture2D" uid="uid://cgj65kd4na1pl" path="res://kenney_desert-shooter-pack_1.0/kenney_desert-shooter-pack_1.0/PNG/Tiles/Tiles/tile_0218.png" id="2_s2tek"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_chest"]
+size = Vector2(32, 32)
+
+[node name="Chest" type="Area2D" unique_id=1903305399 groups=["chests"]]
+collision_layer = 4
+script = ExtResource("1_chest")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=403634726]
+modulate = Color(0.6, 0.3, 0, 1)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_s2tek")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2017824889]
+shape = SubResource("RectangleShape2D_chest")
