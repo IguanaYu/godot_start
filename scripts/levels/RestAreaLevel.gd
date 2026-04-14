@@ -14,6 +14,8 @@ extends "res://scripts/levels/BaseLevel.gd"
 @export var background_color: Color = Color(0.15, 0.1, 0.2, 1.0)
 ## 可选地图配置列表
 @export var available_maps: Array[MapConfig] = []
+## 防止重复触发返回主关卡
+var _is_returning: bool = false
 
 ## ========== 节点引用 ==========
 
@@ -81,6 +83,10 @@ func _setup_npcs() -> void:
 ## ========== 返回到主关卡 ==========
 
 func _on_returned_to_main() -> void:
+	if _is_returning:
+		return
+	_is_returning = true
+
 	print("RestAreaLevel: 玩家与出口NPC交互，准备返回主关卡")
 
 	# 应用永久性增益
