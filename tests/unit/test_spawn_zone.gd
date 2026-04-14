@@ -2,11 +2,13 @@
 ## 测试4种定位模式的位置计算
 extends GutTest
 
-var _zone: SpawnZone
+const SpawnZoneScript = preload("res://scripts/spawn/SpawnZone.gd")
+
+var _zone
 var _player: CharacterBody2D
 
 func before_each():
-	_zone = SpawnZone.new()
+	_zone = SpawnZoneScript.new()
 	add_child(_zone)
 
 	# 创建一个模拟 Player 节点
@@ -33,7 +35,7 @@ func after_each():
 
 ## 测试 PLAYER_RELATIVE 返回的位置在合理偏移范围内
 func test_player_relative_in_range():
-	_zone.zone_mode = SpawnZone.ZoneType.PLAYER_RELATIVE
+	_zone.zone_mode = 0  # PLAYER_RELATIVE
 	_zone.global_position = Vector2.ZERO
 
 	# 多次采样检查范围
@@ -48,7 +50,7 @@ func test_player_relative_in_range():
 ## 测试 PLAYER_RELATIVE 在无玩家时以原点为中心
 func test_player_relative_no_player():
 	GameManager.player = null
-	_zone.zone_mode = SpawnZone.ZoneType.PLAYER_RELATIVE
+	_zone.zone_mode = 0  # PLAYER_RELATIVE
 
 	var pos = _zone.get_spawn_position(50.0, 200.0)
 	var dist = pos.distance_to(Vector2.ZERO)
@@ -58,7 +60,7 @@ func test_player_relative_no_player():
 
 ## 测试 AREA_RANDOM 返回位置在 zone_rect 范围内
 func test_area_random_in_rect():
-	_zone.zone_mode = SpawnZone.ZoneType.AREA_RANDOM
+	_zone.zone_mode = 1  # AREA_RANDOM
 	_zone.zone_rect = Rect2(-200, -200, 400, 400)
 
 	for i in range(50):
@@ -72,7 +74,7 @@ func test_area_random_in_rect():
 
 ## 测试 SEMI_RANDOM 返回位置在合理范围内
 func test_semi_random_returns_valid_position():
-	_zone.zone_mode = SpawnZone.ZoneType.SEMI_RANDOM
+	_zone.zone_mode = 2  # SEMI_RANDOM
 	_zone.zone_rect = Rect2(-500, -500, 1000, 1000)
 	_zone.player_bias = 0.7
 
@@ -88,7 +90,7 @@ func test_semi_random_returns_valid_position():
 
 ## 测试 FIXED 从子 Marker2D 中选择
 func test_fixed_uses_child_markers():
-	_zone.zone_mode = SpawnZone.ZoneType.FIXED
+	_zone.zone_mode = 3  # FIXED
 	_zone.global_position = Vector2(0, 0)
 
 	# 添加几个子 Marker2D
@@ -113,7 +115,7 @@ func test_fixed_uses_child_markers():
 
 ## 测试 FIXED 无子节点时返回自身位置
 func test_fixed_no_children_returns_own_position():
-	_zone.zone_mode = SpawnZone.ZoneType.FIXED
+	_zone.zone_mode = 3  # FIXED
 	_zone.global_position = Vector2(42, 42)
 
 	var pos = _zone.get_spawn_position()
@@ -123,12 +125,12 @@ func test_fixed_no_children_returns_own_position():
 
 ## 测试默认模式为 PLAYER_RELATIVE
 func test_default_mode_is_player_relative():
-	var zone = SpawnZone.new()
-	assert_eq(zone.zone_mode, SpawnZone.ZoneType.PLAYER_RELATIVE, "默认模式应为 PLAYER_RELATIVE")
+	var zone = SpawnZoneScript.new()
+	assert_eq(zone.zone_mode, 0, "默认模式应为 PLAYER_RELATIVE")
 	zone.queue_free()
 
 ## 测试默认 zone_id 为空
 func test_default_zone_id_empty():
-	var zone = SpawnZone.new()
+	var zone = SpawnZoneScript.new()
 	assert_eq(zone.zone_id, "", "默认 zone_id 应为空字符串")
 	zone.queue_free()

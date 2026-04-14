@@ -1,0 +1,4 @@
+{
+	"dirs": ["tests/unit"],
+	"should_exit": true
+}
