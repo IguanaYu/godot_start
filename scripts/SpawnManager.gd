@@ -18,17 +18,16 @@ signal coin_rain_ended()
 
 ## 预加载敌人场景
 var enemy_scene: PackedScene = preload("res://scenes/Enemy.tscn")
-## 预加载基础收集品场景
+## 预加载场景
+var coin_scene: PackedScene = preload("res://scenes/collectibles/collection_coin.tscn")
+var capture_area_scene: PackedScene = preload("res://scenes/areas/CaptureArea.tscn")
 var base_collectible_scene: PackedScene = preload("res://scenes/collectibles/BaseCollectible.tscn")
-## 预加载宝箱场景
 var chest_scene: PackedScene = preload("res://scenes/collectibles/collection_chest.tscn")
 
-## ========== 收集品数据 ==========
+## ========== 收集品数据（仅用于 BaseCollectible 类型） ==========
 
-var coin_data: CollectibleData = preload("res://resources/collectibles/coin.tres")
 var giant_coin_data: CollectibleData = preload("res://resources/collectibles/giant_coin.tres")
 var red_key_data: CollectibleData = preload("res://resources/collectibles/red_key.tres")
-var capture_area_data: CollectibleData = preload("res://resources/collectibles/capture_area.tres")
 
 ## ========== 私有变量 ==========
 
@@ -216,11 +215,10 @@ func _spawn_coins(entry: SpawnEntry) -> void:
 ## 生成单个金币
 func _spawn_single_coin(entry: SpawnEntry) -> void:
 	var pos = _get_spawn_position(entry)
-	var collectible = base_collectible_scene.instantiate()
-	collectible.collectible_data = coin_data
-	collectible.global_position = pos
-	collectible.add_to_group("coins")
-	get_parent().add_child(collectible)
+	var coin = coin_scene.instantiate()
+	coin.global_position = pos
+	coin.add_to_group("coins")
+	get_parent().add_child(coin)
 
 ## 生成占领点
 func _spawn_capture_point(entry: SpawnEntry) -> void:
@@ -229,10 +227,10 @@ func _spawn_capture_point(entry: SpawnEntry) -> void:
 		return
 
 	var pos = _get_spawn_position(entry)
-	var collectible = base_collectible_scene.instantiate()
-	collectible.collectible_data = capture_area_data
-	collectible.global_position = pos
-	get_parent().add_child(collectible)
+	var capture = capture_area_scene.instantiate()
+	capture.global_position = pos
+	capture.bonus_coins = 3  # 匹配原 capture_area.tres 配置
+	get_parent().add_child(capture)
 
 ## 生成宝箱
 func _spawn_chest(entry: SpawnEntry) -> void:
@@ -297,19 +295,18 @@ func spawn_enemy_immediate(count: int = 1) -> void:
 func spawn_coin_immediate(count: int = 1) -> void:
 	for i in count:
 		var pos = _default_zone.get_spawn_position(50.0, 300.0)
-		var collectible = base_collectible_scene.instantiate()
-		collectible.collectible_data = coin_data
-		collectible.global_position = pos
-		collectible.add_to_group("coins")
-		get_parent().add_child(collectible)
+		var coin = coin_scene.instantiate()
+		coin.global_position = pos
+		coin.add_to_group("coins")
+		get_parent().add_child(coin)
 
 ## 立即生成一个占领据点
 func spawn_capture_point_immediate() -> void:
 	var pos = _default_zone.get_spawn_position(100.0, 400.0)
-	var collectible = base_collectible_scene.instantiate()
-	collectible.collectible_data = capture_area_data
-	collectible.global_position = pos
-	get_parent().add_child(collectible)
+	var capture = capture_area_scene.instantiate()
+	capture.global_position = pos
+	capture.bonus_coins = 3
+	get_parent().add_child(capture)
 
 ## 立即生成一个宝箱
 func spawn_chest_immediate() -> void:
@@ -372,11 +369,11 @@ func _process_coin_rain(delta: float) -> void:
 ## 生成金币雨中的单个金币
 func _spawn_coin_rain_coin() -> void:
 	var pos = _default_zone.get_spawn_position(50.0, 300.0)
-	var collectible = base_collectible_scene.instantiate()
-	collectible.collectible_data = coin_data
-	collectible.global_position = pos
-	collectible.add_to_group("coins")
-	get_parent().add_child(collectible)
+	var coin = coin_scene.instantiate()
+	coin.global_position = pos
+	coin.add_to_group("coins")
+	coin.is_from_coin_rain = true
+	get_parent().add_child(coin)
 
 ## ========== 辅助方法 ==========
 
