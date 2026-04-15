@@ -24,7 +24,15 @@
       "Bash(\"E:\\\\godot\\\\Godot_v4.6.1-stable_win64_console.exe\" --path \"F:\\\\godot_game\\\\run_game\\\\richman\" --script addons/gut/gut_cmdln.gd -gdir=res://tests/unit)",
       "Bash(\"E:\\\\godot\\\\Godot_v4.6.1-stable_win64_console.exe\" --path \"F:\\\\godot_game\\\\run_game\\\\richman\" --headless)",
       "Bash(taskkill:*)",
-      "Bash(timeout:*)"
+      "Bash(timeout:*)",
+      "Bash(\"E:\\\\godot\\\\Godot_v4.6.1-stable_win64_console.exe\" --path \"F:\\\\godot_game\\\\run_game\\\\richman\" -s addons/gut/gut_cmd.gd -gdir tests/unit -gexit)",
+      "Bash(\"E:\\\\godot\\\\Godot_v4.6.1-stable_win64_console.exe\" --path \"F:\\\\godot_game\\\\run_game\\\\richman\" -s addons/gut/gut_cmdln.gd -gdir tests/unit -gexit)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git cherry-pick:*)",
+      "Bash(git checkout:*)",
+      "Bash(git push:*)",
+      "Bash(git fetch:*)"
     ]
   }
 }

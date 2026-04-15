@@ -256,7 +256,10 @@ func _initialize_loaded_level() -> void:
 
 ## 切换到主关卡
 func switch_to_main_level() -> void:
-	load_level("res://scenes/levels/MainLevel.tscn")
+	var level_path = "res://scenes/levels/MainLevel.tscn"
+	if GameManager.current_map_config != null and GameManager.current_map_config.level_scene != null:
+		level_path = GameManager.current_map_config.level_scene.resource_path
+	load_level(level_path)
 
 ## 切换到休息区域
 func switch_to_rest_area() -> void:

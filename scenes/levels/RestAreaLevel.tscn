@@ -1,34 +1,36 @@
-[gd_scene format=3 uid="uid://restarealevel"]
+[gd_scene format=3 uid="uid://bw6cwjpacledj"]
 
-[ext_resource type="Script" path="res://scripts/levels/RestAreaLevel.gd" id="1_rest_area"]
-[ext_resource type="PackedScene" uid="uid://bxe2acb931ed16438780dd" path="res://scenes/shop/ShopNPC.tscn" id="3_shop_npc"]
+[ext_resource type="Script" uid="uid://b4um0rsp37o4x" path="res://scripts/levels/RestAreaLevel.gd" id="1_rest_area"]
+[ext_resource type="PackedScene" uid="uid://d1tguqx5tdkaf" path="res://scenes/shop/ShopNPC.tscn" id="3_shop_npc"]
 [ext_resource type="PackedScene" uid="uid://bxootm8ylcpec" path="res://scenes/LevelExitNPC.tscn" id="4_exit_npc"]
+[ext_resource type="Texture2D" uid="uid://b8bga1bkeojuy" path="res://kenney_desert-shooter-pack_1.0/村庄.png" id="5_7yxuu"]
 [ext_resource type="PackedScene" uid="uid://bxshoppanel" path="res://scenes/shop/ShopPanel.tscn" id="5_shop_panel"]
 
-[node name="RestAreaLevel" type="Node2D"]
+[node name="RestAreaLevel" type="Node2D" unique_id=176250234]
 script = ExtResource("1_rest_area")
 
-[node name="PlayerSpawn" type="Marker2D" parent="."]
+[node name="PlayerSpawn" type="Marker2D" parent="." unique_id=733239246]
 position = Vector2(400, 300)
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="Background" type="ColorRect" parent="." unique_id=1511890786]
 offset_right = 1200.0
 offset_bottom = 800.0
 color = Color(0.15, 0.1, 0.2, 1)
 
-[node name="NPCsContainer" type="Node2D" parent="."]
+[node name="NPCsContainer" type="Node2D" parent="." unique_id=688780510]
+z_index = 1
 
-[node name="ShopNPC" parent="NPCsContainer" instance=ExtResource("3_shop_npc")]
+[node name="ShopNPC" parent="NPCsContainer" unique_id=673145942 instance=ExtResource("3_shop_npc")]
 position = Vector2(300, 300)
 
-[node name="LevelExitNPC" parent="NPCsContainer" instance=ExtResource("4_exit_npc")]
+[node name="LevelExitNPC" parent="NPCsContainer" unique_id=2007633203 instance=ExtResource("4_exit_npc")]
 position = Vector2(600, 300)
 
-[node name="LevelUI" type="CanvasLayer" parent="."]
+[node name="LevelUI" type="CanvasLayer" parent="." unique_id=753087548]
 
-[node name="ShopPanel" parent="LevelUI" instance=ExtResource("5_shop_panel")]
+[node name="ShopPanel" parent="LevelUI" unique_id=165538906 instance=ExtResource("5_shop_panel")]
 
-[node name="InventoryPanel" type="Panel" parent="LevelUI"]
+[node name="InventoryPanel" type="Panel" parent="LevelUI" unique_id=1248395086]
 visible = false
 anchors_preset = -1
 anchor_left = 0.3
@@ -36,7 +38,7 @@ anchor_top = 0.15
 anchor_right = 0.7
 anchor_bottom = 0.85
 
-[node name="VBoxContainer" type="VBoxContainer" parent="LevelUI/InventoryPanel"]
+[node name="VBoxContainer" type="VBoxContainer" parent="LevelUI/InventoryPanel" unique_id=1737848155]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -48,23 +50,26 @@ offset_bottom = -10.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="TitleLabel" type="Label" parent="LevelUI/InventoryPanel/VBoxContainer"]
+[node name="TitleLabel" type="Label" parent="LevelUI/InventoryPanel/VBoxContainer" unique_id=499851948]
 layout_mode = 2
 text = "背包"
 horizontal_alignment = 1
 
-[node name="ItemsGrid" type="GridContainer" parent="LevelUI/InventoryPanel/VBoxContainer"]
+[node name="ItemsGrid" type="GridContainer" parent="LevelUI/InventoryPanel/VBoxContainer" unique_id=466505218]
 layout_mode = 2
 size_flags_vertical = 3
 columns = 5
 
-[node name="CloseButton" type="Button" parent="LevelUI/InventoryPanel/VBoxContainer"]
+[node name="CloseButton" type="Button" parent="LevelUI/InventoryPanel/VBoxContainer" unique_id=161052023]
 layout_mode = 2
 text = "关闭"
 
-[node name="InventoryButton" type="Button" parent="LevelUI"]
+[node name="InventoryButton" type="Button" parent="LevelUI" unique_id=108196645]
 offset_left = 1050.0
 offset_top = 20.0
 offset_right = 1150.0
 offset_bottom = 60.0
 text = "背包 (TAB)"
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1039425015]
+texture = ExtResource("5_7yxuu")

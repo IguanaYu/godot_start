@@ -5,12 +5,14 @@
 [ext_resource type="Resource" path="res://resources/spawn/phases/default_day_phase.tres" id="3"]
 [ext_resource type="Resource" path="res://resources/spawn/phases/default_night_phase.tres" id="4"]
 [ext_resource type="Resource" path="res://resources/spawn/configs/default_progression.tres" id="5"]
+[ext_resource type="PackedScene" path="res://scenes/levels/MainLevel.tscn" id="6"]
 
 [resource]
 script = ExtResource("1")
 map_name = "森林"
 description = "初始森林地图，适合新手探索"
 min_unlock_day = 1
+level_scene = ExtResource("6")
 tiers = [ExtResource("2")]
 day_phase = ExtResource("3")
 night_phase = ExtResource("4")

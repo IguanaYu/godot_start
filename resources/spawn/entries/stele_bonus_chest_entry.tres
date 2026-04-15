@@ -5,7 +5,7 @@
 
 [resource]
 script = ExtResource("1")
-entry_id = "chest"
+entry_id = "stele_bonus_chest"
 entity_type = "chest"
 scene = ExtResource("2")
 spawn_interval = 20.0
@@ -14,5 +14,5 @@ spawn_count_min = 1
 spawn_count_max = 1
 min_offset = 80.0
 max_offset = 350.0
-enabled = true
+enabled = false
 is_cumulative_timer = false

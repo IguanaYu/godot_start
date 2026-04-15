@@ -11,6 +11,8 @@ class_name MapConfig
 @export var description: String = ""
 ## 解锁所需天数
 @export var min_unlock_day: int = 1
+## 地图场景
+@export var level_scene: PackedScene = null
 
 ## ========== 刷新配置 ==========
 
