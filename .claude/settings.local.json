@@ -32,7 +32,12 @@
       "Bash(git cherry-pick:*)",
       "Bash(git checkout:*)",
       "Bash(git push:*)",
-      "Bash(git fetch:*)"
+      "Bash(git fetch:*)",
+      "Bash(cd \"f:/godot_game/run_game/richman\" && git*)",
+      "Bash(cd \"F:/godot_game/run_game/richman\" && git*)",
+      "Bash(cd f:/godot_game/run_game/richman && git*)",
+      "Bash(cd F:/godot_game/run_game/richman && git*)"
     ]
+    
   }
 }
