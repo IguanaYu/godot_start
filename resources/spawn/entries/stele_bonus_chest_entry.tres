@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="SpawnEntry" format=3]
+
+[ext_resource type="Script" path="res://resources/spawn/spawn_entry.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/collectibles/collection_chest.tscn" id="2"]
+
+[resource]
+script = ExtResource("1")
+entry_id = "stele_bonus_chest"
+entity_type = "chest"
+scene = ExtResource("2")
+spawn_interval = 20.0
+max_in_scene = 5
+spawn_count_min = 1
+spawn_count_max = 1
+min_offset = 80.0
+max_offset = 350.0
+enabled = false
+is_cumulative_timer = false

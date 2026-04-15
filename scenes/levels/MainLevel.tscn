@@ -5,6 +5,7 @@
 [ext_resource type="Script" path="res://scripts/DayNightCycleManager.gd" id="4_daynight"]
 [ext_resource type="Texture2D" uid="uid://st6lfgchh04h" path="res://kenney_desert-shooter-pack_1.0/kenney_desert-shooter-pack_1.0/PNG/Interface/Tiles/tile_0145.png" id="5_vcsgt"]
 [ext_resource type="Texture2D" uid="uid://jswtv1wirkd2" path="res://kenney_desert-shooter-pack_1.0/背景.png" id="6_c01mt"]
+[ext_resource type="PackedScene" path="res://scenes/stations/Stele.tscn" id="7_stele"]
 
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_vcsgt"]
 particle_flag_disable_z = true
@@ -89,3 +90,6 @@ process_material = SubResource("ParticleProcessMaterial_vcsgt")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture = ExtResource("6_c01mt")
+
+[node name="Stele" parent="." instance=ExtResource("7_stele")]
+position = Vector2(800, -200)

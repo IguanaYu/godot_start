@@ -7,9 +7,10 @@
 [ext_resource type="Resource" path="res://resources/spawn/entries/chest_entry.tres" id="5"]
 [ext_resource type="Resource" path="res://resources/spawn/entries/giant_coin_entry.tres" id="6"]
 [ext_resource type="Resource" path="res://resources/spawn/entries/red_key_entry.tres" id="7"]
+[ext_resource type="Resource" path="res://resources/spawn/entries/stele_bonus_chest_entry.tres" id="8"]
 
 [resource]
 script = ExtResource("1")
 phase_id = "default_day"
 period = 0
-entries = [ExtResource("2"), ExtResource("3"), ExtResource("4"), ExtResource("5"), ExtResource("6"), ExtResource("7")]
+entries = [ExtResource("2"), ExtResource("3"), ExtResource("4"), ExtResource("5"), ExtResource("6"), ExtResource("7"), ExtResource("8")]

@@ -30,3 +30,7 @@ func _on_capture_completed() -> void:
 
 	# 显示提示
 	GameManager.reward_obtained.emit(unlock_message)
+
+	# 延迟 1 秒后消失（让玩家看到金色完成效果）
+	await get_tree().create_timer(1.0).timeout
+	queue_free()
