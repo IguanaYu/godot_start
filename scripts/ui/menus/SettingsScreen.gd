@@ -25,6 +25,15 @@ func _ready():
 	_sfx_slider.value_changed.connect(_on_sfx_slider_value_changed)
 	_music_slider.value_changed.connect(_on_music_slider_value_changed)
 
+	# 应用焦点样式
+	_apply_focus_styles()
+
+	# 设置焦点链：MasterSlider → SfxSlider → MusicSlider → BackButton
+	_setup_focus_chain()
+
+	# 默认聚焦到主音量滑块
+	_master_slider.grab_focus()
+
 ## 主音量滑块值改变时调用
 func _on_master_slider_value_changed(value: float):
 	var volume: float = value / 100.0
@@ -57,6 +66,30 @@ func _update_volume_labels():
 	_master_volume_label.text = str(int(_master_slider.value)) + "%"
 	_sfx_volume_label.text = str(int(_sfx_slider.value)) + "%"
 	_music_volume_label.text = str(int(_music_slider.value)) + "%"
+
+## 应用焦点视觉样式
+func _apply_focus_styles() -> void:
+	# 按钮样式
+	FocusStyleHelper.apply_button_style(_back_button)
+
+	# 滑块样式：设置滑块步长为 5（每次 A/D 增减 5%）
+	_master_slider.step = 5.0
+	_sfx_slider.step = 5.0
+	_music_slider.step = 5.0
+
+## 设置焦点链
+func _setup_focus_chain() -> void:
+	var controls := [_master_slider, _sfx_slider, _music_slider, _back_button]
+
+	for i in range(controls.size()):
+		var ctrl = controls[i]
+		var prev_idx = (i - 1 + controls.size()) % controls.size()
+		var next_idx = (i + 1) % controls.size()
+
+		ctrl.focus_neighbor_top = controls[prev_idx].get_path()
+		ctrl.focus_neighbor_bottom = controls[next_idx].get_path()
+		ctrl.focus_previous = controls[prev_idx].get_path()
+		ctrl.focus_next = controls[next_idx].get_path()
 
 # 节点引用（在场景中自动设置）
 @onready var _master_slider: HSlider = $VBoxContainer/MasterVolumeContainer/MasterSlider
