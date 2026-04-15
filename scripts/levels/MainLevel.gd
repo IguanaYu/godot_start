@@ -81,6 +81,10 @@ func initialize_level(game_root: Node2D) -> void:
 	if countdown_label != null:
 		countdown_label.visible = true
 
+	# 隐藏奖励提示（初始化时）
+	if reward_popup != null:
+		reward_popup.visible = false
+
 	print("MainLevel: 关卡初始化完成")
 
 ## 获取刷新管理器（兼容接口）
