@@ -128,6 +128,9 @@ func _setup_visuals() -> void:
 			area_sprite.color.a = 0.3
 			area_sprite.size = collectible_data.collision_shape_size
 			area_sprite.position = -collectible_data.collision_shape_size / 2.0
+			area_sprite.visible = true
+			if progress_bar != null:
+				progress_bar.visible = true
 
 func _connect_signals() -> void:
 	"""连接信号"""
