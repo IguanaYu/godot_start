@@ -277,7 +277,7 @@ func _spawn_coin_rain_coin() -> void:
 		spawn_position = Vector2(randf_range(0, screen_size.x), randf_range(0, screen_size.y))
 
 	# 加载并实例化金币场景
-	var coin_scene: PackedScene = load("res://scenes/Coin.tscn")
+	var coin_scene: PackedScene = load("res://scenes/collectibles/collection_coin.tscn")
 	if coin_scene != null:
 		var coin = coin_scene.instantiate()
 		coin.global_position = spawn_position

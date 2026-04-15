@@ -21,7 +21,7 @@ var enemy_scene: PackedScene = preload("res://scenes/Enemy.tscn")
 ## 预加载基础收集品场景
 var base_collectible_scene: PackedScene = preload("res://scenes/collectibles/BaseCollectible.tscn")
 ## 预加载宝箱场景
-var chest_scene: PackedScene = preload("res://scenes/Chest.tscn")
+var chest_scene: PackedScene = preload("res://scenes/collectibles/collection_chest.tscn")
 
 ## ========== 收集品数据 ==========
 

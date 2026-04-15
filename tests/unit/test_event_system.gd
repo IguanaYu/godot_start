@@ -1,10 +1,13 @@
 ## 事件系统单元测试
 extends GutTest
 
-var _handler: BaseEventHandler
+const BaseEventHandlerScript = preload("res://scripts/events/BaseEventHandler.gd")
+const SpecialEventScript = preload("res://resources/spawn/special_event.gd")
+
+var _handler: Node
 
 func before_each():
-	_handler = BaseEventHandler.new()
+	_handler = BaseEventHandlerScript.new()
 	add_child(_handler)
 
 func after_each():

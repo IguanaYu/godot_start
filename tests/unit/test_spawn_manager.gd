@@ -2,14 +2,18 @@
 ## 测试数据驱动的刷新管理器
 extends GutTest
 
-var _manager: SpawnManager
+const SpawnManagerScript = preload("res://scripts/SpawnManager.gd")
+const SpawnEntryScript = preload("res://resources/spawn/spawn_entry.gd")
+const SpawnPhaseScript = preload("res://resources/spawn/spawn_phase.gd")
+
+var _manager
 var _parent: Node2D
 
 func before_each():
 	_parent = Node2D.new()
 	add_child(_parent)
 
-	_manager = SpawnManager.new()
+	_manager = SpawnManagerScript.new()
 	_parent.add_child(_manager)
 
 	# 确保 GameManager 有 player 引用
@@ -98,11 +102,11 @@ func test_unlock_entry():
 
 ## 创建测试用的 SpawnPhase（包含一个 coin 条目）
 func _create_test_phase() -> SpawnPhase:
-	var phase = SpawnPhase.new()
+	var phase = SpawnPhaseScript.new()
 	phase.phase_id = "test_day"
-	phase.period = SpawnPhase.Period.DAY
+	phase.period = 0  # Period.DAY
 
-	var entry = SpawnEntry.new()
+	var entry = SpawnEntryScript.new()
 	entry.entry_id = "test_coin"
 	entry.entity_type = "coin"
 	entry.collectible_data = CollectibleData.new()
@@ -119,7 +123,7 @@ func _create_test_phase_with_disabled() -> SpawnPhase:
 	phase.phase_id = "test_day"
 	phase.period = SpawnPhase.Period.DAY
 
-	var enabled_entry = SpawnEntry.new()
+	var enabled_entry = SpawnEntryScript.new()
 	enabled_entry.entry_id = "enabled_entry"
 	enabled_entry.entity_type = "coin"
 	enabled_entry.collectible_data = CollectibleData.new()
@@ -127,7 +131,7 @@ func _create_test_phase_with_disabled() -> SpawnPhase:
 	enabled_entry.spawn_interval = 5.0
 	phase.entries.append(enabled_entry)
 
-	var disabled_entry = SpawnEntry.new()
+	var disabled_entry = SpawnEntryScript.new()
 	disabled_entry.entry_id = "disabled_entry"
 	disabled_entry.entity_type = "coin"
 	disabled_entry.collectible_data = CollectibleData.new()

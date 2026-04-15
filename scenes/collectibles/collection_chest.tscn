@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://drpwl3ln32mp8"]
+[gd_scene format=3 uid="uid://chestxqmnmyp"]
 
 [ext_resource type="Script" uid="uid://clpai56jrhop7" path="res://scripts/Chest.gd" id="1_chest"]
 [ext_resource type="Texture2D" uid="uid://cgj65kd4na1pl" path="res://kenney_desert-shooter-pack_1.0/kenney_desert-shooter-pack_1.0/PNG/Tiles/Tiles/tile_0218.png" id="2_s2tek"]

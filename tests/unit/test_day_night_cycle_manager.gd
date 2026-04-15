@@ -2,10 +2,13 @@
 ## 测试昼夜循环的计时和切换逻辑
 extends GutTest
 
-var _manager: DayNightCycleManager
+const DayNightCycleManagerScript = preload("res://scripts/DayNightCycleManager.gd")
+const DayNightTierScript = preload("res://resources/spawn/day_night_tier.gd")
+
+var _manager
 
 func before_each():
-	_manager = DayNightCycleManager.new()
+	_manager = DayNightCycleManagerScript.new()
 	add_child(_manager)
 
 func after_each():
@@ -16,14 +19,14 @@ func after_each():
 ## ========== 默认值测试 ==========
 
 func test_default_state():
-	assert_eq(_manager.get_current_period(), SpawnPhase.Period.DAY, "默认应为白天")
+	assert_eq(_manager.get_current_period(), 0, "默认应为白天(DAY=0)")
 	assert_eq(_manager.get_difficulty_multiplier(), 1.0, "默认倍率应为 1.0")
 	assert_false(_manager._is_running, "默认不应运行")
 
 ## ========== start_cycle 测试 ==========
 
 func test_start_cycle():
-	var tier = DayNightTier.new()
+	var tier = DayNightTierScript.new()
 	tier.day_duration = 10.0
 	tier.night_duration = 5.0
 	tier.difficulty_multiplier = 1.5
@@ -31,13 +34,13 @@ func test_start_cycle():
 	_manager.start_cycle(tier)
 
 	assert_true(_manager._is_running, "启动后应运行")
-	assert_eq(_manager.get_current_period(), SpawnPhase.Period.DAY, "启动后应为白天")
+	assert_eq(_manager.get_current_period(), 0, "启动后应为白天(DAY=0)")
 	assert_eq(_manager.get_difficulty_multiplier(), 1.5, "倍率应为 1.5")
 
 ## ========== stop_cycle 测试 ==========
 
 func test_stop_cycle():
-	var tier = DayNightTier.new()
+	var tier = DayNightTierScript.new()
 	_manager.start_cycle(tier)
 	_manager.stop_cycle()
 	assert_false(_manager._is_running, "停止后不应运行")
@@ -45,21 +48,21 @@ func test_stop_cycle():
 ## ========== 时段切换测试 ==========
 
 func test_period_switch_day_to_night():
-	var tier = DayNightTier.new()
+	var tier = DayNightTierScript.new()
 	tier.day_duration = 0.1  # 很短的白天方便测试
 	tier.night_duration = 0.1
 
 	_manager.start_cycle(tier)
-	assert_eq(_manager.get_current_period(), SpawnPhase.Period.DAY, "初始为白天")
+	assert_eq(_manager.get_current_period(), 0, "初始为白天(DAY=0)")
 
 	# 模拟时间流逝
 	_manager._process(0.2)
-	assert_eq(_manager.get_current_period(), SpawnPhase.Period.NIGHT, "白天结束应切换到黑夜")
+	assert_eq(_manager.get_current_period(), 1, "白天结束应切换到黑夜(NIGHT=1)")
 
 ## ========== period_changed 信号测试 ==========
 
 func test_period_changed_signal():
-	var tier = DayNightTier.new()
+	var tier = DayNightTierScript.new()
 	tier.day_duration = 0.05
 	tier.night_duration = 0.05
 
@@ -77,12 +80,12 @@ func test_period_changed_signal():
 	_manager._process(0.1)
 
 	assert_true(signal_received[0], "应发出 period_changed 信号")
-	assert_eq(period_value[0], SpawnPhase.Period.NIGHT, "应切换到黑夜")
+	assert_eq(period_value[0], 1, "应切换到黑夜(NIGHT=1)")
 
 ## ========== get_period_time_remaining 测试 ==========
 
 func test_period_time_remaining():
-	var tier = DayNightTier.new()
+	var tier = DayNightTierScript.new()
 	tier.day_duration = 10.0
 	tier.night_duration = 5.0
 
@@ -100,7 +103,7 @@ func test_background_colors():
 
 	_manager.set_background(bg)
 
-	var tier = DayNightTier.new()
+	var tier = DayNightTierScript.new()
 	tier.day_duration = 1.0
 	tier.night_duration = 1.0
 
