@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://wag3pca8pgtm"]
 
-[ext_resource type="Script" uid="uid://bwlv8dfvvd2q3" path="res://scripts/EvacuationPoint.gd" id="1_0q2rx"]
+[ext_resource type="Script" path="res://scripts/areas/EvacuationArea.gd" id="1_0q2rx"]
 [ext_resource type="Texture2D" uid="uid://dlkquao3pyder" path="res://kenney_desert-shooter-pack_1.0/kenney_desert-shooter-pack_1.0/PNG/Tiles/Tiles/tile_0124.png" id="2_qg0hp"]
 
 [sub_resource type="Image" id="Image_qg0hp"]

@@ -33,11 +33,20 @@
       "Bash(git checkout:*)",
       "Bash(git push:*)",
       "Bash(git fetch:*)",
-      "Bash(cd \"f:/godot_game/run_game/richman\" && git*)",
-      "Bash(cd \"F:/godot_game/run_game/richman\" && git*)",
-      "Bash(cd f:/godot_game/run_game/richman && git*)",
-      "Bash(cd F:/godot_game/run_game/richman && git*)"
+      "Bash(find . -name \"*.tscn\" -exec grep -H \"script=\" {} \\\\;)",
+      "Bash(grep -v \"^.$\")",
+      "Bash(find . -name \"*.tscn\" -exec grep -H \"ExtResource\" {} \\\\;)",
+      "Bash(find . -name \"*.gd\" -exec grep -n \"^\\\\s*#.*\" {} \\\\;)",
+      "Bash(grep -E \"\\\\s*#{3,}.*|/\\\\*.*\\\\*/\")",
+      "Bash(find . -name \"*.gd\" -exec grep -Hn \"func _ready\\\\|func _process\\\\|func _physics_process\" {} \\\\;)",
+      "Bash(find . -name \"*.gd\" -exec grep -l \"extends\\\\|class_name\" {} \\\\;)",
+      "Bash(grep -E \"\\\\.\\(gd\\)$\")",
+      "Bash(\"E:/godot/Godot_v4.6.1-stable_win64_console.exe\" --path \"e:/godot/richman/richman\" --headless --quit)",
+      "Read(//e/godot/**)",
+      "Bash(cmd.exe /c \"dir E:\\\\\\\\godot\\\\\\\\Godot*.exe /b\")",
+      "Bash(cmd.exe /c \"dir /b E:\\\\\\\\godot\\\\\\\\Godot*\")",
+      "Bash(\"/e/其他/chorme_download/Godot_v4.6.1-stable_win64.exe/Godot_v4.6.1-stable_win64_console.exe\" --path \"e:/godot/richman/richman\" --headless --quit)",
+      "Bash(\"/e/其他/chorme_download/Godot_v4.6.1-stable_win64.exe/Godot_v4.6.1-stable_win64_console.exe\" --path \"e:/godot/richman/richman\")"
     ]
-    
   }
 }
