@@ -10,3 +10,7 @@ kenney_*/
 *.import
 nul
 *.uid
+
+# Claude 本地配置
+.claude/settings.local.json
+CLAUDE.md
