@@ -61,23 +61,39 @@ func _input(event: InputEvent) -> void:
 		return
 
 	var current_focus := get_viewport().gui_get_focus_owner()
+	if current_focus == null:
+		return
 
 	# 判断焦点在卡片区还是按钮区
 	var in_card_area := _card_panels.has(current_focus)
+	var in_button_area := (current_focus == start_button or current_focus == back_button)
 
 	if in_card_area:
-		if event.is_action_pressed("ui_left") or event.is_action_pressed("ui_up"):
+		if event.is_action_pressed("ui_left"):
 			_move_focus(-1)
 			accept_event()
-		elif event.is_action_pressed("ui_right") or event.is_action_pressed("ui_down"):
+		elif event.is_action_pressed("ui_right"):
 			_move_focus(1)
 			accept_event()
+		elif event.is_action_pressed("ui_down"):
+			# 从卡片区跳到底部按钮区
+			back_button.grab_focus()
+			accept_event()
 		elif event.is_action_pressed("ui_accept"):
-			# 空格选中当前焦点卡片对应的角色
 			_select_focused_card()
 			accept_event()
-		# 焦点在卡片上时，阻止默认的焦点邻居跳转
-		# 因为我们自己管理卡片间的焦点移动
+	elif in_button_area:
+		if event.is_action_pressed("ui_left") or event.is_action_pressed("ui_right"):
+			# 在开始/返回按钮间切换
+			if current_focus == start_button:
+				back_button.grab_focus()
+			else:
+				start_button.grab_focus()
+			accept_event()
+		elif event.is_action_pressed("ui_up"):
+			# 从按钮区跳回卡片区
+			_card_panels[_focused_card_index].grab_focus()
+			accept_event()
 
 ## 移动卡片焦点
 func _move_focus(direction: int) -> void:
@@ -127,7 +143,7 @@ func _create_character_card(char_data, index: int) -> Panel:
 	card.focus_mode = Control.FOCUS_ALL
 
 	var vbox: VBoxContainer = VBoxContainer.new()
-	vbox.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT, Control.PRESET_MINSIZE)
+	vbox.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	vbox.add_theme_constant_override("separation", 10)
 	card.add_child(vbox)
 
