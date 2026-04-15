@@ -3,6 +3,8 @@
 [ext_resource type="Script" uid="uid://b4um0rsp37o4x" path="res://scripts/levels/RestAreaLevel.gd" id="1_rest_area"]
 [ext_resource type="PackedScene" uid="uid://d1tguqx5tdkaf" path="res://scenes/shop/ShopNPC.tscn" id="3_shop_npc"]
 [ext_resource type="PackedScene" uid="uid://bxootm8ylcpec" path="res://scenes/LevelExitNPC.tscn" id="4_exit_npc"]
+[ext_resource type="PackedScene" uid="uid://mapselectnpc01" path="res://scenes/MapSelectNPC.tscn" id="4_map_npc"]
+[ext_resource type="PackedScene" uid="uid://mapselectpanel01" path="res://scenes/MapSelectPanel.tscn" id="6_map_panel"]
 [ext_resource type="Texture2D" uid="uid://b8bga1bkeojuy" path="res://kenney_desert-shooter-pack_1.0/村庄.png" id="5_7yxuu"]
 [ext_resource type="PackedScene" uid="uid://bxshoppanel" path="res://scenes/shop/ShopPanel.tscn" id="5_shop_panel"]
 
@@ -23,12 +25,17 @@ z_index = 1
 [node name="ShopNPC" parent="NPCsContainer" unique_id=673145942 instance=ExtResource("3_shop_npc")]
 position = Vector2(300, 300)
 
+[node name="MapSelectNPC" parent="NPCsContainer" instance=ExtResource("4_map_npc")]
+position = Vector2(450, 300)
+
 [node name="LevelExitNPC" parent="NPCsContainer" unique_id=2007633203 instance=ExtResource("4_exit_npc")]
 position = Vector2(600, 300)
 
 [node name="LevelUI" type="CanvasLayer" parent="." unique_id=753087548]
 
 [node name="ShopPanel" parent="LevelUI" unique_id=165538906 instance=ExtResource("5_shop_panel")]
+
+[node name="MapSelectPanel" parent="LevelUI" instance=ExtResource("6_map_panel")]
 
 [node name="InventoryPanel" type="Panel" parent="LevelUI" unique_id=1248395086]
 visible = false
