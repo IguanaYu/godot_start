@@ -130,8 +130,12 @@ func _purchase_option(data: PurchaseData) -> void:
 		push_error("无法从PurchaseData提取ItemData")
 		return
 
-	# 添加到背包
-	GameManager.add_item_to_inventory(item)
+	# 应用物品效果
+	item.apply_to_player()
+
+	# 永久物品添加到背包作为记录，消耗品不保留
+	if item.is_permanent():
+		GameManager.add_item_to_inventory(item)
 
 	# 从商店移除该商品（_shop_items和_current_options同步移除）
 	var idx = _shop_items.find(item)
