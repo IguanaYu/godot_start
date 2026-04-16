@@ -115,6 +115,7 @@ func _build_ui() -> void:
 	var close_btn := Button.new()
 	close_btn.text = "x"
 	close_btn.flat = true
+	close_btn.focus_mode = Control.FOCUS_NONE
 	close_btn.add_theme_color_override("font_color", Color(0.7, 0.7, 0.7))
 	close_btn.add_theme_color_override("font_hover_color", Color.WHITE)
 	close_btn.pressed.connect(close)
@@ -131,6 +132,7 @@ func _build_ui() -> void:
 		var btn := Button.new()
 		btn.text = filter_names[i]
 		btn.flat = true
+		btn.focus_mode = Control.FOCUS_NONE
 		btn.add_theme_font_size_override("font_size", 12)
 		btn.add_theme_color_override("font_color", ACTIVE_TAB_COLOR if i == 0 else INACTIVE_TAB_COLOR)
 		btn.add_theme_color_override("font_hover_color", Color.WHITE)
@@ -169,6 +171,7 @@ func _build_ui() -> void:
 	var clear_btn := Button.new()
 	clear_btn.text = "清空"
 	clear_btn.flat = true
+	clear_btn.focus_mode = Control.FOCUS_NONE
 	clear_btn.add_theme_font_size_override("font_size", 11)
 	clear_btn.add_theme_color_override("font_color", Color(0.6, 0.6, 0.6))
 	clear_btn.add_theme_color_override("font_hover_color", Color.WHITE)
@@ -182,6 +185,7 @@ func _build_ui() -> void:
 	_auto_scroll_btn = Button.new()
 	_auto_scroll_btn.text = "自动滚动: ON"
 	_auto_scroll_btn.flat = true
+	_auto_scroll_btn.focus_mode = Control.FOCUS_NONE
 	_auto_scroll_btn.add_theme_font_size_override("font_size", 11)
 	_auto_scroll_btn.add_theme_color_override("font_color", ACTIVE_TAB_COLOR)
 	_auto_scroll_btn.add_theme_color_override("font_hover_color", Color.WHITE)
