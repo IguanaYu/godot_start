@@ -37,46 +37,5 @@ position = Vector2(600, 300)
 
 [node name="MapSelectPanel" parent="LevelUI" instance=ExtResource("6_map_panel")]
 
-[node name="InventoryPanel" type="Panel" parent="LevelUI" unique_id=1248395086]
-visible = false
-anchors_preset = -1
-anchor_left = 0.3
-anchor_top = 0.15
-anchor_right = 0.7
-anchor_bottom = 0.85
-
-[node name="VBoxContainer" type="VBoxContainer" parent="LevelUI/InventoryPanel" unique_id=1737848155]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 10.0
-offset_top = 10.0
-offset_right = -10.0
-offset_bottom = -10.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="TitleLabel" type="Label" parent="LevelUI/InventoryPanel/VBoxContainer" unique_id=499851948]
-layout_mode = 2
-text = "背包"
-horizontal_alignment = 1
-
-[node name="ItemsGrid" type="GridContainer" parent="LevelUI/InventoryPanel/VBoxContainer" unique_id=466505218]
-layout_mode = 2
-size_flags_vertical = 3
-columns = 5
-
-[node name="CloseButton" type="Button" parent="LevelUI/InventoryPanel/VBoxContainer" unique_id=161052023]
-layout_mode = 2
-text = "关闭"
-
-[node name="InventoryButton" type="Button" parent="LevelUI" unique_id=108196645]
-offset_left = 1050.0
-offset_top = 20.0
-offset_right = 1150.0
-offset_bottom = 60.0
-text = "背包 (TAB)"
-
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1039425015]
 texture = ExtResource("5_7yxuu")

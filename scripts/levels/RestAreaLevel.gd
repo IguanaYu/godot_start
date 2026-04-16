@@ -33,10 +33,6 @@ var _is_returning: bool = false
 @onready var shop_panel: Panel = $LevelUI/ShopPanel
 ## 地图选择UI面板
 @onready var map_select_panel: Panel = $LevelUI/MapSelectPanel
-## 背包UI面板
-@onready var inventory_panel: Panel = $LevelUI/InventoryPanel
-## 背包按钮
-@onready var inventory_button: Button = $LevelUI/InventoryButton
 
 ## ========== 标准接口实现 ==========
 
@@ -61,17 +57,6 @@ func initialize_level(game_root: Node2D) -> void:
 		shop_panel.visible = false
 	if map_select_panel != null:
 		map_select_panel.visible = false
-	if inventory_panel != null:
-		inventory_panel.visible = false
-
-	# 连接按钮信号
-	if inventory_button != null:
-		inventory_button.pressed.connect(_on_inventory_button_pressed)
-
-	# 连接背包面板关闭按钮信号
-	var inventory_close_button = inventory_panel.get_node_or_null("VBoxContainer/CloseButton")
-	if inventory_close_button != null:
-		inventory_close_button.pressed.connect(_on_inventory_close_pressed)
 
 	print("RestAreaLevel: 关卡初始化完成")
 
@@ -175,32 +160,15 @@ func _select_default_map() -> void:
 
 ## ========== UI 事件处理 ==========
 
-## 背包按钮按下
-func _on_inventory_button_pressed() -> void:
-	if inventory_panel != null:
-		inventory_panel.visible = not inventory_panel.visible
-
-## 背包关闭按钮按下
-func _on_inventory_close_pressed() -> void:
-	if inventory_panel != null:
-		inventory_panel.visible = false
-
 ## ========== 输入处理 ==========
 
 func _input(event: InputEvent) -> void:
-	# 按Tab键切换背包显示
-	if event is InputEventKey and event.pressed and event.keycode == KEY_TAB:
-		if inventory_panel != null:
-			inventory_panel.visible = not inventory_panel.visible
-
 	# 按ESC键关闭所有UI
 	if event.is_action_pressed("ui_cancel"):
 		if map_select_panel != null and map_select_panel.visible:
 			map_select_panel.visible = false
 		elif shop_panel != null and shop_panel.visible:
 			shop_panel.visible = false
-		elif inventory_panel != null and inventory_panel.visible:
-			inventory_panel.visible = false
 
 	# 处理玩家与出口NPC的交互（按E键）
 	if event.is_action_pressed("interact"):

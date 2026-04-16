@@ -3,6 +3,7 @@
 [ext_resource type="Script" path="res://scripts/GameRoot.gd" id="1_gameroot"]
 [ext_resource type="PackedScene" uid="uid://cxfj8kxqmnmyp" path="res://scenes/Player.tscn" id="2_player"]
 [ext_resource type="PackedScene" uid="uid://pause_menu_main" path="res://scenes/ui/menus/PauseMenu.tscn" id="3_pause_menu"]
+[ext_resource type="PackedScene" path="res://scenes/ui/PlayerStatsPanel.tscn" id="4_stats_panel"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hp_bg"]
 bg_color = Color(0.2, 0.2, 0.2, 0.8)
@@ -54,6 +55,8 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+
+[node name="PlayerStatsPanel" parent="GlobalUI" instance=ExtResource("4_stats_panel")]
 
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10

@@ -40,6 +40,8 @@ signal level_unloading(level_name: String)
 @onready var coin_label: Label = $GlobalUI/CoinLabel
 ## 暂停菜单引用
 @onready var pause_menu: CanvasLayer = $PauseMenu
+## 玩家属性面板引用
+@onready var stats_panel: Control = $GlobalUI/PlayerStatsPanel
 
 ## ========== 私有变量 ==========
 
@@ -287,6 +289,16 @@ func _on_player_died() -> void:
 ## ========== 输入处理 ==========
 
 func _input(event: InputEvent) -> void:
+	# 按下 Tab 键切换属性面板
+	if event.is_action_pressed("toggle_stats"):
+		if stats_panel != null:
+			stats_panel.toggle()
+		return
+
+	# 属性面板打开时不处理其他快捷键
+	if stats_panel != null and stats_panel.is_open():
+		return
+
 	# 按下 R 键重新开始当前关卡
 	if event.is_action_pressed("ui_restart"):
 		restart_current_level()

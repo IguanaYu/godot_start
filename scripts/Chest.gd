@@ -105,7 +105,7 @@ func _grant_wealth() -> void:
 ## 发放无敌星奖励
 func _grant_star_invincible() -> void:
 	var duration: float = 10.0
-	GameManager.apply_buff("star_invincible")
+	GameManager.apply_buff("star_invincibility")
 	GameManager.reward_obtained.emit("无敌星！无敌且秒杀敌人，持续 %.0f 秒" % duration)
 
 ## 发放金币雨奖励
