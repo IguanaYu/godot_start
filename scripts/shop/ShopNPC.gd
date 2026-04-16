@@ -85,6 +85,11 @@ func refresh_shop() -> void:
 		var item = _all_possible_items[random_index]
 		_shop_items.append(item)
 
+	# 同步填充父类的_current_options数组
+	_current_options.clear()
+	for item in _shop_items:
+		_current_options.append(item.to_purchase_data())
+
 	# 更新UI
 	_update_shop_ui()
 
@@ -93,10 +98,7 @@ func buy_item(index: int) -> void:
 	if index < 0 or index >= _shop_items.size():
 		return
 
-	var item: ItemData = _shop_items[index]
-
-	# 转换为PurchaseData并调用基类方法
-	var purchase_data = item.to_purchase_data()
+	# 调用基类购买逻辑（_current_options已在refresh_shop中填充）
 	_on_purchase_button_pressed(index)
 
 ## 更新商店UI
@@ -131,8 +133,12 @@ func _purchase_option(data: PurchaseData) -> void:
 	# 添加到背包
 	GameManager.add_item_to_inventory(item)
 
-	# 从商店移除该商品
-	_shop_items.erase(item)
+	# 从商店移除该商品（_shop_items和_current_options同步移除）
+	var idx = _shop_items.find(item)
+	if idx >= 0:
+		_shop_items.remove_at(idx)
+		if idx < _current_options.size():
+			_current_options.remove_at(idx)
 
 	# 发出信号
 	item_purchased.emit(item)

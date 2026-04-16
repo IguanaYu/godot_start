@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://5xf6t7fo3kjo"]
 
-[ext_resource type="Script" path="res://scripts/areas/CaptureArea.gd" id="1_capture"]
+[ext_resource type="Script" uid="uid://iq6pti7t7vij" path="res://scripts/areas/CaptureArea.gd" id="1_capture"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_capture"]
 radius = 64.0

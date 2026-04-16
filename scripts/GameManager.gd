@@ -135,7 +135,10 @@ func _process(delta: float) -> void:
 ## 增加金币数量
 func add_coins(amount: int) -> void:
 	if amount < 0:
-		return  # 防止增加负数金币
+		# 扣除金币，但不允许变成负数
+		_coins = maxi(0, _coins + amount)
+		coins_changed.emit(_coins)
+		return
 	_coins += amount
 	coins_changed.emit(_coins)
 

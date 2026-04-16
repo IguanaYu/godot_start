@@ -1,6 +1,7 @@
 [gd_resource type="Resource" script_class="CharacterData" format=3 uid="uid://dfh8onute3xwo"]
 
 [ext_resource type="Script" uid="uid://c73se281ow4dn" path="res://resources/character_data.gd" id="1"]
+[ext_resource type="Script" uid="uid://dn5k7ux1jmtdj" path="res://scripts/abilities/CharacterAbility.gd" id="1_o61sf"]
 [ext_resource type="SpriteFrames" uid="uid://dxb4sq7m4par" path="res://resources/characters/speedster_sprites.tres" id="2"]
 [ext_resource type="Resource" path="res://resources/abilities/speedster_coin_heal.tres" id="3"]
 [ext_resource type="Resource" path="res://resources/abilities/speedster_coin_speed.tres" id="4"]
@@ -11,9 +12,8 @@ character_name = "疾风刺客"
 description = "低生命值，极速移动的挑战型角色"
 max_health = 2
 starting_health = 1
-speed = 200.0
+sprite_frames = ExtResource("2")
 acceleration = 1500.0
 friction = 2000.0
-starting_coins = 0
-sprite_frames = ExtResource("2")
-abilities = Array[CharacterAbility]([ExtResource("3"), ExtResource("4")])
+starting_coins = 500
+abilities = Array[ExtResource("1_o61sf")]([ExtResource("3"), ExtResource("4")])

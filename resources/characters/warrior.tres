@@ -13,6 +13,6 @@ starting_health = -1
 speed = 100.0
 acceleration = 1000.0
 friction = 1500.0
-starting_coins = 0
+starting_coins = 200
 sprite_frames = ExtResource("2")
 abilities = Array[CharacterAbility]([ExtResource("3")])

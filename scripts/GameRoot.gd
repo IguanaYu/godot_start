@@ -113,6 +113,12 @@ func _apply_character_data_to_player() -> void:
 		player._apply_character_data()
 		print("GameRoot: 角色数据已应用到 Player")
 
+	# 应用初始金币
+	var char_data = GameManager.selected_character_data
+	if char_data.get("starting_coins") != null and char_data.starting_coins > 0:
+		GameManager.add_coins(char_data.starting_coins)
+		print("GameRoot: 初始金币已设置: %d" % char_data.starting_coins)
+
 ## ========== 全局 UI 初始化 ==========
 
 ## 初始化全局UI
