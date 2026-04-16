@@ -16,7 +16,7 @@ var player: Player = null
 func get_player_spawn_point() -> Marker2D:
 	var spawn_point = get_node_or_null("PlayerSpawn")
 	if spawn_point == null:
-		push_warning("关卡 %s 没有 PlayerSpawn 节点，使用默认位置 (0, 0)" % name)
+		GameConsole.warn("关卡 %s 没有 PlayerSpawn 节点，使用默认位置 (0, 0)" % name)
 		# 创建一个临时的出生点
 		spawn_point = Marker2D.new()
 		spawn_point.position = Vector2.ZERO

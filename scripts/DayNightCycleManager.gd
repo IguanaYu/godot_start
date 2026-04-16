@@ -66,7 +66,7 @@ func start_cycle(tier: DayNightTier) -> void:
 	if _background != null:
 		_background.color = day_color
 
-	print("[DayNight] 昼夜循环启动, 白天 %.0fs / 黑夜 %.0fs" % [tier.day_duration, tier.night_duration])
+	GameConsole.info("[DayNight] 昼夜循环启动, 白天 %.0fs / 黑夜 %.0fs" % [tier.day_duration, tier.night_duration])
 
 ## 设置 SpawnManager 引用（事件调度用）
 func set_spawn_manager(manager: SpawnManager) -> void:
@@ -98,7 +98,7 @@ func schedule_events(event_pool: Array[SpecialEvent], extra_events: Array = []) 
 			"trigger_at": event.trigger_time
 		})
 
-		print("[Event] 事件已调度: %s (%s %.0fs 触发)" % [event.display_name, "白天" if _current_period == SpawnPhase.Period.DAY else "黑夜", event.trigger_time])
+		GameConsole.info("[Event] 事件已调度: %s (%s %.0fs 触发)" % [event.display_name, "白天" if _current_period == SpawnPhase.Period.DAY else "黑夜", event.trigger_time])
 
 ## 检查事件是否匹配当前时段
 func _is_event_period_match(event: SpecialEvent) -> bool:
@@ -176,11 +176,11 @@ func _switch_period() -> void:
 	if _current_period == SpawnPhase.Period.DAY:
 		_current_period = SpawnPhase.Period.NIGHT
 		_target_bg_color = night_color
-		print("[DayNight] 切换到黑夜")
+		GameConsole.info("[DayNight] 切换到黑夜")
 	else:
 		_current_period = SpawnPhase.Period.DAY
 		_target_bg_color = day_color
-		print("[DayNight] 切换到白天")
+		GameConsole.info("[DayNight] 切换到白天")
 
 	period_changed.emit(_current_period)
 

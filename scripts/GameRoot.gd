@@ -84,7 +84,7 @@ func _ready() -> void:
 ## 初始化玩家
 func _initialize_player() -> void:
 	if player == null:
-		push_error("GameRoot: Player 节点未找到！")
+		GameConsole.error("GameRoot: Player 节点未找到！")
 		return
 
 	# 应用角色数据（如果已选择）
@@ -106,12 +106,12 @@ func _initialize_player() -> void:
 ## 应用角色数据到玩家
 func _apply_character_data_to_player() -> void:
 	if GameManager.selected_character_data == null:
-		print("GameRoot: GameManager.selected_character_data 为 null，无法应用角色数据")
+		GameConsole.info("GameRoot: GameManager.selected_character_data 为 null，无法应用角色数据")
 		return
 
 	if player.has_method("_apply_character_data"):
 		player._apply_character_data()
-		print("GameRoot: 角色数据已应用到 Player")
+		GameConsole.info("GameRoot: 角色数据已应用到 Player")
 
 ## ========== 全局 UI 初始化 ==========
 
@@ -156,7 +156,7 @@ func _on_health_changed(health: int) -> void:
 
 ## 奖励获得回调
 func _on_reward_obtained(reward_text: String) -> void:
-	print("奖励: %s" % reward_text)
+	GameConsole.info("奖励: %s" % reward_text)
 	# TODO: 添加奖励弹出UI
 
 ## ========== 关卡管理 ==========
@@ -164,30 +164,30 @@ func _on_reward_obtained(reward_text: String) -> void:
 ## 加载关卡
 func load_level(level_path: String) -> void:
 	if _is_loading_level:
-		push_warning("GameRoot: 关卡加载正在进行中，跳过重复调用")
+		GameConsole.warn("GameRoot: 关卡加载正在进行中，跳过重复调用")
 		return
 
 	_is_loading_level = true
-	print("GameRoot: [1] 开始加载关卡: %s" % level_path)
+	GameConsole.info("GameRoot: [1] 开始加载关卡: %s" % level_path)
 
 	# 卸载当前关卡
 	if _current_level != null:
-		print("GameRoot: [2] 卸载当前关卡: %s" % _current_level_name)
+		GameConsole.info("GameRoot: [2] 卸载当前关卡: %s" % _current_level_name)
 		await unload_current_level_async()
 
 	# 加载新关卡
-	print("GameRoot: [3] 开始加载新关卡")
+	GameConsole.info("GameRoot: [3] 开始加载新关卡")
 	await load_new_level_async(level_path)
 
 	_is_loading_level = false
-	print("GameRoot: [4] 关卡加载完成，标志已重置")
+	GameConsole.info("GameRoot: [4] 关卡加载完成，标志已重置")
 
 ## 卸载当前关卡（异步版本）
 func unload_current_level_async() -> void:
 	if _current_level == null:
 		return
 
-	print("GameRoot: 卸载关卡: %s" % _current_level_name)
+	GameConsole.info("GameRoot: 卸载关卡: %s" % _current_level_name)
 
 	# 发出卸载信号
 	level_unloading.emit(_current_level_name)
@@ -197,21 +197,21 @@ func unload_current_level_async() -> void:
 	await _current_level.tree_exited
 	_current_level = null
 	_current_level_name = ""
-	print("GameRoot: 关卡已卸载")
+	GameConsole.info("GameRoot: 关卡已卸载")
 
 ## 加载新关卡（异步版本）
 func load_new_level_async(level_path: String) -> void:
 	# 加载关卡场景
 	var level_packed = load(level_path) as PackedScene
 	if level_packed == null:
-		push_error("GameRoot: 无法加载关卡场景：%s" % level_path)
+		GameConsole.error("GameRoot: 无法加载关卡场景：%s" % level_path)
 		_is_loading_level = false
 		return
 
 	# 实例化关卡
 	_current_level = level_packed.instantiate() as Node2D
 	if _current_level == null:
-		push_error("GameRoot: 关卡场景根节点不是 Node2D")
+		GameConsole.error("GameRoot: 关卡场景根节点不是 Node2D")
 		_is_loading_level = false
 		return
 
@@ -220,18 +220,18 @@ func load_new_level_async(level_path: String) -> void:
 
 	# 将关卡添加到容器（会触发 _ready）
 	level_container.add_child(_current_level)
-	print("GameRoot: 关卡实例已添加到容器")
+	GameConsole.info("GameRoot: 关卡实例已添加到容器")
 
 	# 等待一帧，确保 _ready 完成
 	await get_tree().physics_frame
-	print("GameRoot: 关卡 _ready 已完成")
+	GameConsole.info("GameRoot: 关卡 _ready 已完成")
 
 	# 初始化关卡
 	_initialize_loaded_level()
 
 	# 发出加载完成信号
 	level_loaded.emit(_current_level_name)
-	print("GameRoot: 关卡加载完成: %s" % _current_level_name)
+	GameConsole.info("GameRoot: 关卡加载完成: %s" % _current_level_name)
 
 ## 初始化已加载的关卡
 func _initialize_loaded_level() -> void:
@@ -243,12 +243,12 @@ func _initialize_loaded_level() -> void:
 		var spawn_point: Marker2D = _current_level.get_player_spawn_point()
 		if spawn_point != null:
 			player.global_position = spawn_point.global_position
-			print("GameRoot: 玩家位置已重置到: %s" % player.global_position)
+			GameConsole.info("GameRoot: 玩家位置已重置到: %s" % player.global_position)
 
 	# 如果关卡有初始化方法，调用它
 	if _current_level.has_method("initialize_level"):
 		_current_level.initialize_level(self)
-		print("GameRoot: 关卡初始化完成")
+		GameConsole.info("GameRoot: 关卡初始化完成")
 
 	# 更新 GameManager 的主场景引用
 	if _current_level.has_method("get_spawner"):
@@ -283,7 +283,7 @@ func get_current_level() -> Node2D:
 
 ## 玩家死亡回调
 func _on_player_died() -> void:
-	print("GameRoot: 玩家死亡")
+	GameConsole.info("GameRoot: 玩家死亡")
 	# TODO: 显示游戏结束界面
 
 ## ========== 输入处理 ==========

@@ -50,7 +50,7 @@ func _on_base_capture_completed() -> void:
 	if game_root and game_root.has_method("switch_to_rest_area"):
 		game_root.switch_to_rest_area()
 	else:
-		push_error("EvacuationArea: 无法获取 GameRoot 实例")
+		GameConsole.error("EvacuationArea: 无法获取 GameRoot 实例")
 
 ## 发放占领完成奖励
 func _grant_capture_bonus() -> void:

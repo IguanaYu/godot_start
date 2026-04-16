@@ -114,7 +114,7 @@ func can_interact() -> bool:
 
 ## 交互逻辑（虚方法，子类必须重写）
 func interact() -> void:
-	push_warning("Interactable.interact() called but not overridden in subclass: %s" % name)
+	GameConsole.warn("Interactable.interact() called but not overridden in subclass: %s" % name)
 
 ## ========== 信号回调 ==========
 

@@ -49,7 +49,7 @@ func interact() -> void:
 			unlocked.append(mc)
 
 	if unlocked.is_empty():
-		push_warning("MapSelectNPC: 没有已解锁的地图")
+		GameConsole.warn("MapSelectNPC: 没有已解锁的地图")
 		return
 
 	_map_select_panel.show_with_maps(unlocked)

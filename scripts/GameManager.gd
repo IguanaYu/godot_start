@@ -505,13 +505,13 @@ func on_red_key_collected() -> void:
 func advance_day() -> void:
 	current_day_number += 1
 	accepted_missions.clear()
-	print("[GameManager] 天数推进到: %d" % current_day_number)
+	GameConsole.info("[GameManager] 天数推进到: %d" % current_day_number)
 
 ## 接受任务
 func accept_mission(event: SpecialEvent) -> void:
 	if not accepted_missions.has(event):
 		accepted_missions.append(event)
-		print("[GameManager] 接受任务: %s" % event.display_name)
+		GameConsole.info("[GameManager] 接受任务: %s" % event.display_name)
 
 ## 清空已接受的任务
 func clear_accepted_missions() -> void:

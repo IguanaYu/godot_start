@@ -58,7 +58,7 @@ func initialize_level(game_root: Node2D) -> void:
 	if map_select_panel != null:
 		map_select_panel.visible = false
 
-	print("RestAreaLevel: 关卡初始化完成")
+	GameConsole.info("RestAreaLevel: 关卡初始化完成")
 
 ## ========== 设置NPC ==========
 
@@ -93,7 +93,7 @@ func _on_returned_to_main() -> void:
 		return
 	_is_returning = true
 
-	print("RestAreaLevel: 玩家与出口NPC交互，准备返回主关卡")
+	GameConsole.info("RestAreaLevel: 玩家与出口NPC交互，准备返回主关卡")
 
 	# 应用永久性增益
 	GameManager.apply_permanent_bonuses()
@@ -109,7 +109,7 @@ func _on_returned_to_main() -> void:
 	if game_root and game_root.has_method("switch_to_main_level"):
 		game_root.switch_to_main_level()
 	else:
-		push_error("RestAreaLevel: 无法获取 GameRoot 实例")
+		GameConsole.error("RestAreaLevel: 无法获取 GameRoot 实例")
 
 ## 玩家通过地图选择NPC选择了一张地图
 func _on_map_selected(map_config: MapConfig) -> void:
@@ -117,7 +117,7 @@ func _on_map_selected(map_config: MapConfig) -> void:
 		return
 	_is_returning = true
 
-	print("RestAreaLevel: 玩家选择了地图: %s" % map_config.map_name)
+	GameConsole.info("RestAreaLevel: 玩家选择了地图: %s" % map_config.map_name)
 
 	# 应用永久性增益
 	GameManager.apply_permanent_bonuses()
@@ -133,7 +133,7 @@ func _on_map_selected(map_config: MapConfig) -> void:
 	if game_root and game_root.has_method("switch_to_main_level"):
 		game_root.switch_to_main_level()
 	else:
-		push_error("RestAreaLevel: 无法获取 GameRoot 实例")
+		GameConsole.error("RestAreaLevel: 无法获取 GameRoot 实例")
 
 ## 选择默认地图（第一个已解锁的地图）
 func _select_default_map() -> void:
@@ -151,7 +151,7 @@ func _select_default_map() -> void:
 	for map_config in available_maps:
 		if GameManager.current_day_number >= map_config.min_unlock_day:
 			GameManager.current_map_config = map_config
-			print("[RestArea] 选择地图: %s" % map_config.map_name)
+			GameConsole.info("[RestArea] 选择地图: %s" % map_config.map_name)
 			return
 
 	# fallback：使用第一个地图

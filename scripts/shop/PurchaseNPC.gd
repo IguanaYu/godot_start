@@ -37,7 +37,7 @@ func _ready() -> void:
 ## 重写交互方法
 func interact() -> void:
 	if ui_panel == null:
-		push_warning("%s: UI面板未设置！" % name)
+		GameConsole.warn("%s: UI面板未设置！" % name)
 		return
 
 	# 打开UI
@@ -50,11 +50,11 @@ func interact() -> void:
 
 ## 设置UI（子类重写以定制UI）
 func _setup_ui() -> void:
-	push_warning("PurchaseNPC._setup_ui() 需要被子类重写！")
+	GameConsole.warn("PurchaseNPC._setup_ui() 需要被子类重写！")
 
 ## 购买选项（子类重写具体逻辑）
 func _purchase_option(data: PurchaseData) -> void:
-	push_warning("PurchaseNPC._purchase_option() 需要被子类重写！")
+	GameConsole.warn("PurchaseNPC._purchase_option() 需要被子类重写！")
 
 ## ========== 公共方法 ==========
 

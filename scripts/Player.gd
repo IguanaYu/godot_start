@@ -234,7 +234,7 @@ func apply_buff(buff_type: String) -> void:
 		"star_invincibility":
 			start_star_invincibility(10.0)  # 10秒持续时间
 		_:
-			push_warning("Unknown buff type: %s" % buff_type)
+			GameConsole.warn("Unknown buff type: %s" % buff_type)
 
 ## 应用移速提升BUFF
 func _apply_speed_boost(duration: float = 10.0) -> void:

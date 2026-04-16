@@ -136,4 +136,4 @@ func _apply_effect(context: Dictionary) -> void:
 			GameManager.max_health += int(effect_value)
 			GameManager.max_health_bonus += int(effect_value)
 		_:
-			push_warning("Unknown effect type: %s" % effect_type)
+			GameConsole.warn("Unknown effect type: %s" % effect_type)

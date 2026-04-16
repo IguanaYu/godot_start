@@ -22,7 +22,7 @@ func _on_event_started() -> void:
 	_spawned_count = 0
 	_batch_timer = 0.0
 	set_process(true)
-	print("[Event] 金币雨开始！预计 %d 个金币" % total_coins)
+	GameConsole.info("[Event] 金币雨开始！预计 %d 个金币" % total_coins)
 
 func _process(delta: float) -> void:
 	if _spawned_count >= total_coins:

@@ -85,7 +85,7 @@ func initialize_level(game_root: Node2D) -> void:
 	if reward_popup != null:
 		reward_popup.visible = false
 
-	print("MainLevel: 关卡初始化完成")
+	GameConsole.info("MainLevel: 关卡初始化完成")
 
 ## 获取刷新管理器（兼容接口）
 func get_spawner() -> SpawnManager:
@@ -96,7 +96,7 @@ func get_spawner() -> SpawnManager:
 ## 初始化 SpawnManager
 func _init_spawn_manager() -> void:
 	if spawn_manager == null:
-		push_error("MainLevel: SpawnManager 节点未找到！")
+		GameConsole.error("MainLevel: SpawnManager 节点未找到！")
 		return
 
 	# 从 MapConfig 加载阶段配置，或使用默认
@@ -108,14 +108,14 @@ func _init_spawn_manager() -> void:
 		day_phase = load("res://resources/spawn/phases/default_day_phase.tres")
 
 	if day_phase == null:
-		push_error("MainLevel: 无法加载白天阶段配置")
+		GameConsole.error("MainLevel: 无法加载白天阶段配置")
 		return
 
 	# 配置 SpawnManager
 	spawn_manager.configure(day_phase)
 	spawn_manager.resume_spawning()
 
-	print("MainLevel: SpawnManager 已配置")
+	GameConsole.info("MainLevel: SpawnManager 已配置")
 
 ## 初始化昼夜循环
 func _init_day_night_cycle() -> void:
@@ -131,7 +131,7 @@ func _init_day_night_cycle() -> void:
 		tier = load("res://resources/spawn/tiers/default_tier.tres")
 
 	if tier == null:
-		push_warning("MainLevel: 无法加载昼夜挡位")
+		GameConsole.warn("MainLevel: 无法加载昼夜挡位")
 		return
 
 	# 设置背景节点
@@ -150,7 +150,7 @@ func _init_day_night_cycle() -> void:
 	if not day_night_cycle_manager.period_changed.is_connected(_on_period_changed):
 		day_night_cycle_manager.period_changed.connect(_on_period_changed)
 
-	print("[DayNight] 第%d天, 挡位%d, 白天 %.0fs / 黑夜 %.0fs" % [GameManager.current_day_number, tier.tier_index, tier.day_duration, tier.night_duration])
+	GameConsole.info("[DayNight] 第%d天, 挡位%d, 白天 %.0fs / 黑夜 %.0fs" % [GameManager.current_day_number, tier.tier_index, tier.day_duration, tier.night_duration])
 
 ## ========== 事件调度（步骤8新增） ==========
 
@@ -193,7 +193,7 @@ func _on_period_changed(period: SpawnPhase.Period) -> void:
 
 ## 玩家死亡
 func _on_player_died() -> void:
-	print("MainLevel: 玩家死亡")
+	GameConsole.info("MainLevel: 玩家死亡")
 	# 暂停刷新管理器
 	if spawn_manager != null:
 		spawn_manager.pause_spawning()
@@ -252,7 +252,7 @@ func _process(delta: float) -> void:
 func _spawn_evacuation_point() -> void:
 	var evacuation_scene = load("res://scenes/areas/EvacuationArea.tscn")
 	if evacuation_scene == null:
-		push_error("MainLevel: 无法加载 EvacuationArea.tscn")
+		GameConsole.error("MainLevel: 无法加载 EvacuationArea.tscn")
 		return
 
 	var evacuation_point = evacuation_scene.instantiate()

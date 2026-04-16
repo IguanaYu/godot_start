@@ -71,7 +71,7 @@ func _load_item_pool() -> void:
 
 ## 创建默认物品（用于测试）
 func _create_default_items() -> void:
-	push_warning("未找到物品资源文件，使用临时物品")
+	GameConsole.warn("未找到物品资源文件，使用临时物品")
 
 ## 刷新商店商品
 func refresh_shop() -> void:
@@ -125,7 +125,7 @@ func _purchase_option(data: PurchaseData) -> void:
 	# 从PurchaseData中提取ItemData
 	var item: ItemData = ItemData.from_purchase_data(data)
 	if item == null:
-		push_error("无法从PurchaseData提取ItemData")
+		GameConsole.error("无法从PurchaseData提取ItemData")
 		return
 
 	# 添加到背包

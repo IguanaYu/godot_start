@@ -17,7 +17,7 @@ func _on_capture_completed() -> void:
 	super._on_capture_completed()
 
 	if unlock_entry_id == "":
-		push_warning("Stele: unlock_entry_id 为空")
+		GameConsole.warn("Stele: unlock_entry_id 为空")
 		return
 
 	# 通过 GameManager.main_scene 获取 SpawnManager 并解锁
@@ -26,7 +26,7 @@ func _on_capture_completed() -> void:
 		var spawn_mgr = main_scene.get_spawner()
 		if spawn_mgr != null and spawn_mgr.has_method("unlock_entry"):
 			spawn_mgr.unlock_entry(unlock_entry_id)
-			print("[Stele] 解锁 SpawnEntry: %s" % unlock_entry_id)
+			GameConsole.info("[Stele] 解锁 SpawnEntry: %s" % unlock_entry_id)
 
 	# 显示提示
 	GameManager.reward_obtained.emit(unlock_message)

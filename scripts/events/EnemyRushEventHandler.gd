@@ -22,7 +22,7 @@ func _on_event_started() -> void:
 	_spawned_count = 0
 	_wave_timer = 0.0
 	set_process(true)
-	print("[Event] 敌人突袭开始！预计 %d 个敌人" % rush_enemy_count)
+	GameConsole.info("[Event] 敌人突袭开始！预计 %d 个敌人" % rush_enemy_count)
 
 func _process(delta: float) -> void:
 	if _spawned_count >= rush_enemy_count:

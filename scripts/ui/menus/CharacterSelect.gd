@@ -124,7 +124,7 @@ func _load_character_data() -> void:
 		if char_data != null and char_data.is_valid():
 			_character_data_list.append(char_data)
 		else:
-			push_warning("Failed to load character data: %s" % path)
+			GameConsole.warn("Failed to load character data: %s" % path)
 
 ## ========== UI创建 ==========
 
@@ -322,7 +322,7 @@ func _on_start_button_pressed() -> void:
 
 	# 检查GameManager是否可用
 	if GameManager == null:
-		push_error("GameManager is not available!")
+		GameConsole.error("GameManager is not available!")
 		return
 
 	# 将选中角色数据保存到GameManager

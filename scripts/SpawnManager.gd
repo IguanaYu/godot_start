@@ -88,7 +88,7 @@ func configure(phase: SpawnPhase, zone: SpawnZone = null) -> void:
 	for entry in phase.get_enabled_entries():
 		_init_entry_timer(entry)
 
-	print("[SpawnManager] 已配置阶段: %s, 活跃条目: %d" % [phase.phase_id, phase.get_enabled_entries().size()])
+	GameConsole.info("[SpawnManager] 已配置阶段: %s, 活跃条目: %d" % [phase.phase_id, phase.get_enabled_entries().size()])
 
 ## 切换活跃阶段
 func set_active_phase(phase: SpawnPhase) -> void:
@@ -104,7 +104,7 @@ func set_active_period(period: SpawnPhase.Period) -> void:
 	_base_enemy_intervals.clear()
 	for entry in _current_phase.get_enabled_entries():
 		_init_entry_timer(entry)
-	print("[SpawnManager] 切换到%s阶段, 活跃条目: %d" % ["白天" if period == SpawnPhase.Period.DAY else "黑夜", _current_phase.get_enabled_entries().size()])
+	GameConsole.info("[SpawnManager] 切换到%s阶段, 活跃条目: %d" % ["白天" if period == SpawnPhase.Period.DAY else "黑夜", _current_phase.get_enabled_entries().size()])
 
 ## ========== 计时器初始化 ==========
 
@@ -322,7 +322,7 @@ func spawn_chest_immediate() -> void:
 ## 增加难度（敌人刷新频率翻倍）
 func increase_difficulty(multiplier: float = 2.0) -> void:
 	_difficulty_multiplier = multiplier
-	print("[SpawnManager] 难度提升, 倍率: %.1f" % multiplier)
+	GameConsole.info("[SpawnManager] 难度提升, 倍率: %.1f" % multiplier)
 
 ## 解锁条目
 func unlock_entry(entry_id: String) -> void:
@@ -334,7 +334,7 @@ func unlock_entry(entry_id: String) -> void:
 			entry.enabled = true
 			if not _entry_timers.has(entry_id):
 				_init_entry_timer(entry)
-			print("[SpawnManager] 解锁条目: %s" % entry_id)
+			GameConsole.info("[SpawnManager] 解锁条目: %s" % entry_id)
 
 ## ========== 金币雨系统 ==========
 
@@ -348,7 +348,7 @@ func start_coin_rain(duration: float = 20.0, interval: float = 1.0) -> void:
 	_coin_rain_spawn_timer = 0.0
 	_coin_rain_interval = interval
 	coin_rain_started.emit(duration)
-	print("[SpawnManager] 金币雨开始！持续 %.0f 秒" % duration)
+	GameConsole.info("[SpawnManager] 金币雨开始！持续 %.0f 秒" % duration)
 
 ## 停止金币雨
 func stop_coin_rain() -> void:
@@ -367,7 +367,7 @@ func _process_coin_rain(delta: float) -> void:
 
 	if _coin_rain_time_left <= 0:
 		stop_coin_rain()
-		print("[SpawnManager] 金币雨结束")
+		GameConsole.info("[SpawnManager] 金币雨结束")
 
 ## 生成金币雨中的单个金币
 func _spawn_coin_rain_coin() -> void:
