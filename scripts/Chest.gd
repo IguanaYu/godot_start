@@ -25,6 +25,11 @@ enum RewardType {
 ## 是否已开启
 var _is_opened: bool = false
 
+## 光柱效果引用
+var _beam_sprite: Sprite2D = null
+## 动画计时器
+var _anim_timer: float = 0.0
+
 ## ========== 节点引用 ==========
 
 ## 精灵节点引用
@@ -44,6 +49,34 @@ func _ready() -> void:
 	collision_layer = 0
 	collision_mask = 1 << 0  # 第0层是玩家层
 
+	# 创建金光柱效果
+	_create_beam_effect()
+
+## ========== 金光柱效果 ==========
+
+## 创建金光柱精灵
+func _create_beam_effect() -> void:
+	var tex = load("res://kenney_desert-shooter-pack_1.0/light_beam.png")
+	if tex == null:
+		return
+
+	_beam_sprite = Sprite2D.new()
+	_beam_sprite.texture = tex
+	_beam_sprite.position = Vector2(0, -60)
+	_beam_sprite.scale = Vector2(0.3, 0.6)
+	_beam_sprite.modulate = Color(1.0, 0.85, 0.2, 0.8)
+	_beam_sprite.z_index = -1
+	add_child(_beam_sprite)
+
+## 呼吸脉冲动画
+func _process(delta: float) -> void:
+	if _is_opened or _beam_sprite == null:
+		return
+
+	_anim_timer += delta
+	_beam_sprite.modulate.a = 0.6 + 0.3 * sin(_anim_timer * 3.0)
+	_beam_sprite.scale.x = 0.3 + 0.05 * sin(_anim_timer * 2.3 + 0.5)
+
 ## ========== 拾取逻辑 ==========
 
 ## 当玩家拾取宝箱时调用
@@ -52,6 +85,12 @@ func _on_collected() -> void:
 		return
 
 	_is_opened = true
+
+	# 淡出金光柱
+	if _beam_sprite != null:
+		var tween = create_tween()
+		tween.tween_property(_beam_sprite, "modulate:a", 0.0, 0.4)
+		tween.tween_callback(_beam_sprite.queue_free)
 
 	# 播放开箱动画（如果有）
 	if animation_player != null:
