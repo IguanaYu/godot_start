@@ -46,7 +46,12 @@
       "Bash(cmd.exe /c \"dir E:\\\\\\\\godot\\\\\\\\Godot*.exe /b\")",
       "Bash(cmd.exe /c \"dir /b E:\\\\\\\\godot\\\\\\\\Godot*\")",
       "Bash(\"/e/其他/chorme_download/Godot_v4.6.1-stable_win64.exe/Godot_v4.6.1-stable_win64_console.exe\" --path \"e:/godot/richman/richman\" --headless --quit)",
-      "Bash(\"/e/其他/chorme_download/Godot_v4.6.1-stable_win64.exe/Godot_v4.6.1-stable_win64_console.exe\" --path \"e:/godot/richman/richman\")"
+      "Bash(\"/e/其他/chorme_download/Godot_v4.6.1-stable_win64.exe/Godot_v4.6.1-stable_win64_console.exe\" --path \"e:/godot/richman/richman\")",
+      "Bash(python3 -c \"from PIL import Image; img=Image.open\\('kenney_desert-shooter-pack_1.0/light.png'\\); print\\(f'尺寸: {img.size}, 模式: {img.mode}'\\)\")",
+      "Bash(python -c \"from PIL import Image; img=Image.open\\('kenney_desert-shooter-pack_1.0/light.png'\\); print\\(f'尺寸: {img.size}, 模式: {img.mode}'\\)\")",
+      "Bash(xxd \"f:/godot_game/run_game/richman/scripts/Chest.gd\")",
+      "Bash(find scripts:*)",
+      "Bash(\"E:/godot/Godot_v4.6.1-stable_win64_console.exe\" --path \"F:/godot_game/run_game/richman\")"
     ]
   }
 }
