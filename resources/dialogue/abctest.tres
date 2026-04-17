@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="DialogueGraph" format=3 uid="uid://bkmddbsk74tip"]
+
+[ext_resource type="Script" uid="uid://7vwb7680yer4" path="res://scripts/dialogue/dialogue_connection.gd" id="1_hpxr1"]
+[ext_resource type="Script" uid="uid://bcl3c6yc5tlte" path="res://scripts/dialogue/dialogue_node_data.gd" id="2_sjwqv"]
+[ext_resource type="Script" uid="uid://cgkqt1h25rexw" path="res://scripts/dialogue/action_data.gd" id="3_kq385"]
+[ext_resource type="Script" uid="uid://ge3vgfjeri38" path="res://scripts/dialogue/choice_data.gd" id="4_ahc82"]
+[ext_resource type="Script" uid="uid://bepmn62a7fgbm" path="res://scripts/dialogue/dialogue_graph.gd" id="5_im8vk"]
+
+[sub_resource type="Resource" id="Resource_mwslk"]
+script = ExtResource("2_sjwqv")
+node_id = "node_28017"
+node_type = 0
+position = Vector2(140, 200)
+
+[resource]
+script = ExtResource("5_im8vk")
+graph_id = "abctest"
+npc_id = "ssss"
+nodes = Array[ExtResource("2_sjwqv")]([SubResource("Resource_mwslk")])
+editor_scroll_offset = Vector2(0, -23)
