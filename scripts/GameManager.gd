@@ -46,6 +46,21 @@ signal all_red_keys_collected()
 ## 背景音乐音量（0.0到1.0）
 @export var music_volume: float = 0.8
 
+## ========== 显示设置 ==========
+
+## 可选分辨率列表
+const RESOLUTIONS: Array[Vector2i] = [
+	Vector2i(1280, 720),
+	Vector2i(1366, 768),
+	Vector2i(1600, 900),
+	Vector2i(1920, 1080),
+]
+
+## 当前窗口模式
+var _window_mode: int = DisplayServer.WINDOW_MODE_WINDOWED
+## 当前分辨率索引
+var _resolution_index: int = 0
+
 ## ========== 私有变量 ==========
 
 ## 当前收集的金币数量
@@ -122,6 +137,9 @@ func _ready() -> void:
 	_coin_rain_timer.one_shot = true
 	_coin_rain_timer.timeout.connect(_on_coin_rain_finished)
 	add_child(_coin_rain_timer)
+
+	# 加载持久化设置
+	load_settings()
 
 ## ========== _process 处理金币雨逻辑 ==========
 
@@ -356,6 +374,7 @@ func apply_buff(buff_type: String) -> void:
 func set_master_volume(value: float) -> void:
 	master_volume = clamp(value, 0.0, 1.0)
 	volume_changed.emit("master", master_volume)
+	save_settings()
 
 ## 获取主音量
 func get_master_volume() -> float:
@@ -365,6 +384,7 @@ func get_master_volume() -> float:
 func set_sfx_volume(value: float) -> void:
 	sfx_volume = clamp(value, 0.0, 1.0)
 	volume_changed.emit("sfx", sfx_volume)
+	save_settings()
 
 ## 获取音效音量
 func get_sfx_volume() -> float:
@@ -374,6 +394,7 @@ func get_sfx_volume() -> float:
 func set_music_volume(value: float) -> void:
 	music_volume = clamp(value, 0.0, 1.0)
 	volume_changed.emit("music", music_volume)
+	save_settings()
 
 ## 获取背景音乐音量
 func get_music_volume() -> float:
@@ -519,3 +540,66 @@ func accept_mission(event: SpecialEvent) -> void:
 ## 清空已接受的任务
 func clear_accepted_missions() -> void:
 	accepted_missions.clear()
+
+## ========== 公共方法：显示设置管理 ==========
+
+## 设置窗口模式
+func set_window_mode(mode: int) -> void:
+	_window_mode = mode
+	DisplayServer.window_set_mode(mode)
+	if mode == DisplayServer.WINDOW_MODE_WINDOWED:
+		_apply_resolution()
+	save_settings()
+
+## 获取当前窗口模式
+func get_window_mode() -> int:
+	return _window_mode
+
+## 设置分辨率索引
+func set_resolution_index(index: int) -> void:
+	_resolution_index = index
+	if _window_mode == DisplayServer.WINDOW_MODE_WINDOWED:
+		_apply_resolution()
+	save_settings()
+
+## 获取当前分辨率索引
+func get_resolution_index() -> int:
+	return _resolution_index
+
+## 应用当前分辨率到窗口
+func _apply_resolution() -> void:
+	if _resolution_index >= 0 and _resolution_index < RESOLUTIONS.size():
+		var res: Vector2i = RESOLUTIONS[_resolution_index]
+		DisplayServer.window_set_size(res)
+
+## ========== 公共方法：设置持久化 ==========
+
+## 保存设置到本地文件
+func save_settings() -> void:
+	var config = ConfigFile.new()
+	config.set_value("display", "window_mode", _window_mode)
+	config.set_value("display", "resolution_index", _resolution_index)
+	config.set_value("audio", "master_volume", master_volume)
+	config.set_value("audio", "sfx_volume", sfx_volume)
+	config.set_value("audio", "music_volume", music_volume)
+	config.save("user://settings.cfg")
+
+## 从本地文件加载设置
+func load_settings() -> void:
+	var config = ConfigFile.new()
+	if config.load("user://settings.cfg") != OK:
+		return
+
+	# 加载显示设置
+	_window_mode = config.get_value("display", "window_mode", DisplayServer.WINDOW_MODE_WINDOWED)
+	_resolution_index = config.get_value("display", "resolution_index", 0)
+
+	# 加载音量设置
+	master_volume = config.get_value("audio", "master_volume", 0.8)
+	sfx_volume = config.get_value("audio", "sfx_volume", 0.8)
+	music_volume = config.get_value("audio", "music_volume", 0.8)
+
+	# 应用显示设置
+	DisplayServer.window_set_mode(_window_mode)
+	if _window_mode == DisplayServer.WINDOW_MODE_WINDOWED:
+		_apply_resolution()

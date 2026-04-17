@@ -1,12 +1,20 @@
 extends Control
 
-# 设置界面脚本 - 用于调整游戏音量设置
+# 设置界面脚本 - 用于调整游戏音量和显示设置
 
 ## 设置面板关闭信号（用于暂停菜单中的返回）
 signal settings_closed()
 
 ## 是否在暂停菜单中使用（由 PauseMenu 设置）
 var is_in_pause_menu: bool = false
+
+## 窗口模式选项
+const WINDOW_MODES: Array[String] = ["窗口化", "全屏", "独占全屏"]
+const WINDOW_MODE_VALUES: Array[int] = [
+	DisplayServer.WINDOW_MODE_WINDOWED,
+	DisplayServer.WINDOW_MODE_FULLSCREEN,
+	DisplayServer.WINDOW_MODE_EXCLUSIVE_FULLSCREEN,
+]
 
 func _ready():
 	# 从GameManager读取当前音量值并设置滑块位置
@@ -17,6 +25,9 @@ func _ready():
 	# 更新音量值标签
 	_update_volume_labels()
 
+	# 初始化显示设置下拉框
+	_init_display_options()
+
 	# 连接按钮信号
 	_back_button.pressed.connect(_on_back_button_pressed)
 
@@ -25,10 +36,14 @@ func _ready():
 	_sfx_slider.value_changed.connect(_on_sfx_slider_value_changed)
 	_music_slider.value_changed.connect(_on_music_slider_value_changed)
 
+	# 连接显示设置信号
+	_window_mode_option.item_selected.connect(_on_window_mode_selected)
+	_resolution_option.item_selected.connect(_on_resolution_selected)
+
 	# 应用焦点样式
 	_apply_focus_styles()
 
-	# 设置焦点链：MasterSlider → SfxSlider → MusicSlider → BackButton
+	# 设置焦点链
 	_setup_focus_chain()
 
 	# 默认聚焦到主音量滑块
@@ -79,7 +94,7 @@ func _apply_focus_styles() -> void:
 
 ## 设置焦点链
 func _setup_focus_chain() -> void:
-	var controls := [_master_slider, _sfx_slider, _music_slider, _back_button]
+	var controls := [_master_slider, _sfx_slider, _music_slider, _window_mode_option, _resolution_option, _back_button]
 
 	for i in range(controls.size()):
 		var ctrl = controls[i]
@@ -91,6 +106,33 @@ func _setup_focus_chain() -> void:
 		ctrl.focus_previous = controls[prev_idx].get_path()
 		ctrl.focus_next = controls[next_idx].get_path()
 
+## 初始化显示设置下拉框
+func _init_display_options() -> void:
+	# 填充窗口模式选项
+	for mode_name in WINDOW_MODES:
+		_window_mode_option.add_item(mode_name)
+	# 设置当前选中项
+	var current_mode = GameManager.get_window_mode()
+	for i in range(WINDOW_MODE_VALUES.size()):
+		if WINDOW_MODE_VALUES[i] == current_mode:
+			_window_mode_option.select(i)
+			break
+
+	# 填充分辨率选项
+	for res in GameManager.RESOLUTIONS:
+		_resolution_option.add_item("%dx%d" % [res.x, res.y])
+	# 设置当前选中项
+	_resolution_option.select(GameManager.get_resolution_index())
+
+## 窗口模式切换
+func _on_window_mode_selected(index: int) -> void:
+	if index >= 0 and index < WINDOW_MODE_VALUES.size():
+		GameManager.set_window_mode(WINDOW_MODE_VALUES[index])
+
+## 分辨率切换
+func _on_resolution_selected(index: int) -> void:
+	GameManager.set_resolution_index(index)
+
 # 节点引用（在场景中自动设置）
 @onready var _master_slider: HSlider = $VBoxContainer/MasterVolumeContainer/MasterSlider
 @onready var _sfx_slider: HSlider = $VBoxContainer/SfxVolumeContainer/SfxSlider
@@ -98,4 +140,6 @@ func _setup_focus_chain() -> void:
 @onready var _master_volume_label: Label = $VBoxContainer/MasterVolumeContainer/MasterVolumeLabel
 @onready var _sfx_volume_label: Label = $VBoxContainer/SfxVolumeContainer/SfxVolumeLabel
 @onready var _music_volume_label: Label = $VBoxContainer/MusicVolumeContainer/MusicVolumeLabel
+@onready var _window_mode_option: OptionButton = $VBoxContainer/WindowModeContainer/WindowModeOptionButton
+@onready var _resolution_option: OptionButton = $VBoxContainer/ResolutionContainer/ResolutionOptionButton
 @onready var _back_button: Button = $VBoxContainer/BackButton
