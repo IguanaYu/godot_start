@@ -4,9 +4,11 @@ extends VBoxContainer
 
 const PropertyPanelScript := preload("res://addons/dialogue_editor/editor/property_panel.gd")
 const GraphSerializerScript := preload("res://addons/dialogue_editor/editor/graph_serializer.gd")
+const GraphValidatorScript := preload("res://addons/dialogue_editor/editor/graph_validator.gd")
+const UndoManagerScript := preload("res://addons/dialogue_editor/editor/undo_manager.gd")
 
-@onready var graph_edit: GraphEdit = $HSplitContainer/GraphEdit
-@onready var sidebar: VBoxContainer = $HSplitContainer/Sidebar
+var graph_edit: GraphEdit = null
+var sidebar: VBoxContainer = null
 
 # 属性面板
 var _property_panel: VBoxContainer = null
@@ -27,15 +29,30 @@ var _dirty: bool = false
 var _selected_node_id: String = ""
 # 文件对话框
 var _file_dialog: FileDialog = null
+# 撤销管理器
+var _undo_manager: RefCounted = null
+# 右键菜单
+var _popup_menu: PopupMenu = null
+# 状态栏
+var _status_bar: Label = null
+# 防止撤销循环
+var _applying_snapshot: bool = false
 
 
 func _ready() -> void:
+	graph_edit = get_node_or_null("HSplitContainer/GraphEdit")
+	# 兼容两种结构：有/无 ScrollContainer
+	sidebar = get_node_or_null("HSplitContainer/SidebarScroll/Sidebar")
+	if sidebar == null:
+		sidebar = get_node_or_null("HSplitContainer/Sidebar")
+
 	_connect_toolbar()
 	if graph_edit:
 		graph_edit.connection_request.connect(_on_connection_request)
 		graph_edit.disconnection_request.connect(_on_disconnection_request)
 		graph_edit.node_selected.connect(_on_node_selected)
 		graph_edit.node_deselected.connect(_on_node_deselected)
+		graph_edit.gui_input.connect(_on_graph_input)
 
 	# 创建属性面板
 	_property_panel = VBoxContainer.new()
@@ -55,6 +72,18 @@ func _ready() -> void:
 	_file_dialog.file_selected.connect(_on_file_selected)
 	add_child(_file_dialog)
 
+	# 撤销管理器
+	_undo_manager = UndoManagerScript.new()
+
+	# 右键菜单
+	_build_popup_menu()
+
+	# 状态栏
+	_status_bar = Label.new()
+	_status_bar.name = "StatusBar"
+	_status_bar.add_theme_font_size_override("font_size", 11)
+	add_child(_status_bar)
+
 	_new_graph()
 
 
@@ -69,6 +98,50 @@ func _connect_toolbar() -> void:
 	$Toolbar/BtnAddAction.pressed.connect(_on_add_node.bind(4))
 	$Toolbar/BtnAddSub.pressed.connect(_on_add_node.bind(5))
 	$Toolbar/BtnAddEnd.pressed.connect(_on_add_node.bind(6))
+
+
+
+func _on_graph_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
+		_popup_menu.position = DisplayServer.mouse_get_position()
+		_popup_menu.reset_size()
+		_popup_menu.popup()
+		accept_event()
+
+
+# ==================== 右键菜单 ====================
+
+func _build_popup_menu() -> void:
+	_popup_menu = PopupMenu.new()
+	_popup_menu.name = "PopupMenu"
+	# 添加节点
+	_popup_menu.add_item("Add Start", 100)
+	_popup_menu.add_item("Add Dialogue", 101)
+	_popup_menu.add_item("Add Choice", 102)
+	_popup_menu.add_item("Add Condition", 103)
+	_popup_menu.add_item("Add Action", 104)
+	_popup_menu.add_item("Add Sub-Dialogue", 105)
+	_popup_menu.add_item("Add End", 106)
+	_popup_menu.add_separator()
+	_popup_menu.add_item("Delete Selected", 200)
+	_popup_menu.add_item("Duplicate Selected", 201)
+	_popup_menu.add_item("Disconnect Selected", 202)
+	_popup_menu.id_pressed.connect(_on_popup_id)
+	add_child(_popup_menu)
+
+
+func _on_popup_id(id: int) -> void:
+	match id:
+		100: _on_add_node(0)
+		101: _on_add_node(1)
+		102: _on_add_node(2)
+		103: _on_add_node(3)
+		104: _on_add_node(4)
+		105: _on_add_node(5)
+		106: _on_add_node(6)
+		200: _delete_selected_node()
+		201: _duplicate_selected_node()
+		202: _disconnect_selected_node()
 
 
 # ==================== 工具栏操作 ====================
@@ -97,8 +170,11 @@ func _new_graph() -> void:
 	}
 	_dirty = false
 	_selected_node_id = ""
+	if _undo_manager:
+		_undo_manager.clear()
 	_show_graph_panel()
 	_refresh_graph_panel()
+	_update_status_bar()
 
 
 func _on_save() -> void:
@@ -106,6 +182,15 @@ func _on_save() -> void:
 	if _graph.graph_id == "":
 		push_warning("Dialogue Editor: graph_id 不能为空，请在右侧面板填写")
 		return
+
+	# 验证
+	var errors := GraphValidatorScript.validate(_graph, _connections)
+	if errors.size() > 0:
+		push_warning("Dialogue Editor: 验证发现 %d 个问题:" % errors.size())
+		for e in errors:
+			push_warning("  - " + e)
+			# 验证失败，阻止保存
+			return
 
 	# 同步图属性
 	_graph.priority = _graph_meta.get("priority", 0)
@@ -122,6 +207,16 @@ func _on_save() -> void:
 	_graph.editor_scroll_offset = graph_edit.scroll_offset
 	_graph.editor_zoom = graph_edit.zoom
 
+	# 同步连接到 graph.connections
+	_graph.connections.clear()
+	for conn in _connections:
+		var dconn := DialogueConnection.new()
+		dconn.from_node = conn["from_node"]
+		dconn.from_port = conn["from_port"]
+		dconn.to_node = conn["to_node"]
+		dconn.to_port = conn["to_port"]
+		_graph.connections.append(dconn)
+
 	# 更新节点位置
 	for node_id in _nodes:
 		var gn: GraphNode = _nodes[node_id]
@@ -135,6 +230,7 @@ func _on_save() -> void:
 	if err == OK:
 		print("Dialogue Editor: 已保存到 ", path)
 		_dirty = false
+		_update_status_bar()
 	else:
 		push_warning("Dialogue Editor: 保存失败，错误码 %d" % err)
 
@@ -182,23 +278,92 @@ func _on_file_selected(path: String) -> void:
 	if _graph_meta.has("editor_zoom"):
 		graph_edit.zoom = _graph_meta["editor_zoom"]
 
+	if _undo_manager:
+		_undo_manager.clear()
 	_show_graph_panel()
 	_refresh_graph_panel()
+	_update_status_bar()
 	print("Dialogue Editor: 已加载 ", graph.graph_id)
+
+
+# ==================== 撤销/重做 ====================
+
+func _push_undo() -> void:
+	if _applying_snapshot:
+		return
+	if _undo_manager:
+		var snapshot := UndoManagerScript.create_snapshot(_graph, _connections, _graph_meta)
+		_undo_manager.push_snapshot(snapshot)
+
+
+func _on_undo() -> void:
+	if _undo_manager == null or not _undo_manager.can_undo():
+		return
+	var snapshot: Dictionary = _undo_manager.undo()
+	if snapshot.is_empty():
+		return
+	_apply_snapshot(snapshot)
+
+
+func _on_redo() -> void:
+	if _undo_manager == null or not _undo_manager.can_redo():
+		return
+	var snapshot: Dictionary = _undo_manager.redo()
+	if snapshot.is_empty():
+		return
+	_apply_snapshot(snapshot)
+
+
+func _apply_snapshot(snapshot: Dictionary) -> void:
+	_applying_snapshot = true
+
+	_clear_canvas()
+	_graph.graph_id = snapshot.get("graph_id", "")
+	_graph.npc_id = snapshot.get("npc_id", "")
+	_graph_meta = snapshot.get("meta", {})
+
+	# 重建节点
+	for node_data: DialogueNodeData in snapshot.get("nodes", []):
+		_graph.nodes.append(node_data)
+		_create_graph_node(node_data)
+
+	# 重建连接
+	for conn in snapshot.get("connections", []):
+		_connections.append({
+			"from_node": conn["from_node"],
+			"from_port": conn["from_port"],
+			"to_node": conn["to_node"],
+			"to_port": conn["to_port"],
+		})
+		graph_edit.connect_node(
+			StringName(conn["from_node"]), conn["from_port"],
+			StringName(conn["to_node"]), conn["to_port"])
+
+	_dirty = true
+	_selected_node_id = ""
+	_show_graph_panel()
+	_refresh_graph_panel()
+	_update_status_bar()
+	_applying_snapshot = false
 
 
 # ==================== 节点操作 ====================
 
 func _on_add_node(node_type: int) -> void:
+	_push_undo()
 	var node_data := DialogueNodeData.new()
 	node_data.node_id = _generate_node_id()
 	node_data.node_type = node_type
 	var count := _nodes.size()
-	node_data.position = Vector2(100 + count * 50, 100 + count * 40)
+	# 尝试在视口中心附近创建
+	var offset := graph_edit.scroll_offset if graph_edit else Vector2.ZERO
+	var zoom := graph_edit.zoom if graph_edit else 1.0
+	node_data.position = offset + Vector2(200 + count * 30, 150 + count * 30) / zoom
 
 	_graph.nodes.append(node_data)
 	_create_graph_node(node_data)
 	_dirty = true
+	_update_status_bar()
 
 
 func _on_node_selected(node: Node) -> void:
@@ -218,14 +383,17 @@ func _on_node_deselected(_node: Node) -> void:
 
 
 func _on_node_data_changed() -> void:
+	_push_undo()
 	_dirty = true
 	if _selected_node_id != "" and _nodes.has(_selected_node_id):
 		var node: GraphNode = _nodes[_selected_node_id]
 		var node_data: DialogueNodeData = node.get_meta("node_data")
 		_update_node_display(node, node_data)
+	_update_status_bar()
 
 
 func _on_connection_request(from: StringName, from_port: int, to: StringName, to_port: int) -> void:
+	_push_undo()
 	graph_edit.connect_node(from, from_port, to, to_port)
 	_connections.append({
 		"from_node": String(from),
@@ -234,9 +402,11 @@ func _on_connection_request(from: StringName, from_port: int, to: StringName, to
 		"to_port": to_port,
 	})
 	_dirty = true
+	_update_status_bar()
 
 
 func _on_disconnection_request(from: StringName, from_port: int, to: StringName, to_port: int) -> void:
+	_push_undo()
 	graph_edit.disconnect_node(from, from_port, to, to_port)
 	_connections.erase({
 		"from_node": String(from),
@@ -245,6 +415,47 @@ func _on_disconnection_request(from: StringName, from_port: int, to: StringName,
 		"to_port": to_port,
 	})
 	_dirty = true
+	_update_status_bar()
+
+
+func _delete_selected_node() -> void:
+	if _selected_node_id == "":
+		return
+	_push_undo()
+	_on_node_delete(_selected_node_id)
+
+
+func _disconnect_selected_node() -> void:
+	if _selected_node_id == "":
+		return
+	_push_undo()
+	var to_remove: Array = []
+	for conn in _connections:
+		if conn["from_node"] == _selected_node_id or conn["to_node"] == _selected_node_id:
+			to_remove.append(conn)
+	for conn in to_remove:
+		graph_edit.disconnect_node(StringName(conn["from_node"]), conn["from_port"],
+			StringName(conn["to_node"]), conn["to_port"])
+		_connections.erase(conn)
+	_dirty = true
+	_update_status_bar()
+
+
+func _duplicate_selected_node() -> void:
+	if _selected_node_id == "":
+		return
+	var src_node: GraphNode = _nodes.get(_selected_node_id)
+	if src_node == null or not src_node.has_meta("node_data"):
+		return
+	_push_undo()
+	var src_data: DialogueNodeData = src_node.get_meta("node_data")
+	var new_data := _copy_node_data(src_data)
+	new_data.node_id = _generate_node_id()
+	new_data.position = src_data.position + Vector2(40, 40)
+	_graph.nodes.append(new_data)
+	_create_graph_node(new_data)
+	_dirty = true
+	_update_status_bar()
 
 
 # ==================== 节点创建/更新 ====================
@@ -302,7 +513,9 @@ func _setup_ports(node: GraphNode, data: DialogueNodeData) -> void:
 			for i in data.choices.size():
 				node.set_slot(i + 1, false, 0, Color.WHITE, true, 0, Color(1.0, 0.9, 0.3))
 		3:  # CONDITION
+			# port 0 = True (green), port 1 = False (red)
 			node.set_slot(0, true, 0, Color.WHITE, true, 0, Color.GREEN)
+			node.set_slot(1, false, 0, Color.WHITE, true, 0, Color.RED)
 		4:  # ACTION
 			node.set_slot(0, true, 0, Color.WHITE, true, 0, Color.CYAN)
 		5:  # SUB_DIALOGUE
@@ -356,6 +569,7 @@ func _on_node_delete(node_id: String) -> void:
 			_property_panel.edit_node(null)
 	node.queue_free()
 	_dirty = true
+	_update_status_bar()
 
 
 func _clear_canvas() -> void:
@@ -381,7 +595,7 @@ func _build_graph_panel() -> void:
 	_graph_panel.add_child(title)
 
 	# graph_id
-	_add_graph_field("graph_id", "", func(v): _graph.graph_id = v; _dirty = true)
+	_add_graph_field("graph_id", "", func(v): _graph.graph_id = v; _dirty = true; _update_status_bar())
 	# npc_id
 	_add_graph_field("npc_id", "", func(v): _graph.npc_id = v; _dirty = true)
 	# priority
@@ -393,29 +607,48 @@ func _build_graph_panel() -> void:
 	repeat_cb.toggled.connect(func(v): _graph_meta["repeatable"] = v; _dirty = true)
 	_graph_panel.add_child(repeat_cb)
 
-	# 分隔
+	# ── 前置条件 ──
 	_graph_panel.add_child(HSeparator.new())
 	var prereq_label := Label.new()
 	prereq_label.text = "Prerequisites"
+	prereq_label.add_theme_font_size_override("font_size", 13)
 	_graph_panel.add_child(prereq_label)
+
 	# prerequisite_logic
 	_add_graph_option("logic", ["AND", "OR"], 0,
 		func(idx): _graph_meta["prerequisite_logic"] = ["AND", "OR"][idx]; _dirty = true)
-	# prerequisite_flags
-	_add_graph_multiline("prereq_flags", "",
-		func(v): _parse_string_array(v, "prerequisite_flags"); _dirty = true)
+	# prerequisite_graph_ids
+	_add_graph_multiline("prereq_graphs", "",
+		func(v): _parse_string_array(v, "prerequisite_graph_ids"); _dirty = true)
+	# prerequisite_quest_ids
+	_add_graph_multiline("prereq_quests", "",
+		func(v): _parse_string_array(v, "prerequisite_quest_ids"); _dirty = true)
 	# prerequisite_min_day
 	_add_graph_spinbox("min_day", 0,
 		func(v): _graph_meta["prerequisite_min_day"] = v; _dirty = true)
+	# prerequisite_min_exploration
+	_add_graph_float_spinbox("min_exploration", 0.0,
+		func(v): _graph_meta["prerequisite_min_exploration"] = v; _dirty = true)
+	# prerequisite_flags
+	_add_graph_multiline("prereq_flags", "",
+		func(v): _parse_string_array(v, "prerequisite_flags"); _dirty = true)
 
-	# 分隔
+	# ── 完成效果 ──
 	_graph_panel.add_child(HSeparator.new())
 	var comp_label := Label.new()
 	comp_label.text = "Completion Effects"
+	comp_label.add_theme_font_size_override("font_size", 13)
 	_graph_panel.add_child(comp_label)
+
 	# completion_flags_set
 	_add_graph_multiline("comp_flags", "",
 		func(v): _parse_string_array(v, "completion_flags_set"); _dirty = true)
+	# completion_quest_complete
+	_add_graph_multiline("comp_quests", "",
+		func(v): _parse_string_array(v, "completion_quest_complete"); _dirty = true)
+	# completion_unlock_graphs
+	_add_graph_multiline("comp_graphs", "",
+		func(v): _parse_string_array(v, "completion_unlock_graphs"); _dirty = true)
 
 	sidebar.add_child(_graph_panel)
 
@@ -423,23 +656,27 @@ func _build_graph_panel() -> void:
 func _refresh_graph_panel() -> void:
 	if _graph_panel == null:
 		return
-	# 更新字段值
 	_set_field_text("graph_id", _graph.graph_id)
 	_set_field_text("npc_id", _graph.npc_id)
 	_set_spinbox_value("priority", _graph_meta.get("priority", 0))
 	var cb: CheckBox = _graph_panel.get_node_or_null("Repeatable")
 	if cb:
 		cb.button_pressed = _graph_meta.get("repeatable", false)
-	_set_field_text("prereq_flags", ",".join(_graph_meta.get("prerequisite_flags", [])))
+	_set_field_text("prereq_graphs", ",".join(_graph_meta.get("prerequisite_graph_ids", [])))
+	_set_field_text("prereq_quests", ",".join(_graph_meta.get("prerequisite_quest_ids", [])))
 	_set_spinbox_value("min_day", _graph_meta.get("prerequisite_min_day", 0))
+	_set_float_spinbox_value("min_exploration", _graph_meta.get("prerequisite_min_exploration", 0.0))
+	_set_field_text("prereq_flags", ",".join(_graph_meta.get("prerequisite_flags", [])))
 	_set_field_text("comp_flags", ",".join(_graph_meta.get("completion_flags_set", [])))
+	_set_field_text("comp_quests", ",".join(_graph_meta.get("completion_quest_complete", [])))
+	_set_field_text("comp_graphs", ",".join(_graph_meta.get("completion_unlock_graphs", [])))
 
 
 func _add_graph_field(name: String, value: String, on_change: Callable) -> void:
 	var hbox := HBoxContainer.new()
 	var label := Label.new()
 	label.text = name
-	label.custom_minimum_size.x = 80
+	label.custom_minimum_size.x = 100
 	hbox.add_child(label)
 	var line := LineEdit.new()
 	line.name = name
@@ -454,7 +691,7 @@ func _add_graph_spinbox(name: String, value: int, on_change: Callable) -> void:
 	var hbox := HBoxContainer.new()
 	var label := Label.new()
 	label.text = name
-	label.custom_minimum_size.x = 80
+	label.custom_minimum_size.x = 100
 	hbox.add_child(label)
 	var spin := SpinBox.new()
 	spin.name = name
@@ -466,11 +703,28 @@ func _add_graph_spinbox(name: String, value: int, on_change: Callable) -> void:
 	_graph_panel.add_child(hbox)
 
 
+func _add_graph_float_spinbox(name: String, value: float, on_change: Callable) -> void:
+	var hbox := HBoxContainer.new()
+	var label := Label.new()
+	label.text = name
+	label.custom_minimum_size.x = 100
+	hbox.add_child(label)
+	var spin := SpinBox.new()
+	spin.name = name
+	spin.value = value
+	spin.min_value = 0.0
+	spin.max_value = 1.0
+	spin.step = 0.01
+	spin.value_changed.connect(func(v): on_change.call(float(v)))
+	hbox.add_child(spin)
+	_graph_panel.add_child(hbox)
+
+
 func _add_graph_option(name: String, options: Array, selected: int, on_change: Callable) -> void:
 	var hbox := HBoxContainer.new()
 	var label := Label.new()
 	label.text = name
-	label.custom_minimum_size.x = 80
+	label.custom_minimum_size.x = 100
 	hbox.add_child(label)
 	var btn := OptionButton.new()
 	btn.name = name
@@ -484,7 +738,7 @@ func _add_graph_option(name: String, options: Array, selected: int, on_change: C
 
 func _add_graph_multiline(name: String, value: String, on_change: Callable) -> void:
 	var label := Label.new()
-	label.text = name + " (comma separated)"
+	label.text = name + " (comma sep)"
 	_graph_panel.add_child(label)
 	var line := LineEdit.new()
 	line.name = name
@@ -501,6 +755,12 @@ func _set_field_text(name: String, text: String) -> void:
 
 
 func _set_spinbox_value(name: String, value: int) -> void:
+	var node: SpinBox = _graph_panel.get_node_or_null(name)
+	if node:
+		node.value = value
+
+
+func _set_float_spinbox_value(name: String, value: float) -> void:
 	var node: SpinBox = _graph_panel.get_node_or_null(name)
 	if node:
 		node.value = value
@@ -527,6 +787,18 @@ func _show_node_panel() -> void:
 		_graph_panel.visible = false
 	if _property_panel:
 		_property_panel.visible = true
+
+
+# ==================== 状态栏 ====================
+
+func _update_status_bar() -> void:
+	if _status_bar == null:
+		return
+	var id := _graph.graph_id if _graph else ""
+	var node_count := _nodes.size()
+	var conn_count := _connections.size()
+	var dirty_mark := " *" if _dirty else ""
+	_status_bar.text = "%s | Nodes: %d | Connections: %d%s" % [id, node_count, conn_count, dirty_mark]
 
 
 # ==================== 工具函数 ====================
@@ -572,3 +844,31 @@ func _get_node_color(node_type: int) -> Color:
 		5: return Color(0.3, 0.9, 0.9)
 		6: return Color(1.0, 0.3, 0.3)
 		_: return Color.WHITE
+
+
+func _copy_node_data(src: DialogueNodeData) -> DialogueNodeData:
+	var dst := DialogueNodeData.new()
+	dst.node_id = src.node_id + "_copy"
+	dst.node_type = src.node_type
+	dst.position = src.position
+	dst.text_key = src.text_key
+	dst.speaker = src.speaker
+	dst.target_graph_id = src.target_graph_id
+	dst.choices.clear()
+	for c: ChoiceData in src.choices:
+		var nc := ChoiceData.new()
+		nc.text_key = c.text_key
+		nc.target_node_id = c.target_node_id
+		dst.choices.append(nc)
+	if src.condition:
+		dst.condition = ConditionData.new()
+		dst.condition.condition_type = src.condition.condition_type
+		dst.condition.negated = src.condition.negated
+		dst.condition.params = src.condition.params.duplicate()
+	dst.actions.clear()
+	for a: ActionData in src.actions:
+		var na := ActionData.new()
+		na.action_type = a.action_type
+		na.params = a.params.duplicate()
+		dst.actions.append(na)
+	return dst

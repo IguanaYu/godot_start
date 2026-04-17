@@ -58,11 +58,18 @@ size_flags_vertical = 3
 [node name="GraphEdit" type="GraphEdit" parent="HSplitContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
+snapping_enabled = true
+minimap_enabled = true
 
-[node name="Sidebar" type="VBoxContainer" parent="HSplitContainer"]
+[node name="SidebarScroll" type="ScrollContainer" parent="HSplitContainer"]
 layout_mode = 2
 custom_minimum_size = Vector2(280, 0)
+horizontal_scroll_mode = 0
 
-[node name="PropertiesLabel" type="Label" parent="HSplitContainer/Sidebar"]
+[node name="Sidebar" type="VBoxContainer" parent="HSplitContainer/SidebarScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="PropertiesLabel" type="Label" parent="HSplitContainer/SidebarScroll/Sidebar"]
 layout_mode = 2
 text = "Properties"
