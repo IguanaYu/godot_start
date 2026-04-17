@@ -44,6 +44,8 @@ signal level_unloading(level_name: String)
 @onready var stats_panel: Control = $GlobalUI/PlayerStatsPanel
 ## 性能面板引用
 @onready var performance_overlay: Control = $GlobalUI/PerformanceOverlay
+## 对话 UI 引用
+@onready var dialogue_ui: Control = $GlobalUI/DialogueUI
 
 ## ========== 私有变量 ==========
 
@@ -69,6 +71,9 @@ func _ready() -> void:
 
 	# 连接 GameManager 信号
 	_connect_game_manager_signals()
+
+	# 初始化对话系统 UI
+	_initialize_dialogue_ui()
 
 	# 连接暂停菜单信号
 	if pause_menu != null:
@@ -148,6 +153,14 @@ func _initialize_global_ui() -> void:
 func _connect_game_manager_signals() -> void:
 	if GameManager.has_signal("player_died") and not GameManager.player_died.is_connected(_on_player_died):
 		GameManager.player_died.connect(_on_player_died)
+
+## 初始化对话 UI
+func _initialize_dialogue_ui() -> void:
+	if dialogue_ui != null:
+		DialogueRunner.dialogue_ui = dialogue_ui
+		dialogue_ui.advance_requested.connect(_on_dialogue_advance_requested)
+		dialogue_ui.choice_made.connect(_on_dialogue_choice_made)
+		dialogue_ui.visible = false
 
 ## ========== UI 更新 ==========
 
@@ -302,6 +315,14 @@ func get_current_level() -> Node2D:
 func _on_player_died() -> void:
 	print("GameRoot: 玩家死亡")
 	# TODO: 显示游戏结束界面
+
+## 对话推进回调
+func _on_dialogue_advance_requested() -> void:
+	DialogueRunner.advance()
+
+## 对话选择回调
+func _on_dialogue_choice_made(index: int) -> void:
+	DialogueRunner.advance(index)
 
 ## ========== 输入处理 ==========
 

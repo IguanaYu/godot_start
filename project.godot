@@ -18,13 +18,18 @@ config/icon="res://icon.svg"
 [autoload]
 
 GameManager="*res://scripts/GameManager.gd"
+QuestManager="*res://scripts/quests/quest_manager.gd"
+DialogueManager="*res://scripts/dialogue/dialogue_manager.gd"
+DialogueRunner="*res://scripts/dialogue/dialogue_runner.gd"
+ExplorationProgress="*res://scripts/exploration/exploration_progress.gd"
+Iguana="*res://scripts/iguana/iguana.gd"
+SaveManager="*res://scripts/save_system/save_manager.gd"
 
 [display]
 
 window/size/viewport_width=1280
 window/size/viewport_height=720
 window/stretch/mode="canvas_items"
-window/stretch/aspect="keep"
 
 [editor_plugins]
 

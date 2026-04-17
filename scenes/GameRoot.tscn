@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://pause_menu_main" path="res://scenes/ui/menus/PauseMenu.tscn" id="3_pause_menu"]
 [ext_resource type="PackedScene" path="res://scenes/ui/PlayerStatsPanel.tscn" id="4_stats_panel"]
 [ext_resource type="PackedScene" uid="uid://perf_overlay_001" path="res://scenes/ui/PerformanceOverlay.tscn" id="5_perf_overlay"]
+[ext_resource type="PackedScene" uid="uid://dialogue_ui_001" path="res://scenes/dialogue/DialogueUI.tscn" id="6_dialogue_ui"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hp_bg"]
 bg_color = Color(0.2, 0.2, 0.2, 0.8)
@@ -60,6 +61,8 @@ mouse_filter = 2
 [node name="PlayerStatsPanel" parent="GlobalUI" instance=ExtResource("4_stats_panel")]
 
 [node name="PerformanceOverlay" parent="GlobalUI" instance=ExtResource("5_perf_overlay")]
+
+[node name="DialogueUI" parent="GlobalUI" instance=ExtResource("6_dialogue_ui")]
 
 [node name="Background" type="ColorRect" parent="."]
 z_index = -10
