@@ -188,6 +188,15 @@ func clear_flag(flag_name: String) -> void:
 	_flags.erase(flag_name)
 
 
+## 程序化注册对话图（测试/脚本用，不从 .tres 加载）
+func register_graph(graph) -> void:
+	if graph == null or graph.get("graph_id") == "":
+		return
+	_graph_definitions[graph.graph_id] = graph
+	if not _unlocked_graphs.has(graph.graph_id) and _check_prerequisites(graph):
+		_unlock_graph(graph.graph_id)
+
+
 ## 存档
 func get_save_data() -> Dictionary:
 	return {

@@ -3,3 +3,5 @@
 
 git提交的时候，不要添加Co-Authored-By相关的内容
 
+手写 .tscn 文件时不要写 uid=，引用资源只写 path=，不要写 uid=，UID 由 Godot 编辑器自动管理
+

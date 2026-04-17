@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://mainlevel"]
 
-[ext_resource type="Script" path="res://scripts/levels/MainLevel.gd" id="1_main_level"]
-[ext_resource type="Script" path="res://scripts/SpawnManager.gd" id="2_spawn_manager"]
-[ext_resource type="Script" path="res://scripts/DayNightCycleManager.gd" id="4_daynight"]
+[ext_resource type="Script" uid="uid://ck3ed0hxn2v5p" path="res://scripts/levels/MainLevel.gd" id="1_main_level"]
+[ext_resource type="Script" uid="uid://c2u4raubrcskj" path="res://scripts/SpawnManager.gd" id="2_spawn_manager"]
+[ext_resource type="Script" uid="uid://dxfhv5xmmwpgm" path="res://scripts/DayNightCycleManager.gd" id="4_daynight"]
 [ext_resource type="Texture2D" uid="uid://st6lfgchh04h" path="res://kenney_desert-shooter-pack_1.0/kenney_desert-shooter-pack_1.0/PNG/Interface/Tiles/tile_0145.png" id="5_vcsgt"]
 [ext_resource type="Texture2D" uid="uid://jswtv1wirkd2" path="res://kenney_desert-shooter-pack_1.0/背景.png" id="6_c01mt"]
 [ext_resource type="PackedScene" path="res://scenes/stations/Stele.tscn" id="7_stele"]
@@ -19,19 +19,19 @@ initial_velocity_min = 100.0
 initial_velocity_max = 200.0
 gravity = Vector3(0, 98, 0)
 
-[node name="MainLevel" type="Node2D"]
+[node name="MainLevel" type="Node2D" unique_id=435350961]
 script = ExtResource("1_main_level")
 
-[node name="PlayerSpawn" type="Marker2D" parent="."]
+[node name="PlayerSpawn" type="Marker2D" parent="." unique_id=28468945]
 position = Vector2(400, 300)
 
-[node name="SpawnManager" type="Node2D" parent="."]
+[node name="SpawnManager" type="Node2D" parent="." unique_id=605106779]
 script = ExtResource("2_spawn_manager")
 
-[node name="DayNightCycleManager" type="Node" parent="."]
+[node name="DayNightCycleManager" type="Node" parent="." unique_id=1748844582]
 script = ExtResource("4_daynight")
 
-[node name="Background" type="ColorRect" parent="."]
+[node name="Background" type="ColorRect" parent="." unique_id=1578252773]
 z_index = -10
 offset_left = -1000.0
 offset_top = -1000.0
@@ -39,9 +39,9 @@ offset_right = 1000.0
 offset_bottom = 1000.0
 color = Color(0.1, 0.1, 0.15, 1)
 
-[node name="LevelUI" type="CanvasLayer" parent="."]
+[node name="LevelUI" type="CanvasLayer" parent="." unique_id=1866143064]
 
-[node name="CountdownLabel" type="Label" parent="LevelUI"]
+[node name="CountdownLabel" type="Label" parent="LevelUI" unique_id=1680975555]
 offset_left = 20.0
 offset_top = 20.0
 offset_right = 300.0
@@ -50,7 +50,7 @@ theme_override_colors/font_color = Color(1, 0.3, 0.3, 1)
 theme_override_font_sizes/font_size = 24
 text = "Evacuation: 20.0s"
 
-[node name="RewardPopup" type="Label" parent="LevelUI"]
+[node name="RewardPopup" type="Label" parent="LevelUI" unique_id=915096485]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -66,7 +66,7 @@ text = "奖励提示"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="ControlsHint" type="Label" parent="LevelUI"]
+[node name="ControlsHint" type="Label" parent="LevelUI" unique_id=403383274]
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
@@ -78,7 +78,7 @@ theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 0.7)
 theme_override_font_sizes/font_size = 14
 text = "WASD: 移动 | R: 重新开始 | ESC: 暂停"
 
-[node name="GPUParticles2D" type="GPUParticles2D" parent="."]
+[node name="GPUParticles2D" type="GPUParticles2D" parent="." unique_id=2108933786]
 position = Vector2(-60, 17)
 emitting = false
 amount = 21
@@ -88,8 +88,8 @@ one_shot = true
 explosiveness = 1.0
 process_material = SubResource("ParticleProcessMaterial_vcsgt")
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=2077087435]
 texture = ExtResource("6_c01mt")
 
-[node name="Stele" parent="." instance=ExtResource("7_stele")]
+[node name="Stele" parent="." unique_id=1613150630 instance=ExtResource("7_stele")]
 position = Vector2(800, -200)

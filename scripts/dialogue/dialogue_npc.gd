@@ -8,9 +8,8 @@ extends Interactable
 
 
 func interact() -> void:
-	super.interact()
 	if DialogueRunner.is_active():
 		return
-	var graph := DialogueManager.get_next_graph_for_npc(npc_id)
+	var graph = DialogueManager.get_next_graph_for_npc(npc_id)
 	if graph:
 		DialogueRunner.start_dialogue(graph)

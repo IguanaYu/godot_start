@@ -58,6 +58,11 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 24
 text = "设置"
 
+[node name="DialogueTestButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 24
+text = "对话系统测试"
+
 [node name="ExitButton" type="Button" parent="VBoxContainer" unique_id=419104954]
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
