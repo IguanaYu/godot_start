@@ -42,6 +42,8 @@ signal level_unloading(level_name: String)
 @onready var pause_menu: CanvasLayer = $PauseMenu
 ## 玩家属性面板引用
 @onready var stats_panel: Control = $GlobalUI/PlayerStatsPanel
+## 性能面板引用
+@onready var performance_overlay: Control = $GlobalUI/PerformanceOverlay
 
 ## ========== 私有变量 ==========
 
@@ -136,6 +138,10 @@ func _initialize_global_ui() -> void:
 	# 初始化UI显示
 	_update_ui()
 
+	# 初始化性能面板可见性
+	if performance_overlay != null:
+		performance_overlay.visible = GameManager.show_fps
+
 ## ========== 信号连接 ==========
 
 ## 连接 GameManager 信号
@@ -166,6 +172,11 @@ func _on_reward_obtained(reward_text: String) -> void:
 	# TODO: 添加奖励弹出UI
 
 ## ========== 关卡管理 ==========
+
+## 每帧同步性能面板可见性
+func _process(_delta: float) -> void:
+	if performance_overlay != null and performance_overlay.visible != GameManager.show_fps:
+		performance_overlay.visible = GameManager.show_fps
 
 ## 加载关卡
 func load_level(level_path: String) -> void:

@@ -39,6 +39,10 @@ func _ready():
 	# 连接显示设置信号
 	_window_mode_option.item_selected.connect(_on_window_mode_selected)
 	_resolution_option.item_selected.connect(_on_resolution_selected)
+	_fps_check_button.toggled.connect(_on_fps_toggle)
+
+	# 初始化性能显示开关状态
+	_fps_check_button.set_pressed_no_signal(GameManager.get_show_fps())
 
 	# 应用焦点样式
 	_apply_focus_styles()
@@ -94,7 +98,7 @@ func _apply_focus_styles() -> void:
 
 ## 设置焦点链
 func _setup_focus_chain() -> void:
-	var controls := [_master_slider, _sfx_slider, _music_slider, _window_mode_option, _resolution_option, _back_button]
+	var controls := [_master_slider, _sfx_slider, _music_slider, _window_mode_option, _resolution_option, _fps_check_button, _back_button]
 
 	for i in range(controls.size()):
 		var ctrl = controls[i]
@@ -133,6 +137,10 @@ func _on_window_mode_selected(index: int) -> void:
 func _on_resolution_selected(index: int) -> void:
 	GameManager.set_resolution_index(index)
 
+## 性能显示开关切换
+func _on_fps_toggle(toggled: bool) -> void:
+	GameManager.set_show_fps(toggled)
+
 # 节点引用（在场景中自动设置）
 @onready var _master_slider: HSlider = $VBoxContainer/MasterVolumeContainer/MasterSlider
 @onready var _sfx_slider: HSlider = $VBoxContainer/SfxVolumeContainer/SfxSlider
@@ -142,4 +150,5 @@ func _on_resolution_selected(index: int) -> void:
 @onready var _music_volume_label: Label = $VBoxContainer/MusicVolumeContainer/MusicVolumeLabel
 @onready var _window_mode_option: OptionButton = $VBoxContainer/WindowModeContainer/WindowModeOptionButton
 @onready var _resolution_option: OptionButton = $VBoxContainer/ResolutionContainer/ResolutionOptionButton
+@onready var _fps_check_button: CheckButton = $VBoxContainer/FPSContainer/FPSCheckButton
 @onready var _back_button: Button = $VBoxContainer/BackButton

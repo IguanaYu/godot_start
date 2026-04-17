@@ -60,6 +60,8 @@ const RESOLUTIONS: Array[Vector2i] = [
 var _window_mode: int = DisplayServer.WINDOW_MODE_WINDOWED
 ## 当前分辨率索引
 var _resolution_index: int = 0
+## 是否显示性能面板
+var show_fps: bool = false
 
 ## ========== 私有变量 ==========
 
@@ -572,6 +574,15 @@ func _apply_resolution() -> void:
 		var res: Vector2i = RESOLUTIONS[_resolution_index]
 		DisplayServer.window_set_size(res)
 
+## 设置是否显示性能面板
+func set_show_fps(value: bool) -> void:
+	show_fps = value
+	save_settings()
+
+## 获取是否显示性能面板
+func get_show_fps() -> bool:
+	return show_fps
+
 ## ========== 公共方法：设置持久化 ==========
 
 ## 保存设置到本地文件
@@ -579,6 +590,7 @@ func save_settings() -> void:
 	var config = ConfigFile.new()
 	config.set_value("display", "window_mode", _window_mode)
 	config.set_value("display", "resolution_index", _resolution_index)
+	config.set_value("display", "show_fps", show_fps)
 	config.set_value("audio", "master_volume", master_volume)
 	config.set_value("audio", "sfx_volume", sfx_volume)
 	config.set_value("audio", "music_volume", music_volume)
@@ -593,6 +605,7 @@ func load_settings() -> void:
 	# 加载显示设置
 	_window_mode = config.get_value("display", "window_mode", DisplayServer.WINDOW_MODE_WINDOWED)
 	_resolution_index = config.get_value("display", "resolution_index", 0)
+	show_fps = config.get_value("display", "show_fps", false)
 
 	# 加载音量设置
 	master_volume = config.get_value("audio", "master_volume", 0.8)
