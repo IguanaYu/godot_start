@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://mapselectpanel01" path="res://scenes/MapSelectPanel.tscn" id="6_map_panel"]
 [ext_resource type="Texture2D" uid="uid://b8bga1bkeojuy" path="res://kenney_desert-shooter-pack_1.0/村庄.png" id="5_7yxuu"]
 [ext_resource type="PackedScene" uid="uid://bxshoppanel" path="res://scenes/shop/ShopPanel.tscn" id="5_shop_panel"]
+[ext_resource type="PackedScene" path="res://scenes/ui/menus/StoryProgressPanel.tscn" id="7_story_panel"]
 
 [node name="RestAreaLevel" type="Node2D" unique_id=176250234]
 script = ExtResource("1_rest_area")
@@ -36,6 +37,10 @@ position = Vector2(600, 300)
 [node name="ShopPanel" parent="LevelUI" unique_id=165538906 instance=ExtResource("5_shop_panel")]
 
 [node name="MapSelectPanel" parent="LevelUI" instance=ExtResource("6_map_panel")]
+
+[node name="StoryProgressPanel" parent="LevelUI" instance=ExtResource("7_story_panel")]
+
+[node name="StoryProgressPanel" parent="LevelUI" instance=ExtResource("7_story_panel")]
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1039425015]
 texture = ExtResource("5_7yxuu")

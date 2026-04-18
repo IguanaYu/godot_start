@@ -33,6 +33,10 @@ var _is_returning: bool = false
 @onready var shop_panel: Panel = $LevelUI/ShopPanel
 ## 地图选择UI面板
 @onready var map_select_panel: Panel = $LevelUI/MapSelectPanel
+## 剧情进度面板
+@onready var story_progress_panel: Control = $LevelUI/StoryProgressPanel
+## 剧情查看NPC（动态创建）
+var story_viewer_npc: Node = null
 
 ## ========== 标准接口实现 ==========
 
@@ -57,6 +61,9 @@ func initialize_level(game_root: Node2D) -> void:
 		shop_panel.visible = false
 	if map_select_panel != null:
 		map_select_panel.visible = false
+
+	# 创建剧情查看 NPC
+	_setup_story_viewer()
 
 	print("RestAreaLevel: 关卡初始化完成")
 
@@ -165,7 +172,9 @@ func _select_default_map() -> void:
 func _input(event: InputEvent) -> void:
 	# 按ESC键关闭所有UI
 	if event.is_action_pressed("ui_cancel"):
-		if map_select_panel != null and map_select_panel.visible:
+		if story_progress_panel != null and story_progress_panel.visible:
+			story_progress_panel.hide_panel()
+		elif map_select_panel != null and map_select_panel.visible:
 			map_select_panel.visible = false
 		elif shop_panel != null and shop_panel.visible:
 			shop_panel.visible = false
@@ -185,6 +194,56 @@ func _try_interact_with_exit_npc() -> void:
 	var distance = player.global_position.distance_to(level_exit_npc.global_position)
 	if distance <= 80.0:  # 交互范围
 		_on_returned_to_main()
+
+## ========== 剧情查看 NPC ==========
+
+func _setup_story_viewer() -> void:
+	if story_progress_panel == null:
+		return
+	# 动态创建 NPC
+	var npc_script = load("res://scripts/ui/StoryViewerNPC.gd")
+	var npc := Area2D.new()
+	npc.set_script(npc_script)
+	npc.position = Vector2(150, 300)
+	npc.collision_layer = 4
+	npc.collision_mask = 0
+	npc.name = "StoryViewerNPC"
+
+	# Sprite2D
+	var sprite := Sprite2D.new()
+	sprite.modulate = Color(0.8, 0.6, 0.9, 1)
+	var tex = load("res://kenney_desert-shooter-pack_1.0/kenney_desert-shooter-pack_1.0/PNG/Enemies/Tiles/tile_0009.png")
+	if tex:
+		sprite.texture = tex
+	npc.add_child(sprite)
+
+	# CollisionShape2D (body)
+	var body_shape := CircleShape2D.new()
+	body_shape.radius = 30.0
+	var body_col := CollisionShape2D.new()
+	body_col.shape = body_shape
+	npc.add_child(body_col)
+
+	# InteractionArea
+	var inter_area := Area2D.new()
+	var inter_shape := CircleShape2D.new()
+	inter_shape.radius = 80.0
+	var inter_col := CollisionShape2D.new()
+	inter_col.shape = inter_shape
+	inter_area.add_child(inter_col)
+	npc.add_child(inter_area)
+
+	npc.set("prompt_text", "查看剧情进度")
+	npc.set_panel(story_progress_panel)
+
+	npcs_container.add_child(npc)
+	story_viewer_npc = npc
+	story_progress_panel.closed.connect(_on_story_panel_closed)
+
+
+func _on_story_panel_closed() -> void:
+	pass
+
 
 ## ========== 清理 ==========
 
