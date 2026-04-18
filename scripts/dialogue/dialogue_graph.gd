@@ -3,6 +3,7 @@ extends Resource
 ## 对话图数据。一段完整的对话，由多个节点和连接组成。
 
 @export var graph_id: String = ""
+@export var display_name: String = ""
 @export var npc_id: String = ""
 @export var priority: int = 0
 @export var repeatable: bool = false

@@ -1,10 +1,13 @@
 extends Node
 ## 对话图总管理器。管理所有对话图的加载、解锁关系和完成状态。
 
+const StoryArcScript := preload("res://scripts/story_arc/story_arc.gd")
+
 signal dialogue_graph_completed(graph_id: String)
 signal dialogue_graph_unlocked(graph_id: String)
 
 const DIALOGUE_DIR := "res://resources/dialogue/"
+const STORY_ARC_DIR := "res://resources/story_arcs/"
 
 # 所有对话图定义
 var _graph_definitions: Dictionary = {}
@@ -14,10 +17,14 @@ var _completed_graphs: Array[String] = []
 var _unlocked_graphs: Array[String] = []
 # 对话标记系统
 var _flags: Dictionary = {}
+# StoryArc 数据
+var _story_arcs: Dictionary = {}  # arc_id -> StoryArc
+var _graph_to_arc: Dictionary = {}  # graph_id -> StoryArc
 
 
 func _ready() -> void:
 	_load_all_graphs()
+	_load_story_arcs()
 	_initialize_unlocked_graphs()
 
 
@@ -210,3 +217,94 @@ func restore_save_data(data: Dictionary) -> void:
 	_completed_graphs = data.get("completed_graphs", [])
 	_unlocked_graphs = data.get("unlocked_graphs", [])
 	_flags = data.get("flags", {})
+
+
+# ==================== StoryArc 加载 ====================
+
+func _load_story_arcs() -> void:
+	var dir := DirAccess.open(STORY_ARC_DIR)
+	if dir == null:
+		return
+	dir.list_dir_begin()
+	var file_name := dir.get_next()
+	while file_name != "":
+		if file_name.ends_with(".tres"):
+			var res = load(STORY_ARC_DIR + file_name)
+			if res and res.get("arc_id") != null and res.arc_id != "":
+				_story_arcs[res.arc_id] = res
+				for gid in res.graph_ids:
+					_graph_to_arc[gid] = res
+		file_name = dir.get_next()
+	dir.list_dir_end()
+
+
+# ==================== 查询 API ====================
+
+func get_all_graph_ids() -> Array[String]:
+	var ids: Array[String] = []
+	for gid in _graph_definitions:
+		ids.append(gid)
+	return ids
+
+
+func get_graph_lock_reasons(graph_id: String) -> Dictionary:
+	var result: Dictionary = {
+		"missing_graphs": [],
+		"missing_quests": [],
+		"need_day": 0,
+		"current_day": 0,
+		"need_exploration": 0.0,
+		"current_exploration": 0.0,
+		"missing_flags": [],
+	}
+	var graph = _graph_definitions.get(graph_id)
+	if graph == null:
+		return result
+
+	# 前置对话图
+	for gid in graph.prerequisite_graph_ids:
+		if not _completed_graphs.has(gid):
+			result["missing_graphs"].append(gid)
+
+	# 前置任务
+	for qid in graph.prerequisite_quest_ids:
+		if not QuestManager.is_quest_completed(qid):
+			result["missing_quests"].append(qid)
+
+	# 天数
+	if graph.prerequisite_min_day > 0:
+		result["need_day"] = graph.prerequisite_min_day
+		result["current_day"] = GameManager.current_day_number
+
+	# 探索度
+	if graph.prerequisite_min_exploration > 0.0:
+		result["need_exploration"] = graph.prerequisite_min_exploration
+		if ExplorationProgress:
+			result["current_exploration"] = ExplorationProgress.get_exploration_value()
+
+	# 标记
+	for flag in graph.prerequisite_flags:
+		if not _flags.get(flag, false):
+			result["missing_flags"].append(flag)
+
+	return result
+
+
+func get_story_arcs() -> Array:
+	var result: Array = []
+	for arc_id in _story_arcs:
+		result.append(_story_arcs[arc_id])
+	return result
+
+
+func get_story_arc_for_graph(graph_id: String):
+	return _graph_to_arc.get(graph_id)
+
+
+func get_graph_display_name(graph_id: String) -> String:
+	var graph = _graph_definitions.get(graph_id)
+	if graph == null:
+		return graph_id
+	if graph.display_name != "":
+		return graph.display_name
+	return graph_id
