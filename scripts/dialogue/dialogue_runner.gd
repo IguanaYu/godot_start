@@ -216,6 +216,11 @@ func _execute_actions(actions: Array) -> void:
 
 
 func _execute_action(action) -> void:
+	# 优先使用 RewardData（如果有）
+	if action.reward != null:
+		action.reward.grant()
+		return
+
 	var action_type = action.action_type
 
 	if action_type == 0:  # SET_FLAG
