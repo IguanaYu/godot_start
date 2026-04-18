@@ -40,11 +40,15 @@ var _applying_snapshot: bool = false
 
 
 func _ready() -> void:
-	graph_edit = get_node_or_null("HSplitContainer/GraphEdit")
-	# 兼容两种结构：有/无 ScrollContainer
-	sidebar = get_node_or_null("HSplitContainer/SidebarScroll/Sidebar")
+	graph_edit = get_node_or_null("GraphViewContainer/HSplitContainer/GraphEdit")
+	sidebar = get_node_or_null("GraphViewContainer/HSplitContainer/SidebarScroll/Sidebar")
 	if sidebar == null:
-		sidebar = get_node_or_null("HSplitContainer/Sidebar")
+		sidebar = get_node_or_null("GraphViewContainer/HSplitContainer/Sidebar")
+
+	# TabBar 切换
+	var tab_bar: TabBar = get_node_or_null("TabBar")
+	if tab_bar:
+		tab_bar.tab_changed.connect(_on_tab_changed)
 
 	_connect_toolbar()
 	if graph_edit:
@@ -82,22 +86,31 @@ func _ready() -> void:
 	_status_bar = Label.new()
 	_status_bar.name = "StatusBar"
 	_status_bar.add_theme_font_size_override("font_size", 11)
-	add_child(_status_bar)
+	$GraphViewContainer.add_child(_status_bar)
 
 	_new_graph()
 
 
 func _connect_toolbar() -> void:
-	$Toolbar/BtnNew.pressed.connect(_on_new)
-	$Toolbar/BtnSave.pressed.connect(_on_save)
-	$Toolbar/BtnLoad.pressed.connect(_on_load)
-	$Toolbar/BtnAddStart.pressed.connect(_on_add_node.bind(0))
-	$Toolbar/BtnAddDialogue.pressed.connect(_on_add_node.bind(1))
-	$Toolbar/BtnAddChoice.pressed.connect(_on_add_node.bind(2))
-	$Toolbar/BtnAddCondition.pressed.connect(_on_add_node.bind(3))
-	$Toolbar/BtnAddAction.pressed.connect(_on_add_node.bind(4))
-	$Toolbar/BtnAddSub.pressed.connect(_on_add_node.bind(5))
-	$Toolbar/BtnAddEnd.pressed.connect(_on_add_node.bind(6))
+	$GraphViewContainer/Toolbar/BtnNew.pressed.connect(_on_new)
+	$GraphViewContainer/Toolbar/BtnSave.pressed.connect(_on_save)
+	$GraphViewContainer/Toolbar/BtnLoad.pressed.connect(_on_load)
+	$GraphViewContainer/Toolbar/BtnAddStart.pressed.connect(_on_add_node.bind(0))
+	$GraphViewContainer/Toolbar/BtnAddDialogue.pressed.connect(_on_add_node.bind(1))
+	$GraphViewContainer/Toolbar/BtnAddChoice.pressed.connect(_on_add_node.bind(2))
+	$GraphViewContainer/Toolbar/BtnAddCondition.pressed.connect(_on_add_node.bind(3))
+	$GraphViewContainer/Toolbar/BtnAddAction.pressed.connect(_on_add_node.bind(4))
+	$GraphViewContainer/Toolbar/BtnAddSub.pressed.connect(_on_add_node.bind(5))
+	$GraphViewContainer/Toolbar/BtnAddEnd.pressed.connect(_on_add_node.bind(6))
+
+
+func _on_tab_changed(index: int) -> void:
+	var graph_view: PanelContainer = get_node_or_null("GraphViewContainer")
+	var story_view: PanelContainer = get_node_or_null("StoryViewContainer")
+	if graph_view:
+		graph_view.visible = (index == 0)
+	if story_view:
+		story_view.visible = (index == 1)
 
 
 
@@ -596,6 +609,8 @@ func _build_graph_panel() -> void:
 
 	# graph_id
 	_add_graph_field("graph_id", "", func(v): _graph.graph_id = v; _dirty = true; _update_status_bar())
+	# display_name
+	_add_graph_field("display_name", "", func(v): _graph.display_name = v; _dirty = true)
 	# npc_id
 	_add_graph_field("npc_id", "", func(v): _graph.npc_id = v; _dirty = true)
 	# priority
@@ -657,6 +672,7 @@ func _refresh_graph_panel() -> void:
 	if _graph_panel == null:
 		return
 	_set_field_text("graph_id", _graph.graph_id)
+	_set_field_text("display_name", _graph.display_name)
 	_set_field_text("npc_id", _graph.npc_id)
 	_set_spinbox_value("priority", _graph_meta.get("priority", 0))
 	var cb: CheckBox = _graph_panel.get_node_or_null("Repeatable")
