@@ -6,6 +6,7 @@ const PropertyPanelScript := preload("res://addons/dialogue_editor/editor/proper
 const GraphSerializerScript := preload("res://addons/dialogue_editor/editor/graph_serializer.gd")
 const GraphValidatorScript := preload("res://addons/dialogue_editor/editor/graph_validator.gd")
 const UndoManagerScript := preload("res://addons/dialogue_editor/editor/undo_manager.gd")
+const StoryOverviewScript := preload("res://addons/dialogue_editor/editor/story_overview.gd")
 
 var graph_edit: GraphEdit = null
 var sidebar: VBoxContainer = null
@@ -104,6 +105,9 @@ func _connect_toolbar() -> void:
 	$GraphViewContainer/Toolbar/BtnAddEnd.pressed.connect(_on_add_node.bind(6))
 
 
+var _story_overview: VBoxContainer = null
+
+
 func _on_tab_changed(index: int) -> void:
 	var graph_view: PanelContainer = get_node_or_null("GraphViewContainer")
 	var story_view: PanelContainer = get_node_or_null("StoryViewContainer")
@@ -111,6 +115,15 @@ func _on_tab_changed(index: int) -> void:
 		graph_view.visible = (index == 0)
 	if story_view:
 		story_view.visible = (index == 1)
+	# 首次切换到总览时创建面板
+	if index == 1 and _story_overview == null:
+		_story_overview = VBoxContainer.new()
+		_story_overview.set_script(StoryOverviewScript)
+		_story_overview.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		story_view.add_child(_story_overview)
+		_story_overview.refresh_overview()
+	elif index == 1 and _story_overview:
+		_story_overview.refresh_overview()
 
 
 
